@@ -1,7 +1,7 @@
 # WoLua
 _Warrior of... Lua?_
 
-![GitHub build status](https://img.shields.io/github/workflow/status/PrincessRTFM/WoLua/Build?logo=github)
+![GitHub build status](https://img.shields.io/github/actions/workflow/status/PrincessRTFM/WoLua/build.yml?logo=github)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/PrincessRTFM/WoLua?label=version&color=informational)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/PrincessRTFM/WoLua/master?label=updated)
 [![GitHub issues](https://img.shields.io/github/issues-raw/PrincessRTFM/WoLua?label=known%20issues)](https://github.com/PrincessRTFM/WoLua/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
