@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WoLua", "WoLua\WoLua.csproj", "{1C719255-3E61-49E3-9547-4D4241FE7E06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C719255-3E61-49E3-9547-4D4241FE7E06}.Debug|x64.ActiveCfg = Debug|x64
+		{1C719255-3E61-49E3-9547-4D4241FE7E06}.Debug|x64.Build.0 = Debug|x64
+		{1C719255-3E61-49E3-9547-4D4241FE7E06}.Release|x64.ActiveCfg = Release|Any CPU
+		{1C719255-3E61-49E3-9547-4D4241FE7E06}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ECD50639-A786-4B5F-90A0-4EBBB84F9371}
+	EndGlobalSection
+EndGlobal
