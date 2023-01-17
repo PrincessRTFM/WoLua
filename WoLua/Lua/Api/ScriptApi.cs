@@ -17,21 +17,10 @@ public class ScriptApi: ApiBase {
 
 	[MoonSharpHidden]
 	internal ScriptApi(ScriptContainer source) : base(source, "CORE") {
-		this.Storage = new(source.Engine) {
-			MetaTable = this.GenerateMetatable()
-		};
+		this.Storage = new(source.Engine);
 		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.Owner.InternalName), "json");
 		this.Debug = new(this.Owner);
 		this.Keys = new(this.Owner);
-	}
-
-	protected Table GenerateMetatable() {
-		Table mt = new(this.Owner.Engine);
-#if !DEBUG
-		mt["__metatable"] = true;
-#endif
-		mt["__call"] = (Action<Table>)this.SetStorage; // XXX this isn't working and I don't know why
-		return mt;
 	}
 
 	protected readonly string StoragePath;
@@ -108,7 +97,6 @@ public class ScriptApi: ApiBase {
 			Table loaded = JsonTableConverter.JsonToTable(json, this.Owner.Engine);
 			if (loaded is null)
 				return null;
-			loaded.MetaTable = this.GenerateMetatable();
 			this.Storage = loaded;
 			return true;
 		}
@@ -127,9 +115,7 @@ public class ScriptApi: ApiBase {
 			return;
 
 		this.Log("Replacing script storage", "STORAGE");
-		Table store = new(this.Owner.Engine) {
-			MetaTable = this.GenerateMetatable()
-		};
+		Table store = new(this.Owner.Engine);
 		foreach (TablePair item in update.Pairs) {
 			store[item.Key] = item.Value;
 		}
@@ -167,7 +153,7 @@ public class ScriptApi: ApiBase {
 
 	#endregion
 
-	// TODO maybe ImGui toasts?
+	// TODO clipboard read/write, ImGui toasts?
 
 	#region Metamethods
 
