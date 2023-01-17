@@ -110,6 +110,9 @@ The following properties exist on the `Player` API object.
 - `WeaponDrawn`, readonly boolean|nil
   Whether the user's weapon is currently drawn.
 
+- `Moving`, readonly boolean|nil
+  Whether the game says the user is currently moving.
+
 - `PartyMemberCount`, readonly number|nil (unsigned integer)
   The number of _other_ members of the user's current party. This does not include the player, so a full party will have a `PartyMemberCount` of `7`, not `8`. It also does not include the user's pet (chocobo, carbuncle, etc) if one is present.
 

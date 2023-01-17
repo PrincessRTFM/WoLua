@@ -9,6 +9,7 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Logging;
 
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
@@ -206,6 +207,9 @@ public class PlayerApi: ApiBase {
 		=> this.Loaded
 			? Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.WeaponOut)
 		: null;
+
+	protected internal static unsafe bool Moving
+		=> AgentMap.Instance() is not null && AgentMap.Instance()->IsPlayerMoving > 0;
 
 	#endregion
 
