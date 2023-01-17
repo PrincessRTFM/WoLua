@@ -44,7 +44,8 @@ public class ScriptContainer: IDisposable {
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
 
 	public Script Engine { get; private set; } = new(ScriptModules);
-	public readonly string Name;
+	public readonly string InternalName;
+	public readonly string PrettyName;
 	public readonly string SourcePath;
 
 	public ScriptApi ScriptApi { get; private set; }
@@ -59,8 +60,9 @@ public class ScriptContainer: IDisposable {
 	internal DynValue callback = DynValue.Void;
 	public bool Ready => this.callback.Type is DataType.Function;
 
-	public ScriptContainer(string file, string name) {
-		this.Name = name;
+	public ScriptContainer(string file, string name, string slug) {
+		this.InternalName = slug;
+		this.PrettyName = name;
 		this.SourcePath = file;
 
 		this.Engine.Options.ScriptLoader = new ScriptLoader(this.SourceDir);
@@ -98,11 +100,12 @@ public class ScriptContainer: IDisposable {
 			}
 		}
 		else { // If there was a load error, don't try to run any callback that may have been registered, the script is in an unknown (errored) state and it might not work
-			Service.Plugin.Error($"Loading failed, clearing callback for {this.Name}");
+			Service.Plugin.Error($"Loading failed, clearing callback for {this.PrettyName}");
 			this.callback = DynValue.Void;
 		}
 	}
-	public ScriptContainer(string file) : this(file, new DirectoryInfo(Path.GetDirectoryName(file)!).Name.Replace(" ", "")) { }
+	public ScriptContainer(string file) : this(file, new DirectoryInfo(Path.GetDirectoryName(file)!).Name) { }
+	public ScriptContainer(string file, string name) : this(file, name, name.Replace(" ", "")) { }
 
 	public bool SetCallback(DynValue func) {
 		if (this.disposed)

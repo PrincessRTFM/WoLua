@@ -184,16 +184,17 @@ public class Plugin: IDalamudPlugin {
 		PluginLog.Information($"[LOADER] Scanning root script directory {path}");
 		foreach (string dir in Directory.EnumerateDirectories(path)) {
 			string file = Path.Combine(dir, "command.lua");
-			string name = new DirectoryInfo(dir).Name.Replace(" ", "");
-			if (Service.Scripts.ContainsKey(name)) {
-				this.Error($"Duplicate script invocation name {name}");
+			string name = new DirectoryInfo(dir).Name;
+			string slug = name.Replace(" ", "");
+			if (Service.Scripts.ContainsKey(slug)) {
+				this.Error($"Duplicate script invocation name {slug} (for {name})");
 				continue;
 			}
 			if (File.Exists(file)) {
 				PluginLog.Information($"[LOADER] Loading {file}");
-				ScriptContainer script = new(file, name);
-				PluginLog.Information($"[LOADER] Registering script container for {name}");
-				Service.Scripts.Add(name, script);
+				ScriptContainer script = new(file, name, slug);
+				PluginLog.Information($"[LOADER] Registering script container for {slug}");
+				Service.Scripts.Add(slug, script);
 				if (!script.Ready) {
 					PluginLog.Error("[CHECK] Script does not have a registered callback!");
 				}

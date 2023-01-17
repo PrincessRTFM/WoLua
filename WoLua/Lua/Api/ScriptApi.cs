@@ -19,7 +19,7 @@ public class ScriptApi: ApiBase {
 		this.Storage = new(source.Engine) {
 			MetaTable = this.GenerateMetatable()
 		};
-		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.ScriptName), "json");
+		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.ScriptSlug), "json");
 		this.Debug = new(this.Owner);
 	}
 
@@ -58,7 +58,9 @@ public class ScriptApi: ApiBase {
 
 	public static string PluginCommand => Service.Plugin.Command;
 
-	public string Name => this.ScriptName;
+	public string Name => this.ScriptSlug;
+
+	public string Title => this.ScriptTitle;
 
 	public string CallSelfCommand => PluginCommand + " call " + this.Name;
 
@@ -84,7 +86,7 @@ public class ScriptApi: ApiBase {
 			return true;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to delete disk storage for {this.ScriptName}", err);
+			Service.Plugin.Error($"Failed to delete disk storage for {this.ScriptTitle}", err);
 			return false;
 		}
 	}
@@ -99,7 +101,7 @@ public class ScriptApi: ApiBase {
 			return true;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to save storage for {this.ScriptName}", err);
+			Service.Plugin.Error($"Failed to save storage for {this.ScriptTitle}", err);
 			return false;
 		}
 	}
@@ -123,7 +125,7 @@ public class ScriptApi: ApiBase {
 			return false;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to load storage for {this.ScriptName}", err);
+			Service.Plugin.Error($"Failed to load storage for {this.ScriptTitle}", err);
 			return null;
 		}
 	}
@@ -150,7 +152,7 @@ public class ScriptApi: ApiBase {
 
 	[MoonSharpUserDataMetamethod("__tostring")]
 	public override string ToString()
-		=> $"Script[{this.ScriptName}]";
+		=> $"Script[{this.ScriptTitle}]";
 
 	[MoonSharpUserDataMetamethod("__call")]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]

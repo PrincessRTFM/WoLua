@@ -47,7 +47,7 @@ public class GameApi: ApiBase {
 			messages.Select(dv => ToUsefulString(dv))
 		);
 		this.Log(message, "CHAT");
-		Service.Plugin.Print(message, null, this.ScriptName);
+		Service.Plugin.Print(message, null, this.ScriptTitle);
 	}
 
 	public void PrintError(params DynValue[] messages) {
@@ -59,7 +59,7 @@ public class GameApi: ApiBase {
 			messages.Select(dv => ToUsefulString(dv))
 		);
 		this.Log(message, "CHAT");
-		Service.Plugin.Print(message, Foreground.Error, this.ScriptName);
+		Service.Plugin.Print(message, Foreground.Error, this.ScriptTitle);
 	}
 
 	public void SendChat(string chatline) {

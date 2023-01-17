@@ -14,7 +14,10 @@ public abstract class ApiBase: IDisposable {
 	public ScriptContainer Owner { get; private set; }
 
 	[MoonSharpHidden]
-	public readonly string ScriptName;
+	public readonly string ScriptSlug;
+
+	[MoonSharpHidden]
+	public readonly string ScriptTitle;
 
 	[MoonSharpHidden]
 	public readonly string DefaultMessageTag;
@@ -22,7 +25,8 @@ public abstract class ApiBase: IDisposable {
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source, string tag) {
 		this.Owner = source;
-		this.ScriptName = source.Name;
+		this.ScriptSlug = source.InternalName;
+		this.ScriptTitle = source.PrettyName;
 		this.DefaultMessageTag = tag;
 	}
 
@@ -31,7 +35,7 @@ public abstract class ApiBase: IDisposable {
 			return;
 
 		if (force || this.Owner.ScriptApi.Debug.Enabled)
-			PluginLog.Information($"[SCRIPT:{this.ScriptName}|{tag ?? this.DefaultMessageTag}] {message}");
+			PluginLog.Information($"[SCRIPT:{this.ScriptTitle}|{tag ?? this.DefaultMessageTag}] {message}");
 	}
 
 	protected internal static string ToUsefulString(DynValue value, bool typed = false)
