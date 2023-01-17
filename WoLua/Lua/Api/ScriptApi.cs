@@ -7,6 +7,7 @@ using System.IO;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
+using PrincessRTFM.WoLua.Lua.Actions;
 using PrincessRTFM.WoLua.Lua.Api.Script;
 
 // This API is for all for everything that doesn't relate to the actual game itself.
@@ -19,7 +20,7 @@ public class ScriptApi: ApiBase {
 		this.Storage = new(source.Engine) {
 			MetaTable = this.GenerateMetatable()
 		};
-		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.ScriptSlug), "json");
+		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.Owner.InternalName), "json");
 		this.Debug = new(this.Owner);
 		this.Keys = new(this.Owner);
 	}
@@ -77,7 +78,7 @@ public class ScriptApi: ApiBase {
 			return true;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to delete disk storage for {this.ScriptTitle}", err);
+			Service.Plugin.Error($"Failed to delete disk storage for {this.Owner.PrettyName}", err);
 			return false;
 		}
 	}
@@ -92,7 +93,7 @@ public class ScriptApi: ApiBase {
 			return true;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to save storage for {this.ScriptTitle}", err);
+			Service.Plugin.Error($"Failed to save storage for {this.Owner.PrettyName}", err);
 			return false;
 		}
 	}
@@ -116,7 +117,7 @@ public class ScriptApi: ApiBase {
 			return false;
 		}
 		catch (Exception err) {
-			Service.Plugin.Error($"Failed to load storage for {this.ScriptTitle}", err);
+			Service.Plugin.Error($"Failed to load storage for {this.Owner.PrettyName}", err);
 			return null;
 		}
 	}
@@ -141,11 +142,28 @@ public class ScriptApi: ApiBase {
 
 	public static string PluginCommand => Service.Plugin.Command;
 
-	public string Name => this.ScriptSlug;
+	public string Name => this.Owner.InternalName;
 
-	public string Title => this.ScriptTitle;
+	public string Title => this.Owner.PrettyName;
 
 	public string CallSelfCommand => PluginCommand + " call " + this.Name;
+
+	#endregion
+
+	#region Action queueing
+
+	public int QueueSize => this.Owner.ActionQueue.Count;
+
+	public void ClearQueue()
+		=> this.Owner.ActionQueue.clear();
+
+	public void QueueDelay(uint ms)
+		=> this.Owner.ActionQueue.add(new PauseAction(ms));
+
+	public void QueueAction(Closure func, params DynValue[] arguments)
+		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewClosure(func), arguments));
+	public void QueueAction(CallbackFunction func, params DynValue[] arguments)
+		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewCallback(func), arguments));
 
 	#endregion
 
@@ -155,7 +173,7 @@ public class ScriptApi: ApiBase {
 
 	[MoonSharpUserDataMetamethod("__tostring")]
 	public override string ToString()
-		=> $"Script[{this.ScriptTitle}]";
+		=> $"Script[{this.Owner.PrettyName}]";
 
 	[MoonSharpUserDataMetamethod("__call")]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]

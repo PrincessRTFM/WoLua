@@ -31,7 +31,9 @@ Since there's a fair amount of information exposed, not to mention the functions
 
 - The [Script API][script api] has functions that don't relate to the game itself
 - The [Debug API][debug api] contains everything related to debugging scripts
+- The [Keys API][keys api] contains a handful of properties to test if modifier keys (control, alt, shift) are down
 - The [persistent storage table][script storage] isn't technically an API, but it has its own documentation
+- The [action queueing API][action queueing] allows emulation (and better) of vanilla macros' `<wait>` functionality
 - The [Game API][game api] is the overall access point for everything relating to the game itself
 - The [Player API][player api] has details about the current player
 - The [Toast API][toast api] contains a handful of functions for creating the "toast message" popups, like quest objective completion or moving to a new part of the map
@@ -40,6 +42,8 @@ Since there's a fair amount of information exposed, not to mention the functions
 
 [script api]: <script.md>
 [debug api]: <debug.md>
+[keys api]: <keys.md>
+[action queueing]: <queue.md>
 [script storage]: <storage.md>
 [game api]: <game.md>
 [player api]: <player.md>

@@ -2,8 +2,6 @@ namespace PrincessRTFM.WoLua.Lua.Api;
 
 using System;
 
-using Dalamud.Logging;
-
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
@@ -14,28 +12,19 @@ public abstract class ApiBase: IDisposable {
 	public ScriptContainer Owner { get; private set; }
 
 	[MoonSharpHidden]
-	public readonly string ScriptSlug;
-
-	[MoonSharpHidden]
-	public readonly string ScriptTitle;
-
-	[MoonSharpHidden]
 	public readonly string DefaultMessageTag;
 
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source, string tag) {
 		this.Owner = source;
-		this.ScriptSlug = source.InternalName;
-		this.ScriptTitle = source.PrettyName;
 		this.DefaultMessageTag = tag;
 	}
 
 	protected void Log(string message, string? tag = null, bool force = false) {
-		if (this.Disposed)
+		if (this.Disposed || this.Owner.Disposed)
 			return;
 
-		if (force || this.Owner.ScriptApi.Debug.Enabled)
-			PluginLog.Information($"[SCRIPT:{this.ScriptTitle}|{tag ?? this.DefaultMessageTag}] {message}");
+		this.Owner.log(message, tag ?? this.DefaultMessageTag, force);
 	}
 
 	protected internal static string ToUsefulString(DynValue value, bool typed = false)

@@ -46,8 +46,8 @@ public class GameApi: ApiBase {
 			" ",
 			messages.Select(dv => ToUsefulString(dv))
 		);
-		this.Log(message, "CHAT");
-		Service.Plugin.Print(message, null, this.ScriptTitle);
+		this.Log(message, "LOCALCHAT");
+		Service.Plugin.Print(message, null, this.Owner.PrettyName);
 	}
 
 	public void PrintError(params DynValue[] messages) {
@@ -58,8 +58,8 @@ public class GameApi: ApiBase {
 			" ",
 			messages.Select(dv => ToUsefulString(dv))
 		);
-		this.Log(message, "CHAT");
-		Service.Plugin.Print(message, Foreground.Error, this.ScriptTitle);
+		this.Log(message, "LOCALCHAT");
+		Service.Plugin.Print(message, Foreground.Error, this.Owner.PrettyName);
 	}
 
 	public void SendChat(string chatline) {
@@ -67,8 +67,10 @@ public class GameApi: ApiBase {
 			return;
 
 		string cleaned = Service.Common.Functions.Chat.SanitiseText(chatline);
-		if (!string.IsNullOrWhiteSpace(cleaned))
+		if (!string.IsNullOrWhiteSpace(cleaned)) {
+			this.Log(cleaned, "SERVERCHAT");
 			Service.Common.Functions.Chat.SendMessage(cleaned);
+		}
 	}
 
 	// TODO map flags, playing sounds?

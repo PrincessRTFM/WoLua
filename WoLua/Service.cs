@@ -25,6 +25,7 @@ internal class Service {
 	[PluginService] public static PluginConfiguration Configuration { get; private set; } = null!;
 	[PluginService] public static XivCommonBase Common { get; private set; } = null!;
 
+	[PluginService] public static Framework Framework { get; private set; } = null!;
 	[PluginService] public static ChatGui Chat { get; private set; } = null!;
 	[PluginService] public static GameGui Gui { get; private set; } = null!;
 	[PluginService] public static ToastGui Toast { get; private set; } = null!;
