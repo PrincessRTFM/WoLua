@@ -13,6 +13,9 @@ The following properties exist on the `Script` API object.
 - `Debug`, API
   Access to the [Debug API](debug.md).
 
+- `Keys`, API
+  Access to the [Keys API](keys.md).
+
 - `PluginCommand`, readonly string
   The WoLua base command, including the leading slash (`/wolua`, unless it changes in the future for some reason) for convenience in case of forks or changes.
 

@@ -35,6 +35,7 @@ public class Plugin: IDalamudPlugin {
 
 	static Plugin() {
 		UserData.RegisterType(typeof(ScriptApi), TypeRegistrationMode);
+		UserData.RegisterType(typeof(KeysApi), TypeRegistrationMode);
 		UserData.RegisterType(typeof(DebugApi), TypeRegistrationMode);
 		UserData.RegisterType(typeof(GameApi), TypeRegistrationMode);
 		UserData.RegisterType(typeof(PlayerApi), TypeRegistrationMode);
