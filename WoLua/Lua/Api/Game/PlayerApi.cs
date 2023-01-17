@@ -208,7 +208,7 @@ public class PlayerApi: ApiBase {
 			? Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.WeaponOut)
 		: null;
 
-	protected internal static unsafe bool Moving
+	public static unsafe bool Moving
 		=> AgentMap.Instance() is not null && AgentMap.Instance()->IsPlayerMoving > 0;
 
 	#endregion
