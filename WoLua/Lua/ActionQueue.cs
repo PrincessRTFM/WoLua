@@ -53,6 +53,8 @@ public class ActionQueue: IDisposable {
 			this.clear();
 		}
 
+		this.Script.log(this.GetType().Name, "DISPOSE", true);
+
 		this.Script = null!;
 	}
 

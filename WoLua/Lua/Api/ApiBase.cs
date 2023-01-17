@@ -72,6 +72,8 @@ public abstract class ApiBase: IDisposable {
 			return;
 		this.Disposed = true;
 
+		this.Owner.log(this.GetType().Name, "DISPOSE", true);
+
 		this.Owner = null!;
 	}
 

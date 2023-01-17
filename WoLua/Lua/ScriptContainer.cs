@@ -30,10 +30,11 @@ public class ScriptContainer: IDisposable {
 		| CoreModules.Dynamic;
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
 
-	public Script Engine { get; private set; } = new(ScriptModules);
 	public readonly string InternalName;
 	public readonly string PrettyName;
 	public readonly string SourcePath;
+
+	public Script Engine { get; private set; } = new(ScriptModules);
 
 	public ActionQueue ActionQueue { get; private set; }
 
@@ -47,7 +48,7 @@ public class ScriptContainer: IDisposable {
 	public bool ErrorOnCall { get; private set; } = false;
 
 	internal DynValue callback = DynValue.Void;
-	public bool Ready => this.callback.Type is DataType.Function;
+	public bool Ready => this.Engine is not null && this.callback.Type is DataType.Function;
 
 	public ScriptContainer(string file, string name, string slug) {
 		this.InternalName = slug;
@@ -92,7 +93,7 @@ public class ScriptContainer: IDisposable {
 		}
 		else { // If there was a load error, don't try to run any callback that may have been registered, the script is in an unknown (errored) state and it might not work
 			Service.Plugin.Error($"Loading failed, clearing callback for {this.PrettyName}");
-			this.callback = DynValue.Void;
+			this.Dispose(); // shut everything down because this ship ain't sailing
 		}
 	}
 	public ScriptContainer(string file) : this(file, new DirectoryInfo(Path.GetDirectoryName(file)!).Name) { }
@@ -141,9 +142,6 @@ public class ScriptContainer: IDisposable {
 	}
 
 	internal void log(string message, string tag, bool force = false) {
-		if (this.Disposed)
-			return;
-
 		if (force || this.ScriptApi.Debug.Enabled)
 			PluginLog.Information($"[SCRIPT:{this.PrettyName}|{tag}] {message}");
 	}
@@ -161,6 +159,9 @@ public class ScriptContainer: IDisposable {
 			this.GameApi.Dispose();
 		}
 
+		this.log(this.GetType().Name, "DISPOSE", true);
+
+		this.callback = DynValue.Void;
 		this.Engine = null!;
 		this.ScriptApi = null!;
 		this.GameApi = null!;

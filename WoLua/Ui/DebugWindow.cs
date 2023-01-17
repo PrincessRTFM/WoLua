@@ -90,47 +90,51 @@ internal class DebugWindow: BaseWindow {
 			ImGui.PopStyleColor();
 
 			ImGui.Spacing();
-			ImGui.PushTextWrapPos(Width - (ImGui.GetStyle().WindowPadding.X * 2));
 
-			Textline("Globals:", 0);
-			ImGui.Indent();
-			try {
-				Script engine = script.Engine;
-				Table globals = engine.Globals;
-				DynValue[] globalVars = globals.Keys.ToArray();
-				foreach (DynValue key in globalVars) {
-					if (ignoredScriptGlobals.Contains(key.CastToString()))
-						continue;
-					DynValue value = globals.Get(key);
-					Textline($"[{ApiBase.ToUsefulString(key, true)}] = {ApiBase.ToUsefulString(value, true)}", 0);
+			if (script.Ready) {
+				ImGui.PushTextWrapPos(Width - (ImGui.GetStyle().WindowPadding.X * 2));
+
+				Textline("Globals:", 0);
+				ImGui.Indent();
+				try {
+					Script engine = script.Engine;
+					Table globals = engine.Globals;
+					DynValue[] globalVars = globals.Keys.ToArray();
+					foreach (DynValue key in globalVars) {
+						if (ignoredScriptGlobals.Contains(key.CastToString()))
+							continue;
+						DynValue value = globals.Get(key);
+						Textline($"[{ApiBase.ToUsefulString(key, true)}] = {ApiBase.ToUsefulString(value, true)}", 0);
+					}
 				}
-			}
-			catch (Exception e) {
-				Textline(e.ToString(), 0);
-			}
-			ImGui.Unindent();
-
-			ImGui.Spacing();
-
-			Textline("Storage:", 0);
-			ImGui.Indent();
-			try {
-				Script engine = script.Engine;
-				Table globals = engine.Globals;
-				ScriptApi api = script.ScriptApi;
-				Table storage = api.Storage;
-				DynValue[] storedVars = storage.Keys.ToArray();
-				foreach (DynValue key in storedVars) {
-					DynValue value = storage.Get(key);
-					Textline($"[{ApiBase.ToUsefulString(key, true)}] = {ApiBase.ToUsefulString(value, true)}", 0);
+				catch (Exception e) {
+					Textline(e.ToString(), 0);
 				}
-			}
-			catch (Exception e) {
-				Textline(e.ToString(), 0);
-			}
-			ImGui.Unindent();
+				ImGui.Unindent();
 
-			ImGui.PopTextWrapPos();
+				ImGui.Spacing();
+
+				Textline("Storage:", 0);
+				ImGui.Indent();
+				try {
+					Script engine = script.Engine;
+					Table globals = engine.Globals;
+					ScriptApi api = script.ScriptApi;
+					Table storage = api.Storage;
+					DynValue[] storedVars = storage.Keys.ToArray();
+					foreach (DynValue key in storedVars) {
+						DynValue value = storage.Get(key);
+						Textline($"[{ApiBase.ToUsefulString(key, true)}] = {ApiBase.ToUsefulString(value, true)}", 0);
+					}
+				}
+				catch (Exception e) {
+					Textline(e.ToString(), 0);
+				}
+				ImGui.Unindent();
+
+				ImGui.PopTextWrapPos();
+			}
+
 			ImGui.Spacing();
 			ImGui.Spacing();
 		}
