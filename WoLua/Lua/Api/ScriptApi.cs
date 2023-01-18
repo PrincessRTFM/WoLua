@@ -106,6 +106,10 @@ public class ScriptApi: ApiBase {
 			this.Log("No disk storage found", "STORAGE");
 			return false;
 		}
+		catch (SyntaxErrorException err) {
+			Service.Plugin.Error($"Invalid JSON disk storage for {this.Owner.PrettyName}", err);
+			return null;
+		}
 		catch (Exception err) {
 			Service.Plugin.Error($"Failed to load storage for {this.Owner.PrettyName}", err);
 			return null;
@@ -162,6 +166,29 @@ public class ScriptApi: ApiBase {
 		get => ImGui.GetClipboardText() ?? string.Empty;
 		set => ImGui.SetClipboardText(value ?? string.Empty);
 	}
+
+	#endregion
+
+	#region JSON
+
+	public DynValue ParseJson(string content) {
+		this.Log(content, "JSON.PARSE");
+		try {
+			Table table = JsonTableConverter.JsonToTable(content, this.Owner.Engine);
+			return DynValue.NewTable(table);
+		}
+		catch (SyntaxErrorException e) {
+			this.Log(e.ToString(), "JSON.PARSE");
+			return DynValue.Nil;
+		}
+	}
+	public string SerialiseJson(Table content) {
+		string json = JsonTableConverter.TableToJson(content);
+		this.Log(json, "JSON.SERIALISE");
+		return json;
+	}
+	public string SerializeJson(Table content) // american spelling
+		=> this.SerialiseJson(content);
 
 	#endregion
 
