@@ -78,6 +78,7 @@ public class ScriptApi: ApiBase {
 		if (this.Disposed)
 			return false;
 
+		this.Owner.cleanTable(this.Storage);
 		this.Log($"Writing to {this.StoragePath}", "STORAGE");
 		try {
 			File.WriteAllText(this.StoragePath, this.Storage.TableToJson());
@@ -99,6 +100,7 @@ public class ScriptApi: ApiBase {
 			Table loaded = JsonTableConverter.JsonToTable(json, this.Owner.Engine);
 			if (loaded is null)
 				return null;
+			this.Owner.cleanTable(loaded);
 			this.Storage = loaded;
 			return true;
 		}
@@ -122,6 +124,7 @@ public class ScriptApi: ApiBase {
 
 		this.Log("Replacing script storage", "STORAGE");
 		Table store = new(this.Owner.Engine);
+		this.Owner.cleanTable(update);
 		foreach (TablePair item in update.Pairs) {
 			store[item.Key] = item.Value;
 		}
@@ -175,6 +178,7 @@ public class ScriptApi: ApiBase {
 		this.Log(content, "JSON.PARSE");
 		try {
 			Table table = JsonTableConverter.JsonToTable(content, this.Owner.Engine);
+			this.Owner.cleanTable(table);
 			return DynValue.NewTable(table);
 		}
 		catch (SyntaxErrorException e) {
@@ -183,6 +187,7 @@ public class ScriptApi: ApiBase {
 		}
 	}
 	public string SerialiseJson(Table content) {
+		this.Owner.cleanTable(content);
 		string json = JsonTableConverter.TableToJson(content);
 		this.Log(json, "JSON.SERIALISE");
 		return json;

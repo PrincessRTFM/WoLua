@@ -1,7 +1,9 @@
 namespace PrincessRTFM.WoLua.Lua;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Dalamud.Logging;
 
@@ -144,6 +146,24 @@ public class ScriptContainer: IDisposable {
 	internal void log(string message, string tag, bool force = false) {
 		if (force || this.ScriptApi.Debug.Enabled)
 			PluginLog.Information($"[SCRIPT:{this.PrettyName}|{tag}] {message}");
+	}
+
+	internal void cleanTable(Table table) {
+		this.log("Recursively collecting dead keys", "CLEANTABLE");
+		Queue<Table> queue = new();
+		queue.Enqueue(table);
+		while (queue.TryDequeue(out Table? target)) {
+			this.log("Clearing dead keys...", "CLEANTABLE");
+			target.CollectDeadKeys();
+			TablePair[] entries = target.Pairs.ToArray();
+			foreach (TablePair entry in entries) {
+				if (entry.Value.Type is DataType.Table) {
+					this.log($"Found subtable {entry.Key}", "CLEANTABLE");
+					queue.Enqueue(entry.Value.Table);
+				}
+			}
+			this.log("Table finished", "CLEANTABLE");
+		}
 	}
 
 	#region Disposable
