@@ -31,6 +31,9 @@ The following properties exist on the `Script` API object.
 - `QueueSize`, readonly number (integer)
   The number of actions currently sitting in this script's action queue, waiting to be executed.
 
+- `Clipboard`, writable string
+  The current text on the system clipboard. Can be set as well, in order to set the clipboard text.
+
 ### Methods
 The following methods are avilable on the `Script` API object.
 

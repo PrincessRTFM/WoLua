@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
+using ImGuiNET;
+
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
@@ -153,7 +155,17 @@ public class ScriptApi: ApiBase {
 
 	#endregion
 
-	// TODO clipboard read/write, ImGui toasts?
+	#region Clipboard
+
+	[AllowNull]
+	public static string Clipboard {
+		get => ImGui.GetClipboardText() ?? string.Empty;
+		set => ImGui.SetClipboardText(value ?? string.Empty);
+	}
+
+	#endregion
+
+	// TODO ImGui toasts?
 
 	#region Metamethods
 
