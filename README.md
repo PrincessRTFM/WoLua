@@ -6,6 +6,8 @@ _Warrior of... Lua?_
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/PrincessRTFM/WoLua/master?label=updated)
 [![GitHub issues](https://img.shields.io/github/issues-raw/PrincessRTFM/WoLua?label=known%20issues)](https://github.com/PrincessRTFM/WoLua/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
 
+[![Support me!](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7IK9UU)
+
 ## About
 [![License](https://img.shields.io/github/license/PrincessRTFM/WoLua?logo=github&color=informational&cacheSeconds=86400)](https://github.com/PrincessRTFM/WoLua/blob/master/LICENSE)
 
