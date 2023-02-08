@@ -17,6 +17,12 @@ The following properties exist on the `Player` API object.
 - `Name`, readonly string|nil
   The current character's name, first and last. Can be combined with `Homeworld` below using `@` as a separator in order to identify a character for sending chat tells.
 
+- `Firstname`, readonly string|nil
+  The current character's first name only.
+
+- `Lastname`, readonly string|nil
+  The current character's last name only.
+
 - `HomeWorldId`, readonly number|nil (unsigned short)
   The internal (FFXIV) numeric ID of the current character's _home_ world. May be useful in niche cases, but you probably want `HomeWorld` instead.
 

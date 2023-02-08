@@ -34,12 +34,26 @@ public class PlayerApi: ApiBase {
 			? Service.Client.LocalContentId
 		: null;
 
-	#region Details
+	#region Name
 
 	public string? Name
 		=> this.Loaded
 			? Service.Client.LocalPlayer!.Name!.TextValue
 		: null;
+
+	public string? Firstname
+		=> this.Loaded
+			? this.Name!.Split(' ')[0]
+		: null;
+
+	public string? Lastname
+		=> this.Loaded
+			? this.Name!.Split(' ')[1]
+		: null;
+
+	#endregion
+
+	#region Details
 
 	public byte? Level
 		=> this.Loaded
