@@ -2,7 +2,7 @@
 _A key part of multi-purpose scripts._
 
 ## Usage
-The Keys API is a sub-component of the Script API, which means it's accessible through `Script.Keys`.
+The Keys API is a sub-component of the [Script API](script.md), which means it's accessible through `Script.Keys`.
 
 ### Properties
 The following properties exist on the `Keys` API object.

@@ -1,22 +1,25 @@
 # WoLua Job Data
-_Toast is bread held under direct heat until crisp. Wait, wrong kind of toast._
+_Work work work..._
 
 ## Usage
-Job data is exposed via the `Job` property of the `Player` API, which means it's accessible through `Game.Player.Job`.
+Job data is exposed via the `Job` property of an [entity container](entity.md), which means it's accessible through `Game.Player.Entity.Job` for the current character.
 
 ## Properties
-The following properties exist on job data objects. All of them are readonly. If you access job data while no character data is loaded, the `Id` will be zero and the various name properties will be `nil`.
+The following properties exist on job data objects. All of them are readonly.
 
 - `Id`, number (unsigned integer)
-  The internal (FFXIV) numeric ID of the current class or job. Unique for each; jobs do not share IDs with their classes.
+  The internal (FFXIV) numeric ID of the current class or job. Unique for each; jobs do not share IDs with their classes. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `0`.
 
 - `Name`, string|nil
-  The long-form (full) name of the represented class or job.
+  The long-form (full) name of the represented class or job. This value is always in all lowercase. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `adventurer`.
 
 - `Abbreviation`, string|nil
 - `Abbr`
 - `ShortName`
-  The short-form (three-letter) name of the represented class or job.
+  The short-form (three-letter) name of the represented class or job. This value is always in all uppercase. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `ADV`.
+
+- `Valid`, boolean
+  Indicates whether this object represents a valid job. If not, then `Id` will be `0`, `Name` will be `adventurer`, and `Abbreviation` (and aliases) will be `ADV`.
 
 - `IsCrafter`, boolean
   Whether or not this class is a Disciple of the Hand.

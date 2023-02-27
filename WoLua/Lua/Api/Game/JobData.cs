@@ -4,7 +4,11 @@ using System;
 
 using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public sealed record class JobData(uint Id, string? Name, string? Abbreviation): IEquatable<JobData> {
+	internal const string
+		invalidJobName = "adventurer",
+		invalidJobAbbr = "ADV";
 	public bool Equals(JobData? other)
 		=> this.Id == other?.Id;
 	public override int GetHashCode()
@@ -16,7 +20,7 @@ public sealed record class JobData(uint Id, string? Name, string? Abbreviation):
 		=> this.Abbreviation;
 
 	public bool Valid
-		=> this.Id > 0 && this.Name is not null && this.Abbreviation is not null;
+		=> this.Id > 0 && this.Name is not null and not invalidJobName && this.Abbreviation is not null and not invalidJobAbbr;
 
 	public bool IsCrafter
 		=> this.Valid && this.Id is >= 8 and <= 15;
@@ -48,7 +52,7 @@ public sealed record class JobData(uint Id, string? Name, string? Abbreviation):
 
 	#region Metamathods
 
-	[MoonSharpUserDataMetamethod("__tostring")]
+	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString()
 		=> this.Name ?? "Adventurer";
 

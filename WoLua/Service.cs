@@ -14,6 +14,7 @@ using Dalamud.Game.Gui.Toast;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 
+using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
 
 using XivCommon;
@@ -38,4 +39,6 @@ internal class Service {
 	[PluginService] public static DataManager DataManager { get; private set; } = null!;
 	[PluginService] public static PartyList Party { get; private set; } = null!;
 	[PluginService] public static ObjectTable Objects { get; private set; } = null!;
+
+	public static PlaySound Sounds { get; internal set; } = null!;
 }

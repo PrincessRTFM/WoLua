@@ -16,23 +16,29 @@ using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
-using CSChar = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
-
+[MoonSharpUserData]
 public class PlayerApi: ApiBase {
 	public const string TAG = "PLAYER";
 
 	[MoonSharpHidden]
-	internal PlayerApi(ScriptContainer source) : base(source, TAG) { }
+	internal PlayerApi(ScriptContainer source) : base(source, TAG) {
+		this.Party = new(this.Owner);
+	}
 
 	public bool Loaded
 		=> !this.Disposed
 		&& Service.Client.LocalPlayer is not null
 		&& Service.Client.LocalContentId is not 0;
+	public static implicit operator bool(PlayerApi? player) => player?.Loaded ?? false;
 
 	public ulong? CharacterId
 		=> this.Loaded
 			? Service.Client.LocalContentId
 		: null;
+
+	public EntityWrapper Entity => new(this ? Service.Client.LocalPlayer : null);
+
+	public MountData Mount => this.Entity.Mount;
 
 	#region Name
 
@@ -53,70 +59,12 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
-	#region Details
-
-	public byte? Level
-		=> this.Loaded
-			? Service.Client.LocalPlayer!.Level
-		: null;
-
-	public JobData Job
-		=> new(
-			this.Loaded ? Service.Client.LocalPlayer!.ClassJob.Id : 0,
-			this.Loaded ? Service.Client.LocalPlayer!.ClassJob!.GameData!.Name!.ToString() : null,
-			this.Loaded ? Service.Client.LocalPlayer!.ClassJob!.GameData!.Abbreviation!.ToString() : null
-		);
-
-	#endregion
-
-	#region Stats
-
-	public uint? Hp
-		=> this.Loaded && (this.MaxHp ?? 0) > 0
-			? Service.Client.LocalPlayer!.CurrentHp
-		: null;
-	public uint? MaxHp
-		=> this.Loaded
-			? Service.Client.LocalPlayer!.MaxHp
-		: null;
-
-	public uint? Mp
-		=> this.Loaded && (this.MaxMp ?? 0) > 0
-			? Service.Client.LocalPlayer!.CurrentMp
-		: null;
-	public uint? MaxMp
-		=> this.Loaded
-			? Service.Client.LocalPlayer!.MaxMp
-		: null;
-
-	public uint? Gp
-		=> this.Loaded && (this.MaxGp ?? 0) > 0
-			? Service.Client.LocalPlayer!.CurrentGp
-		: null;
-	public uint? MaxGp
-		=> this.Loaded
-			? Service.Client.LocalPlayer!.MaxGp
-		: null;
-
-	public uint? Cp
-		=> this.Loaded && (this.MaxCp ?? 0) > 0
-			? Service.Client.LocalPlayer!.CurrentCp
-		: null;
-	public uint? MaxCp
-		=> this.Loaded
-			? Service.Client.LocalPlayer!.MaxCp
-		: null;
-
-	#endregion
-
 	#region Location
 
 	public uint? MapZone
 		=> this.Loaded && Service.Client.TerritoryType > 0
 			? Service.Client.TerritoryType
 		: null;
-
-	// TODO position?
 
 	#endregion
 
@@ -128,16 +76,7 @@ public class PlayerApi: ApiBase {
 			|| Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.InCombat)
 		: null;
 
-	public unsafe bool? Mounted {
-		get {
-			if (!this.Loaded)
-				return null;
-			CSChar* player = (CSChar*)Service.Client.LocalPlayer!.Address;
-			if (player is null)
-				return null;
-			return player->IsMounted();
-		}
-	}
+	public bool Mounted => this.Mount.Active;
 
 	public bool? Crafting
 		=> this.Loaded
@@ -229,98 +168,23 @@ public class PlayerApi: ApiBase {
 
 	#region Party/alliance
 
-	public int? PartyMemberCount
-		=> this.Loaded
-			? Service.Party.Length
-		: null;
-
-	public bool? InAlliance
-		=> this.Loaded
-			? Service.Party.IsAlliance
-		: null;
-
-	public bool? InParty
-		=> this.Loaded
-			? Service.Party.Length > 0
-		: null;
-
-	// TODO party/aliance member details?
+	public PartyApi Party { get; private set; }
 
 	#endregion
 
 	#region Targets
 
-	public bool? HasTarget
-		=> this.Loaded
-			? Service.Targets.Target is not null
-		: null;
+	public EntityWrapper Target => new(this.Loaded ? Service.Targets.Target : null);
+	public bool? HasTarget => this.Loaded ? this.Target : null;
 
-	public bool? HasFocusTarget
-		=> this.Loaded
-			? Service.Targets.FocusTarget is not null
-		: null;
+	public EntityWrapper FocusTarget => new(this.Loaded ? Service.Targets.FocusTarget : null);
+	public bool? HasFocusTarget => this.Loaded ? this.FocusTarget : null;
 
-	public bool? HasMouseoverTarget
-		=> this.Loaded
-			? Service.Targets.MouseOverTarget is not null
-		: null;
+	public EntityWrapper MouseOverTarget => new(this.Loaded ? Service.Targets.MouseOverTarget : null);
+	public bool? HasMouseoverTarget => this.Loaded ? this.MouseOverTarget : null;
 
-	public bool? HasSoftTarget
-		=> this.Loaded
-			? Service.Targets.SoftTarget is not null
-		: null;
-
-	// TODO target type, target details?
-
-	#endregion
-
-	#region Worlds
-
-	public unsafe ushort? HomeWorldId {
-		get {
-			if (!this.Loaded)
-				return null;
-			CSChar* player = (CSChar*)Service.Client.LocalPlayer!.Address;
-			if (player is null)
-				return null;
-			return player->HomeWorld;
-		}
-	}
-
-	public unsafe ushort? CurrentWorldId {
-		get {
-			if (!this.Loaded)
-				return null;
-			CSChar* player = (CSChar*)Service.Client.LocalPlayer!.Address;
-			if (player is null)
-				return null;
-			return player->CurrentWorld;
-		}
-	}
-
-	public string? HomeWorld {
-		get {
-			ushort? id = this.HomeWorldId;
-			if (id is null)
-				return null;
-			World? world = Service.DataManager.GetExcelSheet<World>()!.GetRow(id.Value);
-			if (world is null)
-				return null;
-			return world.Name;
-		}
-	}
-
-	public string? CurrentWorld {
-		get {
-			ushort? id = this.CurrentWorldId;
-			if (id is null)
-				return null;
-			World? world = Service.DataManager.GetExcelSheet<World>()!.GetRow(id.Value);
-			if (world is null)
-				return null;
-			return world.Name;
-		}
-	}
+	public EntityWrapper SoftTarget => new(this.Loaded ? Service.Targets.SoftTarget : null);
+	public bool? HasSoftTarget => this.Loaded ? this.SoftTarget : null;
 
 	#endregion
 
@@ -388,26 +252,14 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
-	public unsafe ushort? MountId {
-		get {
-			if (!this.Loaded)
-				return null;
-			CSChar* player = (CSChar*)Service.Client.LocalPlayer!.Address;
-			if (player is null)
-				return null;
-			CSChar.MountContainer? mount = player->IsMounted() ? player->Mount : null;
-			return mount?.MountId ?? 0;
-		}
-	}
-
 	// TODO status effects?
 
 	#region Metamethods
 
-	[MoonSharpUserDataMetamethod("__tostring")]
+	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString()
 		=> this.Loaded
-			? $"{this.Name}@{this.HomeWorld}"
+			? $"{this.Name}@{this.Entity.HomeWorld}"
 		: string.Empty;
 
 	#endregion

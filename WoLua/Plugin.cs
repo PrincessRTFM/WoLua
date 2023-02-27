@@ -14,10 +14,9 @@ using Dalamud.Plugin;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Platforms;
 
+using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
-using PrincessRTFM.WoLua.Lua.Api;
 using PrincessRTFM.WoLua.Lua.Api.Game;
-using PrincessRTFM.WoLua.Lua.Api.Script;
 using PrincessRTFM.WoLua.Ui;
 using PrincessRTFM.WoLua.Ui.Chat;
 
@@ -34,19 +33,14 @@ public class Plugin: IDalamudPlugin {
 	private readonly DebugWindow debugWindow;
 
 	static Plugin() {
-		UserData.RegisterType(typeof(ScriptApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(KeysApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(DebugApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(GameApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(PlayerApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(ToastApi), TypeRegistrationMode);
-		UserData.RegisterType(typeof(JobData), TypeRegistrationMode);
+		UserData.RegisterAssembly(typeof(Plugin).Assembly, true);
 		Script.GlobalOptions.RethrowExceptionNested = true;
 		Script.GlobalOptions.Platform = new LimitedPlatformAccessor();
 	}
 
 	public Plugin(DalamudPluginInterface i) {
-		i.Create<Service>(i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(), this);
+		i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase());
+		Service.Sounds = new PlaySound();
 
 		PlayerApi.InitialiseEmotes();
 
@@ -267,9 +261,9 @@ public class Plugin: IDalamudPlugin {
 	protected virtual void Dispose(bool disposing) {
 		if (this.disposed)
 			return;
-		this.disposed = true;
 
 		this.clearCommands();
+		this.disposed = true;
 
 		if (disposing) {
 			PluginLog.Information("[CORE] Flushing configuration to disk");

@@ -2,6 +2,9 @@ namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
 using ImGuiNET;
 
+using MoonSharp.Interpreter;
+
+[MoonSharpUserData]
 public class KeysApi: ApiBase {
 	public KeysApi(ScriptContainer source) : base(source, "KEY") { }
 

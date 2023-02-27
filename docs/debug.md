@@ -2,7 +2,7 @@
 _Because nothing is ever bug-free._
 
 ## Usage
-The Debug API is a sub-component of the Script API, which means it's accessible through `Script.Debug`.
+The Debug API is a sub-component of the [Script API](script.md), which means it's accessible through `Script.Debug`.
 
 Please note that _all_ debugging methods print their output to Dalamud's debug log, accessible through `/xllog`, and NOT to the user's chatlog. The debug log contains debugging messages from _all_ loaded plugins, so you may wish to clear the log before debugging a script.
 

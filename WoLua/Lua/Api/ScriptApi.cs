@@ -14,6 +14,7 @@ using PrincessRTFM.WoLua.Lua.Api.Script;
 
 // This API is for all for everything that doesn't relate to the actual game itself.
 // It also contains script-specific and per-script functionality, like persistent storage.
+[MoonSharpUserData]
 public class ScriptApi: ApiBase {
 	#region Non-API functionality
 
@@ -30,17 +31,9 @@ public class ScriptApi: ApiBase {
 	protected override void Dispose(bool disposing) {
 		if (this.Disposed)
 			return;
-
-		if (disposing) {
-			this.Debug.Dispose();
-			this.Keys.Dispose();
-		}
-
 		base.Dispose(disposing);
 
 		this.Storage = null!;
-		this.Debug = null!;
-		this.Keys = null!;
 	}
 
 	#endregion
@@ -201,11 +194,11 @@ public class ScriptApi: ApiBase {
 
 	#region Metamethods
 
-	[MoonSharpUserDataMetamethod("__tostring")]
+	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString()
 		=> $"Script[{this.Owner.PrettyName}]";
 
-	[MoonSharpUserDataMetamethod("__call")]
+	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]
 	public void RegisterCallbackFunction(DynValue self, DynValue func) {
 		if (this.Owner.SetCallback(func)) {

@@ -183,9 +183,9 @@ public class ScriptContainer: IDisposable {
 
 		this.callback = DynValue.Void;
 		this.Engine = null!;
+		this.ActionQueue = null!;
 		this.ScriptApi = null!;
 		this.GameApi = null!;
-		this.ActionQueue = null!;
 	}
 
 	~ScriptContainer() {

@@ -2,11 +2,10 @@
 _Who am I, again?_
 
 ## Usage
-The Player API is a sub-component of the Game API, which means it's accessible through `Game.Player`.
+The Player API is a sub-component of the [Game API](game.md), which means it's accessible through `Game.Player`.
 
 ## Properties
 The following properties exist on the `Player` API object.
-<!-- SO FUCKING MANY -->
 
 - `Loaded`, readonly boolean
   Indicates whether or not character data is loaded and available. Will be false if not logged in, in which case all of the following properties and methods will return `nil`.
@@ -23,50 +22,29 @@ The following properties exist on the `Player` API object.
 - `Lastname`, readonly string|nil
   The current character's last name only.
 
-- `HomeWorldId`, readonly number|nil (unsigned short)
-  The internal (FFXIV) numeric ID of the current character's _home_ world. May be useful in niche cases, but you probably want `HomeWorld` instead.
+- `Party`, API
+  Access to the [Party API](party.md).
 
-- `CurrentWorldId`, readonly number|nil (unsigned short)
-  The internal (FFXIV) numeric ID of the current character's _current_ world. May be useful in niche cases, but you probably want `CurrentWorld` instead.
+- `Mount`, API
+  Access to the [mount data](mount.md) for the current character.
 
-- `HomeWorld`, readonly string|nil
-  The textual name of the current character's _home_ world.
+- `Entity`, readonly object
+  Access to an [entity container](entity.md) representing the current character.
 
-- `CurrentWorld`, readonly string|nil
-  The textual name of the current character's _current_ world.
+- `Target`, readonly object
+  Access to an [entity container](entity.md) representing the current character's hard target.
 
-- `Level`, readonly number|nil (unsigned byte)
-  The current character's level, which _does_ reflect level syncs.
+- `FocusTarget`, readonly object
+  Access to an [entity container](entity.md) representing the current character's focus target.
 
-- `Job`, readonly object
-  Exposes the current character's [job data](job.md).
+- `MouseoverTarget`, readonly object
+  Access to an [entity container](entity.md) representing the current character's _field_ mouseover target. UI mouseover target is planned but not yet implemented.
 
-- `Hp`, readonly number|nil (unsigned integer)
-  The current character's _current_ HP.
-
-- `MaxHp`, readonly number|nil (unsigned integer)
-  The current character's _maximum_ HP at the current level.
-
-- `Mp`, readonly number|nil (unsigned integer)
-  The current character's _current_ MP.
-
-- `MaxMp`, readonly number|nil (unsigned integer)
-  The current character's _maximum_ MP at the current level.
-
-- `Gp`, readonly number|nil (unsigned integer)
-  The current character's _current_ GP.
-
-- `MaxGp`, readonly number|nil (unsigned integer)
-  The current character's _maximum_ GP at the current level.
-
-- `Cp`, readonly number|nil (unsigned integer)
-  The current character's _current_ CP.
-
-- `MaxCp`, readonly number|nil (unsigned integer)
-  The current character's _maximum_ CP at the current level.
+- `SoftTarget`, readonly object
+  Access to an [entity container](entity.md) representing the current character's soft target.
 
 - `MapZone`, readonly number|nil (unsigned integer)
-  The user's current map zone, used to separate worldspaces. May be zero if the current zone is indeterminate.
+  The user's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate.
 
 - `InCombat`, readonly boolean|nil
   Whether or not the user is currently considered to be in combat by the game.
@@ -118,30 +96,6 @@ The following properties exist on the `Player` API object.
 
 - `Moving`, readonly boolean|nil
   Whether the game says the user is currently moving.
-
-- `PartyMemberCount`, readonly number|nil (unsigned integer)
-  The number of _other_ members of the user's current party. This does not include the player, so a full party will have a `PartyMemberCount` of `7`, not `8`. It also does not include the user's pet (chocobo, carbuncle, etc) if one is present.
-
-- `InAlliance`, readonly boolean|nil
-  Whether the user is currently in a multi-party alliance. If this is `false`, you won't be able to use the alliance chat channel.
-
-- `InParty`, readonly boolean|nil
-  Whether the user is currently in a party. If this is `false`, you won't be able to use the party chat channel.
-
-- `HasTarget`, readonly boolean|nil
-  Whether the user currently has a normal target.
-
-- `HasFocusTarget`, readonly boolean|nil
-  Whether the user currently has a focus target.
-
-- `HasMouseoverTarget`, readonly boolean|nil
-  Whether the user currently has their cursor over a targetable entity.
-
-- `HasSoftTarget`, readonly boolean|nil
-  Whether the user currently has a soft target.
-
-- `MountId`, readonly number|nil (unsigned short)
-  The internal (FFXIV) numeric ID of the user's current mount. If the user is not mounted, this will be `0`.
 
 ## Methods
 The following methods are avilable on the `Player` API object.

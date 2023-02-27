@@ -1,6 +1,8 @@
 namespace PrincessRTFM.WoLua.Lua.Api;
 
 using System;
+using System.Linq;
+using System.Reflection;
 
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
@@ -14,10 +16,14 @@ public abstract class ApiBase: IDisposable {
 	[MoonSharpHidden]
 	public readonly string DefaultMessageTag;
 
+	private readonly PropertyInfo[] disposables;
+
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source, string tag) {
 		this.Owner = source;
 		this.DefaultMessageTag = tag;
+		Type disposable = typeof(IDisposable);
+		this.disposables = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead).ToArray();
 	}
 
 	protected void Log(string message, string? tag = null, bool force = false) {
@@ -49,19 +55,15 @@ public abstract class ApiBase: IDisposable {
 	#region Metamethods
 #pragma warning disable CA1822 // Mark members as static - MoonSharp only inherits metamethods if they're non-static
 
-	[MoonSharpUserDataMetamethod("__tostring")]
-	public override string ToString()
-		=> base.ToString() ?? $"nil({this.GetType().FullName})";
+	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
+	public override string ToString() => $"nil[{this.GetType().FullName}]";
 
-	[MoonSharpUserDataMetamethod("__concat")]
-	public string MetamethodConcat(string left, ApiBase right)
-		=> $"{left}{right}";
-	[MoonSharpUserDataMetamethod("__concat")]
-	public string MetamethodConcat(ApiBase left, string right)
-		=> $"{left}{right}";
-	[MoonSharpUserDataMetamethod("__concat")]
-	public string MetamethodConcat(ApiBase left, ApiBase right)
-		=> $"{left}{right}";
+	[MoonSharpUserDataMetamethod(Metamethod.Concatenate)]
+	public string MetamethodConcat(string left, ApiBase right) => $"{left}{right}";
+	[MoonSharpUserDataMetamethod(Metamethod.Concatenate)]
+	public string MetamethodConcat(ApiBase left, string right) => $"{left}{right}";
+	[MoonSharpUserDataMetamethod(Metamethod.Concatenate)]
+	public string MetamethodConcat(ApiBase left, ApiBase right) => $"{left}{right}";
 
 #pragma warning restore CA1822 // Mark members as static
 	#endregion
@@ -73,6 +75,12 @@ public abstract class ApiBase: IDisposable {
 		this.Disposed = true;
 
 		this.Owner.log(this.GetType().Name, "DISPOSE", true);
+
+		foreach (PropertyInfo disposable in this.disposables) {
+			(disposable.GetValue(this) as IDisposable)?.Dispose();
+			if (disposable.CanWrite)
+				disposable.SetValue(this, null);
+		}
 
 		this.Owner = null!;
 	}

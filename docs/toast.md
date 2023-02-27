@@ -2,7 +2,7 @@
 _Toast is bread held under direct heat until crisp. Wait, wrong kind of toast._
 
 ## Usage
-The Toast API is a sub-component of the Game API, which means it's accessible through `Game.Toast`. "Toast" popups are the messages that appear across your screen with a light background when you enter a new part of the map, or when you complete a quest objective, or when you get an error about not having a valid target.
+The Toast API is a sub-component of the [Game API](game.md), which means it's accessible through `Game.Toast`. "Toast" popups are the messages that appear across your screen with a light background when you enter a new part of the map, or when you complete a quest objective, or when you get an error about not having a valid target.
 
 ## Methods
 The following methods are avilable on the `Toast` API object.

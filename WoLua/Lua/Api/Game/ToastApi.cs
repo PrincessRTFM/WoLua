@@ -2,6 +2,9 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 using Dalamud.Game.Gui.Toast;
 
+using MoonSharp.Interpreter;
+
+[MoonSharpUserData]
 public class ToastApi: ApiBase {
 	internal ToastApi(ScriptContainer source) : base(source, "TOAST") { }
 

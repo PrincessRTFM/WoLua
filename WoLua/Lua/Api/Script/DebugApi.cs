@@ -5,6 +5,7 @@ using System.Linq;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
+[MoonSharpUserData]
 public class DebugApi: ApiBase {
 	#region Non-API functionality
 
@@ -31,7 +32,7 @@ public class DebugApi: ApiBase {
 		this.Log(message);
 	}
 
-	[MoonSharpUserDataMetamethod("__call")]
+	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	public void Print(params DynValue[] values) {
 		if (this.Disposed)
 			return;
