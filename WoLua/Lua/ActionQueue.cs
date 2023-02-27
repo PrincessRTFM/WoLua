@@ -1,4 +1,4 @@
-﻿namespace PrincessRTFM.WoLua.Lua;
+namespace PrincessRTFM.WoLua.Lua;
 
 using System;
 using System.Collections.Concurrent;

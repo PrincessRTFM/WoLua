@@ -1,4 +1,4 @@
-﻿namespace PrincessRTFM.WoLua.Lua.Api.Script;
+namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
 using ImGuiNET;
 

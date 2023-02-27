@@ -1,4 +1,4 @@
-﻿namespace PrincessRTFM.WoLua.Lua.Actions;
+namespace PrincessRTFM.WoLua.Lua.Actions;
 
 using System;
 using System.Collections.ObjectModel;
