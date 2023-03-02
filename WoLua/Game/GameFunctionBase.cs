@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 
+using PrincessRTFM.WoLua.Constants;
+
 public abstract class GameFunctionBase<T> where T : Delegate {
 	private readonly IntPtr addr = IntPtr.Zero;
 	public IntPtr Address => this.addr;
@@ -19,7 +21,7 @@ public abstract class GameFunctionBase<T> where T : Delegate {
 				this.function = Marshal.GetDelegateForFunctionPointer<T>(this.Address);
 				return this.function;
 			}
-			PluginLog.Error($"{this.GetType().Name} invocation FAILED: no pointer available");
+			PluginLog.Error($"[{LogTag.PluginCore}] {this.GetType().Name} invocation FAILED: no pointer available");
 			return null;
 		}
 	}
@@ -27,16 +29,16 @@ public abstract class GameFunctionBase<T> where T : Delegate {
 		if (Service.Scanner.TryScanText(sig, out this.addr)) {
 			this.addr += offset;
 			ulong totalOffset = (ulong)this.Address.ToInt64() - (ulong)Service.Scanner.Module.BaseAddress.ToInt64();
-			PluginLog.Information($"{this.GetType().Name} loaded; address = 0x{this.Address.ToInt64():X16}, base memory offset = 0x{totalOffset:X16}");
+			PluginLog.Information($"[{LogTag.PluginCore}] {this.GetType().Name} loaded; address = 0x{this.Address.ToInt64():X16}, base memory offset = 0x{totalOffset:X16}");
 		}
 		else {
-			PluginLog.Warning($"{this.GetType().Name} FAILED, could not find address from signature: ${sig.ToUpper()}");
+			PluginLog.Warning($"[{LogTag.PluginCore}] {this.GetType().Name} FAILED, could not find address from signature: ${sig.ToUpper()}");
 		}
 	}
 	internal GameFunctionBase(IntPtr address, int offset = 0) {
 		this.addr = address + offset;
 		ulong totalOffset = (ulong)this.Address.ToInt64() - (ulong)Service.Scanner.Module.BaseAddress.ToInt64();
-		PluginLog.Information($"{this.GetType().Name} loaded; address = 0x{this.Address.ToInt64():X16}, base memory offset = 0x{totalOffset:X16}");
+		PluginLog.Information($"[{LogTag.PluginCore}] {this.GetType().Name} loaded; address = 0x{this.Address.ToInt64():X16}, base memory offset = 0x{totalOffset:X16}");
 	}
 
 	public dynamic? Invoke(params dynamic[] parameters)

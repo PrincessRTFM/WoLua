@@ -6,6 +6,8 @@ using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
+
 [MoonSharpUserData]
 public sealed record class MountData: IEquatable<MountData> {
 	public readonly bool Active;

@@ -1,4 +1,4 @@
-namespace PrincessRTFM.WoLua;
+namespace PrincessRTFM.WoLua.Constants;
 
 public static class Metamethod {
 	public const string

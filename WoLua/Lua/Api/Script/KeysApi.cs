@@ -6,7 +6,7 @@ using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class KeysApi: ApiBase {
-	public KeysApi(ScriptContainer source) : base(source, "KEY") { }
+	public KeysApi(ScriptContainer source) : base(source) { }
 
 	public static bool Control
 		=> ImGui.IsKeyDown(ImGuiKey.ModCtrl);

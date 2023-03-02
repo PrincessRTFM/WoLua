@@ -16,12 +16,13 @@ using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
+
 [MoonSharpUserData]
 public class PlayerApi: ApiBase {
-	public const string TAG = "PLAYER";
 
 	[MoonSharpHidden]
-	internal PlayerApi(ScriptContainer source) : base(source, TAG) {
+	internal PlayerApi(ScriptContainer source) : base(source) {
 		this.Party = new(this.Owner);
 	}
 
@@ -186,6 +187,8 @@ public class PlayerApi: ApiBase {
 	public EntityWrapper SoftTarget => new(this.Loaded ? Service.Targets.SoftTarget : null);
 	public bool? HasSoftTarget => this.Loaded ? this.SoftTarget : null;
 
+	// TODO UI mouseover target, field mouseover target, and change MouseOverTarget to use whichever is found
+
 	#endregion
 
 	#region Emotes
@@ -198,12 +201,12 @@ public class PlayerApi: ApiBase {
 		if (emotesLoaded)
 			return;
 		emotesLoaded = true;
-		PluginLog.Information($"[{TAG}] Initialising API data");
+		PluginLog.Information($"[{LogTag.Emotes}] Initialising API data");
 
 		ExcelSheet<Emote> emotes = Service.DataManager.GameData.GetExcelSheet<Emote>()!;
 		try {
 			uint max = emotes.RowCount;
-			PluginLog.Information($"[{TAG}] Indexing {max:N0} emotes...");
+			PluginLog.Information($"[{LogTag.Emotes}] Indexing {max:N0} emotes...");
 			for (uint i = 0; i < max; ++i) {
 				Emote? emote = emotes.GetRow(i);
 				if (emote is not null) {
@@ -222,7 +225,7 @@ public class PlayerApi: ApiBase {
 						emoteUnlocks[command] = emote.UnlockLink;
 				}
 			}
-			PluginLog.Information($"[{TAG}] Cached {emoteUnlocks.Count:N0} emote names");
+			PluginLog.Information($"[{LogTag.Emotes}] Cached {emoteUnlocks.Count:N0} emote names");
 		}
 		catch (Exception e) {
 			Service.Plugin.Error("Unable to load Emote sheet, cannot check emote unlock state!", e);
@@ -235,18 +238,18 @@ public class PlayerApi: ApiBase {
 			return null;
 
 		string emote = name.StartsWith('/') ? name[1..] : name;
-		this.Log($"Checking whether '{emote}' is unlocked", "EMOTE");
+		this.Log($"Checking whether '{emote}' is unlocked", LogTag.Emotes);
 		if (!emoteUnlocks.TryGetValue(emote, out uint unlockLink)) {
-			this.Log("Can't find unlock link in cached map", "EMOTE");
+			this.Log("Can't find unlock link in cached map", LogTag.Emotes);
 			return null;
 		}
 		UIState* uiState = UIState.Instance();
 		if (uiState is null || (IntPtr)uiState == IntPtr.Zero) {
-			this.Log("UIState is null", "EMOTE");
+			this.Log("UIState is null", LogTag.Emotes);
 			return null;
 		}
 		bool has = uiState->IsUnlockLinkUnlockedOrQuestCompleted(unlockLink, 1);
-		this.Log($"UIState reports emote is {(has ? "un" : "")}locked", "EMOTE");
+		this.Log($"UIState reports emote is {(has ? "un" : "")}locked", LogTag.Emotes);
 		return has;
 	}
 

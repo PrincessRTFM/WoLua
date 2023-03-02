@@ -14,6 +14,7 @@ using Dalamud.Plugin;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Platforms;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api.Game;
@@ -176,7 +177,7 @@ public class Plugin: IDalamudPlugin {
 		}
 
 		this.clearCommands();
-		PluginLog.Information($"[LOADER] Scanning root script directory {path}");
+		PluginLog.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
 		foreach (string dir in Directory.EnumerateDirectories(path)) {
 			string file = Path.Combine(dir, "command.lua");
 			string name = new DirectoryInfo(dir).Name;
@@ -186,16 +187,16 @@ public class Plugin: IDalamudPlugin {
 				continue;
 			}
 			if (File.Exists(file)) {
-				PluginLog.Information($"[LOADER] Loading {file}");
+				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Loading {file}");
 				ScriptContainer script = new(file, name, slug);
-				PluginLog.Information($"[LOADER] Registering script container for {slug}");
+				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
 				Service.Scripts.Add(slug, script);
 				if (!script.Ready) {
-					PluginLog.Error("[CHECK] Script does not have a registered callback!");
+					PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");
 				}
 			}
 			else {
-				PluginLog.Error($"[LOADER] Cannot load script {name}, no initialisation file exists");
+				PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Cannot load script {name}, no initialisation file exists");
 			}
 		}
 
@@ -247,12 +248,12 @@ public class Plugin: IDalamudPlugin {
 		if (this.disposed)
 			return;
 
-		PluginLog.Information("[CORE] Disposing all loaded scripts");
+		PluginLog.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
 		ScriptContainer[] scripts = Service.Scripts?.Values?.ToArray() ?? Array.Empty<ScriptContainer>();
 		foreach (ScriptContainer script in scripts) {
 			script?.Dispose();
 		}
-		PluginLog.Information("[CORE] Clearing all loaded scripts");
+		PluginLog.Information($"[{LogTag.PluginCore}] Clearing all loaded scripts");
 		Service.Scripts?.Clear();
 	}
 
@@ -266,7 +267,7 @@ public class Plugin: IDalamudPlugin {
 		this.disposed = true;
 
 		if (disposing) {
-			PluginLog.Information("[CORE] Flushing configuration to disk");
+			PluginLog.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
 			Service.Configuration.Save();
 			Service.Common.Dispose();
 			Service.Interface.UiBuilder.Draw -= this.Windows.Draw;
@@ -274,7 +275,7 @@ public class Plugin: IDalamudPlugin {
 			Service.CommandManager.RemoveHandler(this.Command);
 		}
 
-		PluginLog.Information($"[CORE] {this.Name} unloaded successfully!");
+		PluginLog.Information($"[{LogTag.PluginCore}] {this.Name} unloaded successfully!");
 	}
 
 	~Plugin() {

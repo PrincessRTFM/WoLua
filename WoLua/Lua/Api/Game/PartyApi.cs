@@ -4,7 +4,7 @@ using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class PartyApi: ApiBase {
-	public PartyApi(ScriptContainer source) : base(source, "PARTY") { }
+	public PartyApi(ScriptContainer source) : base(source) { }
 
 	public int? Size => this.Owner.GameApi.Player.Loaded ? Service.Party.Length : null;
 	public int? Length => this.Size;

@@ -9,6 +9,7 @@ using Dalamud.Logging;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
 using PrincessRTFM.WoLua.Ui.Chat;
 
@@ -57,7 +58,7 @@ public class ScriptContainer: IDisposable {
 		this.PrettyName = name;
 		this.SourcePath = file;
 
-		this.Engine.Options.ScriptLoader = new ScriptLoader(this.SourceDir);
+		this.Engine.Options.ScriptLoader = new ScriptLoader(this.SourceDir, slug);
 
 		this.ActionQueue = new(this);
 
@@ -149,20 +150,20 @@ public class ScriptContainer: IDisposable {
 	}
 
 	internal void cleanTable(Table table) {
-		this.log("Recursively collecting dead keys", "CLEANTABLE");
+		this.log("Recursively collecting dead keys", LogTag.Cleanup);
 		Queue<Table> queue = new();
 		queue.Enqueue(table);
 		while (queue.TryDequeue(out Table? target)) {
-			this.log("Clearing dead keys...", "CLEANTABLE");
+			this.log("Clearing dead keys...", LogTag.Cleanup);
 			target.CollectDeadKeys();
 			TablePair[] entries = target.Pairs.ToArray();
 			foreach (TablePair entry in entries) {
 				if (entry.Value.Type is DataType.Table) {
-					this.log($"Found subtable {entry.Key}", "CLEANTABLE");
+					this.log($"Found subtable {entry.Key}", LogTag.Cleanup);
 					queue.Enqueue(entry.Value.Table);
 				}
 			}
-			this.log("Table finished", "CLEANTABLE");
+			this.log("Table finished", LogTag.Cleanup);
 		}
 	}
 
@@ -174,12 +175,12 @@ public class ScriptContainer: IDisposable {
 		this.Disposed = true;
 
 		if (disposing) {
-			this.ActionQueue.Dispose();
-			this.ScriptApi.Dispose();
-			this.GameApi.Dispose();
+			this.ActionQueue?.Dispose();
+			this.ScriptApi?.Dispose();
+			this.GameApi?.Dispose();
 		}
 
-		this.log(this.GetType().Name, "DISPOSE", true);
+		this.log(this.GetType().Name, LogTag.Dispose, true);
 
 		this.callback = DynValue.Void;
 		this.Engine = null!;

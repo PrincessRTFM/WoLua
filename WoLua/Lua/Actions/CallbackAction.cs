@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
 
 public class CallbackAction: ScriptAction {
@@ -18,7 +19,7 @@ public class CallbackAction: ScriptAction {
 	}
 
 	protected override void Process(ScriptContainer script) {
-		script.log(ApiBase.ToUsefulString(this.Function), "INVOKE");
+		script.log(ApiBase.ToUsefulString(this.Function), LogTag.ActionCallback);
 		try {
 			script.Engine.Call(this.Function, this.arguments);
 		}

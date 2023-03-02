@@ -10,6 +10,8 @@ using Dalamud.Utility.Numerics;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
+
 using CSChar = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 [MoonSharpUserData]
@@ -82,7 +84,7 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 		get {
 			if (this && this.Entity is Character self)
 				return new(self.ClassJob!.Id, self.ClassJob!.GameData!.Name!.ToString().ToLower(), self.ClassJob!.GameData!.Abbreviation!.ToString().ToUpper());
-			return new(0, JobData.invalidJobName, JobData.invalidJobAbbr);
+			return new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
 		}
 	}
 

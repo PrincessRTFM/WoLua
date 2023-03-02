@@ -7,6 +7,7 @@ using Dalamud.Game;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 
 public class ActionQueue: IDisposable {
@@ -32,7 +33,7 @@ public class ActionQueue: IDisposable {
 			return null;
 		if (!this.queue.TryDequeue(out ScriptAction? action))
 			return false;
-		this.Script.log(action.ToString(), "QUEUE");
+		this.Script.log(action.ToString(), LogTag.ActionQueue);
 		action.Run(this.Script);
 		return true;
 	}
@@ -53,7 +54,7 @@ public class ActionQueue: IDisposable {
 			this.clear();
 		}
 
-		this.Script.log(this.GetType().Name, "DISPOSE", true);
+		this.Script.log(this.GetType().Name, LogTag.Dispose, true);
 
 		this.Script = null!;
 	}

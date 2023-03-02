@@ -5,12 +5,14 @@ using System.Linq;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
+using PrincessRTFM.WoLua.Constants;
+
 [MoonSharpUserData]
 public class DebugApi: ApiBase {
 	#region Non-API functionality
 
 	[MoonSharpHidden]
-	internal DebugApi(ScriptContainer source) : base(source, "DEBUG") { }
+	internal DebugApi(ScriptContainer source) : base(source) { }
 
 	#endregion
 
@@ -29,7 +31,7 @@ public class DebugApi: ApiBase {
 		if (this.Disposed)
 			return;
 
-		this.Log(message);
+		this.Log(message, LogTag.DebugMessage);
 	}
 
 	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
@@ -44,7 +46,7 @@ public class DebugApi: ApiBase {
 	// This isn't exposed to the scripts themselves because it's basically a nearly-nop filler, but it's still part of the debug API so it goes in here
 	public string Input(string prompt) {
 		if (!this.Disposed)
-			this.Log(prompt, "INPUT");
+			this.Log(prompt, LogTag.ScriptInput);
 
 		return string.Empty;
 	}
@@ -53,20 +55,20 @@ public class DebugApi: ApiBase {
 		if (this.Disposed)
 			return;
 
-		this.Log(this.Owner.ScriptApi.Storage.TableToJson(), "STORAGE");
+		this.Log(this.Owner.ScriptApi.Storage.TableToJson(), LogTag.ScriptStorage);
 	}
 
 	public void Dump(params DynValue[] values) {
 		if (this.Disposed)
 			return;
 
-		this.Log($"BEGIN VALUE DUMP: {values.Length}");
+		this.Log($"BEGIN VALUE DUMP: {values.Length}", LogTag.DebugMessage);
 		int size = values.Length.ToString().Length;
 		for (int i = 0; i < values.Length; ++i) {
 			DynValue v = values[i];
-			this.Log($"{(i + 1).ToString().PadLeft(size)}: {ToUsefulString(v)}");
+			this.Log($"{(i + 1).ToString().PadLeft(size)}: {ToUsefulString(v)}", LogTag.DebugMessage);
 		}
-		this.Log("END VALUE DUMP");
+		this.Log("END VALUE DUMP", LogTag.DebugMessage);
 	}
 
 }

@@ -7,6 +7,8 @@ using System.Reflection;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
+using PrincessRTFM.WoLua.Constants;
+
 public abstract class ApiBase: IDisposable {
 	protected bool Disposed = false;
 
@@ -19,9 +21,9 @@ public abstract class ApiBase: IDisposable {
 	private readonly PropertyInfo[] disposables;
 
 	[MoonSharpHidden]
-	public ApiBase(ScriptContainer source, string tag) {
+	public ApiBase(ScriptContainer source) {
 		this.Owner = source;
-		this.DefaultMessageTag = tag;
+		this.DefaultMessageTag = this.GetType().Name.ToUpper();
 		Type disposable = typeof(IDisposable);
 		this.disposables = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead).ToArray();
 	}
@@ -74,7 +76,7 @@ public abstract class ApiBase: IDisposable {
 			return;
 		this.Disposed = true;
 
-		this.Owner.log(this.GetType().Name, "DISPOSE", true);
+		this.Owner.log(this.GetType().Name, LogTag.Dispose, true);
 
 		foreach (PropertyInfo disposable in this.disposables) {
 			(disposable.GetValue(this) as IDisposable)?.Dispose();

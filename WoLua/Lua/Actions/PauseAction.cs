@@ -2,6 +2,8 @@ namespace PrincessRTFM.WoLua.Lua.Actions;
 
 using System;
 
+using PrincessRTFM.WoLua.Constants;
+
 public class PauseAction: ScriptAction {
 	public readonly uint Delay;
 
@@ -10,7 +12,7 @@ public class PauseAction: ScriptAction {
 	}
 
 	protected override void Process(ScriptContainer script) {
-		script.log($"{this.Delay}ms", "PAUSE");
+		script.log($"{this.Delay}ms", LogTag.ActionPause);
 		script.ActionQueue.ActionThreshold = DateTime.Now.AddMilliseconds(this.Delay);
 	}
 

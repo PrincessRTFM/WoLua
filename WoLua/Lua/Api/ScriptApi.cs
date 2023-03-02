@@ -9,6 +9,7 @@ using ImGuiNET;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 using PrincessRTFM.WoLua.Lua.Api.Script;
 
@@ -19,7 +20,7 @@ public class ScriptApi: ApiBase {
 	#region Non-API functionality
 
 	[MoonSharpHidden]
-	internal ScriptApi(ScriptContainer source) : base(source, "CORE") {
+	internal ScriptApi(ScriptContainer source) : base(source) {
 		this.Storage = new(source.Engine);
 		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.Owner.InternalName), "json");
 		this.Debug = new(this.Owner);
@@ -55,7 +56,7 @@ public class ScriptApi: ApiBase {
 			return false;
 
 		this.Storage.Clear();
-		this.Log($"Deleting {this.StoragePath}", "STORAGE");
+		this.Log($"Deleting {this.StoragePath}", LogTag.ScriptStorage);
 		try {
 			if (File.Exists(this.StoragePath))
 				File.Delete(this.StoragePath);
@@ -72,7 +73,7 @@ public class ScriptApi: ApiBase {
 			return false;
 
 		this.Owner.cleanTable(this.Storage);
-		this.Log($"Writing to {this.StoragePath}", "STORAGE");
+		this.Log($"Writing to {this.StoragePath}", LogTag.ScriptStorage);
 		try {
 			File.WriteAllText(this.StoragePath, this.Storage.TableToJson());
 			return true;
@@ -87,7 +88,7 @@ public class ScriptApi: ApiBase {
 		if (this.Disposed)
 			return false;
 
-		this.Log($"Loading from {this.StoragePath}", "STORAGE");
+		this.Log($"Loading from {this.StoragePath}", LogTag.ScriptStorage);
 		try {
 			string json = File.ReadAllText(this.StoragePath);
 			Table loaded = JsonTableConverter.JsonToTable(json, this.Owner.Engine);
@@ -98,7 +99,7 @@ public class ScriptApi: ApiBase {
 			return true;
 		}
 		catch (FileNotFoundException) {
-			this.Log("No disk storage found", "STORAGE");
+			this.Log("No disk storage found", LogTag.ScriptStorage);
 			return false;
 		}
 		catch (SyntaxErrorException err) {
@@ -115,7 +116,7 @@ public class ScriptApi: ApiBase {
 		if (this.Disposed)
 			return;
 
-		this.Log("Replacing script storage", "STORAGE");
+		this.Log("Replacing script storage", LogTag.ScriptStorage);
 		Table store = new(this.Owner.Engine);
 		this.Owner.cleanTable(update);
 		foreach (TablePair item in update.Pairs) {
@@ -168,21 +169,21 @@ public class ScriptApi: ApiBase {
 	#region JSON
 
 	public DynValue ParseJson(string content) {
-		this.Log(content, "JSON.PARSE");
+		this.Log(content, LogTag.JsonParse);
 		try {
 			Table table = JsonTableConverter.JsonToTable(content, this.Owner.Engine);
 			this.Owner.cleanTable(table);
 			return DynValue.NewTable(table);
 		}
 		catch (SyntaxErrorException e) {
-			this.Log(e.ToString(), "JSON.PARSE");
+			this.Log(e.ToString(), LogTag.JsonParse);
 			return DynValue.Nil;
 		}
 	}
 	public string SerialiseJson(Table content) {
 		this.Owner.cleanTable(content);
 		string json = JsonTableConverter.TableToJson(content);
-		this.Log(json, "JSON.SERIALISE");
+		this.Log(json, LogTag.JsonDump);
 		return json;
 	}
 	public string SerializeJson(Table content) // american spelling
@@ -195,20 +196,17 @@ public class ScriptApi: ApiBase {
 	#region Metamethods
 
 	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
-	public override string ToString()
-		=> $"Script[{this.Owner.PrettyName}]";
+	public override string ToString() => $"Script[{this.Owner.PrettyName}]";
 
 	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]
 	public void RegisterCallbackFunction(DynValue self, DynValue func) {
 		if (this.Owner.SetCallback(func)) {
-			this.Log($"Registered on-execute function [{ApiBase.ToUsefulString(func, true)}]", "CALLBACK");
+			this.Log($"Registered on-execute function [{ApiBase.ToUsefulString(func, true)}]", LogTag.CallbackRegistration);
 		}
 		else {
-			this.Log(
-				$"Got a {func.Type}{(func.Type is DataType.UserData ? ("(" + (func.UserData.Object is null ? "static unknown" : func.UserData.Object.GetType().FullName) + ")") : "")} instead of a function",
-				"CALLBACK"
-			);
+			string descriptor = func.Type.ToString() + (func.Type is DataType.UserData ? ("(" + (func.UserData.Object is null ? "static unknown" : func.UserData.Object.GetType().FullName) + ")") : "");
+			this.Log($"Got a {descriptor} instead of a function", LogTag.CallbackRegistration);
 			throw new ScriptRuntimeException("The provided value to Script() must be function to run when the script is called");
 		}
 	}

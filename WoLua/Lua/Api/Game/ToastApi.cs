@@ -6,7 +6,7 @@ using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class ToastApi: ApiBase {
-	internal ToastApi(ScriptContainer source) : base(source, "TOAST") { }
+	internal ToastApi(ScriptContainer source) : base(source) { }
 
 	public void Short(string text) {
 		if (this.Disposed)
