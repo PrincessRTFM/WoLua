@@ -37,6 +37,30 @@ public class ScriptContainer: IDisposable {
 	public readonly string PrettyName;
 	public readonly string SourcePath;
 
+	public bool CommandRegistered { get; private set; } = false;
+	private void redirectCommandInvocation(string command, string argline) => Service.Plugin.Invoke(this.InternalName, argline);
+	public bool RegisterCommand() {
+		if (this.Disposed)
+			return false;
+		if (this.CommandRegistered)
+			return true;
+
+		this.CommandRegistered = Service.CommandManager.AddHandler($"/{this.InternalName}", new(this.redirectCommandInvocation) {
+			HelpMessage = $"Run the {this.InternalName} script from {Service.Plugin.Name}",
+			ShowInHelp = false,
+		});
+		if (this.CommandRegistered)
+			this.log($"Registered /{this.InternalName}", LogTag.PluginCore, true);
+		else
+			this.log("Unable to register direct command with Dalamud", LogTag.PluginCore, true);
+		return this.CommandRegistered;
+	}
+	public void UnregisterCommand() {
+		if (this.CommandRegistered)
+			Service.CommandManager.RemoveHandler($"/{this.InternalName}");
+		this.CommandRegistered = false;
+	}
+
 	public Script Engine { get; private set; } = new(ScriptModules);
 
 	public ActionQueue ActionQueue { get; private set; }
@@ -175,6 +199,7 @@ public class ScriptContainer: IDisposable {
 		this.Disposed = true;
 
 		if (disposing) {
+			this.UnregisterCommand();
 			this.ActionQueue?.Dispose();
 			this.ScriptApi?.Dispose();
 			this.GameApi?.Dispose();

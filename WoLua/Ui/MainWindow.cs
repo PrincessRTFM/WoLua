@@ -4,12 +4,15 @@ using System.Diagnostics;
 
 using ImGuiNET;
 
+using PrincessRTFM.WoLua.Lua;
+
 internal class MainWindow: BaseWindow {
 	public const ImGuiWindowFlags CreationFlags = ImGuiWindowFlags.None
 		| ImGuiWindowFlags.AlwaysAutoResize;
 	public const int Width = 650;
 
 	private string basePath;
+	private bool registerCommands;
 
 	public MainWindow() : base($"{Service.Plugin.Name}##MainWindow", CreationFlags) {
 		this.SizeConstraints = new() {
@@ -17,6 +20,7 @@ internal class MainWindow: BaseWindow {
 			MaximumSize = new(Width, 800),
 		};
 		this.basePath = Service.Configuration.BasePath;
+		this.registerCommands = Service.Configuration.RegisterDirectCommands;
 	}
 
 	public override void OnOpen() => this.basePath = Service.Configuration.BasePath;
@@ -65,7 +69,29 @@ internal class MainWindow: BaseWindow {
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();
-			Textline("This is where all of your lua command scripts will go.");
+			Textline("This is where all of your lua command scripts will go.", 0);
+			ImGui.Unindent();
+			ImGui.EndDisabled();
+			Textline();
+			if (ImGui.Checkbox("Try to register direct commands for each script?", ref this.registerCommands)) {
+				Service.Configuration.RegisterDirectCommands = this.registerCommands;
+				Service.Configuration.Save();
+				foreach (ScriptContainer script in Service.Scripts.Values) {
+					if (this.registerCommands) {
+						if (!script.RegisterCommand())
+							Service.Plugin.Error($"Unable to register /{script.InternalName} - the command may be in use by another plugin.");
+					}
+					else {
+						script.UnregisterCommand();
+					}
+				}
+			}
+			ImGui.Indent();
+			ImGui.BeginDisabled();
+			Textline($"If this is enabled, {Service.Plugin.Name} will try to register commands with Dalamud for each loaded script.", 0);
+			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
+			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
+			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 		}

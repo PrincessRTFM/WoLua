@@ -178,6 +178,7 @@ public class Plugin: IDalamudPlugin {
 
 		this.clearCommands();
 		PluginLog.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
+		bool direct = Service.Configuration.RegisterDirectCommands;
 		foreach (string dir in Directory.EnumerateDirectories(path)) {
 			string file = Path.Combine(dir, "command.lua");
 			string name = new DirectoryInfo(dir).Name;
@@ -191,6 +192,8 @@ public class Plugin: IDalamudPlugin {
 				ScriptContainer script = new(file, name, slug);
 				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
 				Service.Scripts.Add(slug, script);
+				if (direct)
+					script.RegisterCommand();
 				if (!script.Ready) {
 					PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");
 				}
