@@ -28,7 +28,9 @@ public class ScriptLoader: IScriptLoader {
 
 	public bool IsPathUnderScriptRoot(string name) {
 		string absolute = Path.GetFullPath(name);
-		return Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(absolute) ?? Path.GetPathRoot(absolute) ?? string.Empty).StartsWith(this.BaseDir);
+		string folder = Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(absolute) ?? Path.GetPathRoot(absolute) ?? string.Empty) + Path.DirectorySeparatorChar;
+		string root = this.BaseDir + Path.DirectorySeparatorChar;
+		return folder.Length >= root.Length && folder.StartsWith(root);
 	}
 
 	// I think this is for when you try to load a file by path, like with `loadfile`
@@ -51,7 +53,7 @@ public class ScriptLoader: IScriptLoader {
 		this.debug($"Attempting to load {absolute}");
 
 		if (!this.IsPathUnderScriptRoot(absolute))
-			throw new ScriptRuntimeException($"Cannot load {absolute} (outside of module root {this.BaseDir})");
+			throw new ScriptRuntimeException($"Cannot load \"{absolute}\" (outside of module root \"{this.BaseDir}\")");
 
 		if (!this.ScriptFileExists(absolute))
 			return "return nil";
@@ -64,7 +66,7 @@ public class ScriptLoader: IScriptLoader {
 	public bool ScriptFileExists(string name) {
 		string absolute = Path.GetFullPath(name);
 		this.debug($"Checking for existence/validity of {absolute}");
-		return this.IsPathUnderScriptRoot(absolute) && File.Exists(Path.GetFullPath(absolute));
+		return this.IsPathUnderScriptRoot(absolute) && File.Exists(absolute);
 	}
 
 }

@@ -191,6 +191,7 @@ public class ScriptApi: ApiBase {
 
 	#endregion
 
+	// TODO check if a given plugin is installed
 	// TODO ImGui toasts?
 
 	#region Metamethods
