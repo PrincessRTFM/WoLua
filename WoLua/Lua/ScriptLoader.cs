@@ -35,14 +35,14 @@ public class ScriptLoader: IScriptLoader {
 
 	// I think this is for when you try to load a file by path, like with `loadfile`
 	public string ResolveFileName(string filename, Table globalContext) {
-		string absolute = Path.ChangeExtension(Path.Combine(this.BaseDir, filename), "lua");
+		string absolute = this.Clean(filename);
 		this.debug($"Resolving file '{filename}' to {absolute}");
 		return absolute;
 	}
 
 	// And I think this is for when you try to load a module like with `require`
 	public string ResolveModuleName(string modname, Table globalContext) {
-		string absolute = Path.ChangeExtension(Path.Join(this.BaseDir, modname), "lua");
+		string absolute = this.Clean(modname);
 		this.debug($"Resolving module '{modname}' to {absolute}");
 		return absolute;
 	}
