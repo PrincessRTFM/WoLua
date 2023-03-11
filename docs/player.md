@@ -37,8 +37,8 @@ The following properties exist on the `Player` API object.
 - `FocusTarget`, readonly object
   Access to an [entity container](entity.md) representing the current character's focus target.
 
-- `MouseoverTarget`, readonly object
-  Access to an [entity container](entity.md) representing the current character's _field_ mouseover target. UI mouseover target is planned but not yet implemented.
+- `MouseOverTarget`, readonly object
+  Access to an [entity container](entity.md) representing the current character's _field_ mouseover target. UI mouseover target is planned but not yet implemented. Note that the `O` in `Over` is capitalised.
 
 - `SoftTarget`, readonly object
   Access to an [entity container](entity.md) representing the current character's soft target.
