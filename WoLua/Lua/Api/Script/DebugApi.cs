@@ -1,5 +1,6 @@
 namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using MoonSharp.Interpreter;
@@ -18,7 +19,7 @@ public class DebugApi: ApiBase {
 
 	// Debug builds force scripts to run with debug mode enabled, because if you're running a debug build it's assumed you're debugging things
 #if DEBUG
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Retain compatibility in the rest of the codebase with non-debug builds")]
+	[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Retain compatibility in the rest of the codebase with non-debug builds")]
 	public bool Enabled {
 		get => true;
 		set => _ = value;

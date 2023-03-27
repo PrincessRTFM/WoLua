@@ -10,13 +10,13 @@ using MoonSharp.Interpreter.Serialization.Json;
 using PrincessRTFM.WoLua.Constants;
 
 public abstract class ApiBase: IDisposable {
-	protected bool Disposed = false;
+	public bool Disposed { get; protected set; } = false;
 
 	[MoonSharpHidden]
 	public ScriptContainer Owner { get; private set; }
 
 	[MoonSharpHidden]
-	public readonly string DefaultMessageTag;
+	public string DefaultMessageTag { get; init; }
 
 	private readonly PropertyInfo[] disposables;
 

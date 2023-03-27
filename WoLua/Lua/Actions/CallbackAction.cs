@@ -9,7 +9,7 @@ using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
 
 public class CallbackAction: ScriptAction {
-	public readonly DynValue Function;
+	public DynValue Function { get; }
 	private readonly DynValue[] arguments;
 	public ReadOnlyCollection<DynValue> Arguments => Array.AsReadOnly(this.arguments);
 

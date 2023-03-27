@@ -5,7 +5,7 @@ using System;
 using PrincessRTFM.WoLua.Constants;
 
 public class PauseAction: ScriptAction {
-	public readonly uint Delay;
+	public uint Delay { get; }
 
 	internal PauseAction(uint ms) {
 		this.Delay = ms;

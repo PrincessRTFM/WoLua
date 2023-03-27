@@ -1,10 +1,13 @@
 namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
+using System.Diagnostics.CodeAnalysis;
+
 using Dalamud.Game.Gui.Toast;
 
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
+[SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "It doesn't matter")]
 public class ToastApi: ApiBase {
 	internal ToastApi(ScriptContainer source) : base(source) { }
 

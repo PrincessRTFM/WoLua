@@ -29,7 +29,7 @@ public class Plugin: IDalamudPlugin {
 	public string Name { get; } = "WoLua";
 	public string Command => $"/{this.Name.ToLower()}";
 
-	public WindowSystem Windows = new();
+	public WindowSystem Windows { get; } = new();
 	private readonly MainWindow mainWindow;
 	private readonly DebugWindow debugWindow;
 

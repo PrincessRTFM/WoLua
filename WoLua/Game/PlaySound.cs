@@ -2,8 +2,8 @@ namespace PrincessRTFM.WoLua.Game;
 
 using Dalamud.Logging;
 
-public delegate ulong PlaySoundDelegate(int soundId, ulong unknown1, ulong unknown2);
-public class PlaySound: GameFunctionBase<PlaySoundDelegate> {
+public delegate ulong SoundFunc(int soundId, ulong unknown1, ulong unknown2);
+public class PlaySound: GameFunctionBase<SoundFunc> {
 	internal PlaySound() : base("E8 ?? ?? ?? ?? 4D 39 BE") { }
 	public void Play(Sound sound) {
 		if (this.Valid && sound.IsSound()) {

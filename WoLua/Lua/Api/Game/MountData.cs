@@ -10,11 +10,12 @@ using PrincessRTFM.WoLua.Constants;
 
 [MoonSharpUserData]
 public sealed record class MountData: IEquatable<MountData> {
-	public readonly bool Active;
-	public readonly ushort Id;
-	public readonly string? Name;
-	public readonly string? LowercaseArticle;
-	public readonly string? UppercaseArticle;
+	public bool Active { get; }
+	public ushort Id { get; }
+	public string? Name { get; }
+	public string? LowercaseArticle { get; }
+	public string? UppercaseArticle { get; }
+
 	public MountData(ushort id) {
 		Mount? row = id > 0 ? Service.DataManager.GetExcelSheet<Mount>()!.GetRow(id) : null;
 

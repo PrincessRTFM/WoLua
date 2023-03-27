@@ -33,9 +33,9 @@ public class ScriptContainer: IDisposable {
 		| CoreModules.Dynamic;
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
 
-	public readonly string InternalName;
-	public readonly string PrettyName;
-	public readonly string SourcePath;
+	public string InternalName { get; }
+	public string PrettyName { get; }
+	public string SourcePath { get; }
 
 	public bool CommandRegistered { get; private set; } = false;
 	private void redirectCommandInvocation(string command, string argline) => Service.Plugin.Invoke(this.InternalName, argline);

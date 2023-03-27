@@ -11,8 +11,8 @@ using MoonSharp.Interpreter.Loaders;
 using PrincessRTFM.WoLua.Constants;
 
 public class ScriptLoader: IScriptLoader {
-	public readonly string BaseDir;
-	public readonly string ScriptName;
+	public string BaseDir { get; }
+	public string ScriptName { get; }
 
 	public ScriptLoader(string folder, string script) {
 		this.BaseDir = Path.TrimEndingDirectorySeparator(folder);
@@ -48,8 +48,8 @@ public class ScriptLoader: IScriptLoader {
 	}
 
 	// It looks like this needs to return a string consisting of the lua source to load
-	public object LoadFile(string name, Table globalContext) {
-		string absolute = Path.GetFullPath(name);
+	public object LoadFile(string file, Table globalContext) {
+		string absolute = Path.GetFullPath(file);
 		this.debug($"Attempting to load {absolute}");
 
 		if (!this.IsPathUnderScriptRoot(absolute))

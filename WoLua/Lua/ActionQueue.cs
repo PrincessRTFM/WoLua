@@ -2,6 +2,7 @@ namespace PrincessRTFM.WoLua.Lua;
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 using Dalamud.Game;
 
@@ -10,6 +11,7 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 
+[SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "It's a queue for script actions")]
 public class ActionQueue: IDisposable {
 
 	private readonly ConcurrentQueue<ScriptAction> queue = new();

@@ -27,7 +27,7 @@ public class ScriptApi: ApiBase {
 		this.Keys = new(this.Owner);
 	}
 
-	protected readonly string StoragePath;
+	protected string StoragePath { get; }
 
 	protected override void Dispose(bool disposing) {
 		if (this.Disposed)
