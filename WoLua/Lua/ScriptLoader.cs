@@ -24,7 +24,7 @@ public class ScriptLoader: IScriptLoader {
 		=> PluginLog.Information($"[{LogTag.ScriptLoader}:{this.ScriptName}] {message}");
 
 	public string Clean(string dirty)
-		=> Path.ChangeExtension(Path.Join(this.BaseDir, dirty), "lua");
+		=> Path.ChangeExtension(Path.IsPathFullyQualified(dirty) ? dirty : Path.Join(this.BaseDir, dirty), "lua");
 
 	public bool IsPathUnderScriptRoot(string name) {
 		string absolute = Path.GetFullPath(name);
