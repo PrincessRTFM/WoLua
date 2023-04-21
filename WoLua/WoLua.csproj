@@ -7,7 +7,7 @@
 		<Copyright>Copyleft VariableVixen 2022</Copyright>
 	</PropertyGroup>
 
-	<Import Project="dalamud.targets" />
+	<Import Project="dalamud.props" />
 
 	<ItemGroup>
 		<PackageReference Include="MoonSharp" Version="2.0.0" />
