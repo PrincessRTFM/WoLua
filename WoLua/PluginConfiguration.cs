@@ -7,6 +7,7 @@ internal class PluginConfiguration: IPluginConfiguration {
 		public static string BasePath => @"C:\WoLua";
 
 		public static bool RegisterDirectCommands = false;
+		public static bool PathNormalisation = false;
 	}
 
 	public void Save()
@@ -17,4 +18,6 @@ internal class PluginConfiguration: IPluginConfiguration {
 	public string BasePath { get; set; } = Defaults.BasePath;
 
 	public bool RegisterDirectCommands { get; set; } = Defaults.RegisterDirectCommands;
+
+	public bool ExperimentalPathNormalisation { get; set; } = Defaults.PathNormalisation;
 }

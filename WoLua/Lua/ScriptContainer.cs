@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Dalamud.Logging;
 
@@ -13,7 +14,8 @@ using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
 using PrincessRTFM.WoLua.Ui.Chat;
 
-public class ScriptContainer: IDisposable {
+// Declared as `partial` because of the compile-time Regex generation feature
+public sealed partial class ScriptContainer: IDisposable {
 	public const CoreModules ScriptModules = CoreModules.None
 #if DEBUG
 		| CoreModules.Debug
@@ -32,6 +34,31 @@ public class ScriptContainer: IDisposable {
 		| CoreModules.Json
 		| CoreModules.Dynamic;
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
+
+	#region Path normalisation
+	private static string aggregator(string accumulated, Regex pattern) => pattern.Replace(accumulated, string.Empty);
+
+	[GeneratedRegex(@"\s+", RegexOptions.Compiled)]
+	public static partial Regex AllWhitespace();
+
+	public static readonly Regex PluginNamePrefix = new("^" + Regex.Escape($"{Service.Plugin.Name}."), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	public static readonly Regex PluginNameSuffix = new(Regex.Escape($".{Service.Plugin.Name}") + "$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	internal static readonly Regex[] standardRemovals = new Regex[] {
+		AllWhitespace(),
+	};
+	internal static readonly Regex[] experimentalRemovals = new Regex[] {
+		PluginNamePrefix,
+		PluginNameSuffix,
+	};
+
+	public static string NameToSlug(in string name) {
+		IEnumerable<Regex> regexen = standardRemovals;
+		if (Service.Configuration.ExperimentalPathNormalisation)
+			regexen = regexen.Concat(experimentalRemovals);
+		return regexen.Aggregate(name, aggregator);
+	}
+	#endregion
 
 	public string InternalName { get; }
 	public string PrettyName { get; }
@@ -74,7 +101,7 @@ public class ScriptContainer: IDisposable {
 	public bool LoadSuccess { get; private set; } = false;
 	public bool ErrorOnCall { get; private set; } = false;
 
-	internal DynValue callback = DynValue.Void;
+	internal DynValue callback { get; set; } = DynValue.Void;
 	public bool Ready => this.Engine is not null && this.callback.Type is DataType.Function;
 
 	public ScriptContainer(string file, string name, string slug) {
@@ -193,7 +220,7 @@ public class ScriptContainer: IDisposable {
 
 	#region Disposable
 	public bool Disposed { get; private set; } = false;
-	protected virtual void Dispose(bool disposing) {
+	private void dispose(bool disposing) {
 		if (this.Disposed)
 			return;
 		this.Disposed = true;
@@ -215,11 +242,11 @@ public class ScriptContainer: IDisposable {
 	}
 
 	~ScriptContainer() {
-		this.Dispose(false);
+		this.dispose(false);
 	}
 
 	public void Dispose() {
-		this.Dispose(true);
+		this.dispose(true);
 		GC.SuppressFinalize(this);
 	}
 	#endregion

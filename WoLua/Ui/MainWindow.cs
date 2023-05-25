@@ -13,6 +13,7 @@ internal class MainWindow: BaseWindow {
 
 	private string basePath;
 	private bool registerCommands;
+	private bool experimentalPathNormalisation;
 
 	public MainWindow() : base($"{Service.Plugin.Name}##MainWindow", CreationFlags) {
 		this.SizeConstraints = new() {
@@ -59,6 +60,7 @@ internal class MainWindow: BaseWindow {
 		}
 
 		if (Section("Settings")) {
+
 			Textline("Base lua script folder:");
 			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
 			ImGui.InputTextWithHint("###BaseFolderPath", PluginConfiguration.Defaults.BasePath, ref this.basePath, byte.MaxValue);
@@ -72,19 +74,12 @@ internal class MainWindow: BaseWindow {
 			Textline("This is where all of your lua command scripts will go.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
+
 			Textline();
-			if (ImGui.Checkbox("Try to register direct commands for each script?", ref this.registerCommands)) {
+			if (ImGui.Checkbox("Try to register direct commands for each script?###RegisterDirectCommands", ref this.registerCommands)) {
 				Service.Configuration.RegisterDirectCommands = this.registerCommands;
 				Service.Configuration.Save();
-				foreach (ScriptContainer script in Service.Scripts.Values) {
-					if (this.registerCommands) {
-						if (!script.RegisterCommand())
-							Service.Plugin.Error($"Unable to register /{script.InternalName} - the command may be in use by another plugin.");
-					}
-					else {
-						script.UnregisterCommand();
-					}
-				}
+				Service.Plugin.Rescan();
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();
@@ -92,6 +87,22 @@ internal class MainWindow: BaseWindow {
 			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
+			ImGui.Unindent();
+			ImGui.EndDisabled();
+
+			Textline();
+			if (ImGui.Checkbox("Enable experimental path normalisation?###ExperimentalPathNormalisation", ref this.experimentalPathNormalisation)) {
+				Service.Configuration.ExperimentalPathNormalisation = this.experimentalPathNormalisation;
+				Service.Configuration.Save();
+				Service.Plugin.Rescan();
+			}
+			ImGui.Indent();
+			ImGui.BeginDisabled();
+			Textline("If this is enabled, script paths will undergo additional transformations to produce a \"cleaner\" name.", 0);
+			Textline($"For example, leading \"{Service.Plugin.Name.ToLower()}.\" and trailing \".{Service.Plugin.Name.ToLower()}\" strings will be removed.", 0);
+			Textline($"This means that a script folder named \"{Service.Plugin.Name}.MyScript\" will be called via \"{Service.Plugin.Command} call myscript\".", 0);
+			Textline("This feature is still being experimented with, and may be subject to change at any time.");
+			Textline("Any scripts affected by this option will LOSE existing script storage values unless the file is manually renamed!");
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 		}
