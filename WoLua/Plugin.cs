@@ -194,7 +194,7 @@ public class Plugin: IDalamudPlugin {
 				Service.Scripts.Add(slug, script);
 				if (direct) {
 					if (!script.RegisterCommand())
-						this.Error($"Unable to register /{script.InternalName} - is it already in use?");
+						this.Error($"Unable to register //{script.InternalName} - is it already in use?");
 				}
 				if (!script.Ready) {
 					PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");

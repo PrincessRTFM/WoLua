@@ -72,19 +72,19 @@ public sealed partial class ScriptContainer: IDisposable {
 		if (this.CommandRegistered)
 			return true;
 
-		this.CommandRegistered = Service.CommandManager.AddHandler($"/{this.InternalName}", new(this.redirectCommandInvocation) {
+		this.CommandRegistered = Service.CommandManager.AddHandler($"//{this.InternalName}", new(this.redirectCommandInvocation) {
 			HelpMessage = $"Run the {this.InternalName} script from {Service.Plugin.Name}",
 			ShowInHelp = false,
 		});
 		if (this.CommandRegistered)
-			this.log($"Registered /{this.InternalName}", LogTag.PluginCore, true);
+			this.log($"Registered //{this.InternalName}", LogTag.PluginCore, true);
 		else
 			this.log("Unable to register direct command with Dalamud", LogTag.PluginCore, true);
 		return this.CommandRegistered;
 	}
 	public void UnregisterCommand() {
 		if (this.CommandRegistered)
-			Service.CommandManager.RemoveHandler($"/{this.InternalName}");
+			Service.CommandManager.RemoveHandler($"//{this.InternalName}");
 		this.CommandRegistered = false;
 	}
 
