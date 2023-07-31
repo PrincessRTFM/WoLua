@@ -151,7 +151,7 @@ public sealed partial class ScriptContainer: IDisposable {
 		}
 	}
 	public ScriptContainer(string file) : this(file, new DirectoryInfo(Path.GetDirectoryName(file)!).Name) { }
-	public ScriptContainer(string file, string name) : this(file, name, name.Replace(" ", "")) { }
+	public ScriptContainer(string file, string name) : this(file, name, NameToSlug(name)) { }
 
 	public bool SetCallback(DynValue func) {
 		if (this.Disposed)
