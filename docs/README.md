@@ -36,6 +36,7 @@ Since there's a fair amount of information exposed, not to mention the functions
 - The [action queueing API][action queueing] allows emulation (and better) of vanilla macros' `<wait>` functionality
 - The [Game API][game api] is the overall access point for everything relating to the game itself
 - The [Player API][player api] has details about the current player
+- The [Chocobo API][chocobo api] has details about the current player's _combat_ chocobo
 - The [Party API][party api] has details about the current player's party and party members
 - The [Toast API][toast api] contains a handful of functions for creating the "toast message" popups, like quest objective completion or moving to a new part of the map
 
@@ -48,5 +49,6 @@ Since there's a fair amount of information exposed, not to mention the functions
 [script storage]: <storage.md>
 [game api]: <game.md>
 [player api]: <player.md>
+[chocobo api]: <chocobo.md>
 [party api]: <party.md>
 [toast api]: <toast.md>
