@@ -87,7 +87,7 @@ internal class MainWindow: BaseWindow {
 			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
-			Textline($"In order to reduce collisions, each command is registered as `/{ScriptContainer.DirectInvocationCommandPrefix}<script>`.");
+			Textline($"In order to reduce collisions, each command is registered as `/{ScriptContainer.DirectInvocationCommandPrefix}<script>`.", 0);
 			Textline($"For example, a script named `myscript` will get the command `/{ScriptContainer.DirectInvocationCommandPrefix}myscript` as a shortcut.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
@@ -103,8 +103,8 @@ internal class MainWindow: BaseWindow {
 			Textline("If this is enabled, script paths will undergo additional transformations to produce a \"cleaner\" name.", 0);
 			Textline($"For example, leading \"{Service.Plugin.Name.ToLower()}.\" and trailing \".{Service.Plugin.Name.ToLower()}\" strings will be removed.", 0);
 			Textline($"This means that a script folder named \"{Service.Plugin.Name}.MyScript\" will be called via \"{Service.Plugin.Command} call myscript\".", 0);
-			Textline("This feature is still being experimented with, and may be subject to change at any time.");
-			Textline("Any scripts affected by this option will LOSE existing script storage values unless the file is manually renamed!");
+			Textline("This feature is still being experimented with, and may be subject to change at any time.", 0);
+			Textline("Any scripts affected by this option will LOSE existing script storage values unless the file is manually renamed!", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 		}
