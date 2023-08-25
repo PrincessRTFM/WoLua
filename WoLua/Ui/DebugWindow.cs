@@ -19,6 +19,10 @@ internal class DebugWindow: BaseWindow {
 		| ImGuiWindowFlags.AlwaysAutoResize;
 	public const int Width = 650;
 
+	private static readonly Vector4
+		green = new(0, 1, 0, 1),
+		red = new(1, 0, 0, 1);
+
 	internal static readonly HashSet<string> ignoredScriptGlobals = new() {
 		"_G", // the most critical - this avoids a stack overflow crash
 		"_VERSION",
@@ -72,6 +76,7 @@ internal class DebugWindow: BaseWindow {
 	}
 
 	public override void Draw() {
+
 		Textline($"Base path: {Service.Configuration.BasePath}");
 
 		Separator();
@@ -97,8 +102,8 @@ internal class DebugWindow: BaseWindow {
 			ImGui.PushStyleColor(
 				ImGuiCol.Text,
 				script.Ready
-					? new Vector4(0, 1, 0, 1)
-					: new Vector4(1, 0, 0, 1)
+					? green
+					: red
 			);
 			Textline($"{name} [{ApiBase.ToUsefulString(script.callback, true)}]", 0);
 			ImGui.PopStyleColor();
