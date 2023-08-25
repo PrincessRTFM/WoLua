@@ -25,7 +25,10 @@ public abstract class ApiBase: IDisposable {
 		this.Owner = source;
 		this.DefaultMessageTag = this.GetType().Name.ToUpper();
 		Type disposable = typeof(IDisposable);
-		this.disposables = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead).ToArray();
+		this.disposables = this.GetType()
+			.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+			.Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead)
+			.ToArray();
 	}
 
 	protected void Log(string message, string? tag = null, bool force = false) {
