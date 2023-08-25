@@ -34,6 +34,7 @@ public sealed partial class ScriptContainer: IDisposable {
 		| CoreModules.Json
 		| CoreModules.Dynamic;
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
+	public const string DirectInvocationCommandPrefix = "/";
 
 	#region Path normalisation
 	private static string aggregator(string accumulated, Regex pattern) => pattern.Replace(accumulated, string.Empty);
@@ -72,19 +73,19 @@ public sealed partial class ScriptContainer: IDisposable {
 		if (this.CommandRegistered)
 			return true;
 
-		this.CommandRegistered = Service.CommandManager.AddHandler($"//{this.InternalName}", new(this.redirectCommandInvocation) {
+		this.CommandRegistered = Service.CommandManager.AddHandler($"/{DirectInvocationCommandPrefix}{this.InternalName}", new(this.redirectCommandInvocation) {
 			HelpMessage = $"Run the {this.InternalName} script from {Service.Plugin.Name}",
 			ShowInHelp = false,
 		});
 		if (this.CommandRegistered)
-			this.log($"Registered //{this.InternalName}", LogTag.PluginCore, true);
+			this.log($"Registered /{DirectInvocationCommandPrefix}{this.InternalName}", LogTag.PluginCore, true);
 		else
 			this.log("Unable to register direct command with Dalamud", LogTag.PluginCore, true);
 		return this.CommandRegistered;
 	}
 	public void UnregisterCommand() {
 		if (this.CommandRegistered)
-			Service.CommandManager.RemoveHandler($"//{this.InternalName}");
+			Service.CommandManager.RemoveHandler($"/{DirectInvocationCommandPrefix}{this.InternalName}");
 		this.CommandRegistered = false;
 	}
 

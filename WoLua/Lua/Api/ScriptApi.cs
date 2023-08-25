@@ -135,7 +135,7 @@ public class ScriptApi: ApiBase {
 
 	public string Title => this.Owner.PrettyName;
 
-	public string CallSelfCommand => PluginCommand + " call " + this.Name;
+	public string CallSelfCommand => Service.Configuration.RegisterDirectCommands ? $"/{ScriptContainer.DirectInvocationCommandPrefix}{this.Name}" : PluginCommand + " call " + this.Name;
 
 	#endregion
 

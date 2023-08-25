@@ -87,8 +87,8 @@ internal class MainWindow: BaseWindow {
 			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
-			Textline("However, each script shortcut command is registered with TWO leading slashes, so collisions should be minimal.", 0);
-			Textline("For example, a script named `myscript` will get the command `//myscript` as a shortcut.", 0);
+			Textline($"In order to reduce collisions, each command is registered as `/{ScriptContainer.DirectInvocationCommandPrefix}<script>`.");
+			Textline($"For example, a script named `myscript` will get the command `/{ScriptContainer.DirectInvocationCommandPrefix}myscript` as a shortcut.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 
