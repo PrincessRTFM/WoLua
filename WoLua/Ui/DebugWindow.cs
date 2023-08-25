@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using Dalamud.Plugin;
+
 using ImGuiNET;
 
 using MoonSharp.Interpreter;
@@ -72,9 +74,21 @@ internal class DebugWindow: BaseWindow {
 	public override void Draw() {
 		Textline($"Base path: {Service.Configuration.BasePath}");
 
-		Textline($"Loaded scripts: {Service.Scripts.Count}");
+		Separator();
+
+		InstalledPluginState[] plugins = Service.Interface.InstalledPlugins.OrderBy(p => p.Name).ToArray();
+		Textline($"Current plugins: {plugins.Length} installed, {plugins.Where(p => p.IsLoaded).Count()} loaded");
+		ImGui.Indent();
+		foreach (InstalledPluginState p in plugins) {
+			ImGui.BeginDisabled(!p.IsLoaded);
+			Textline($"[{p.InternalName}] {p.Name} v{p.Version}", 0);
+			ImGui.EndDisabled();
+		}
+		ImGui.Spacing();
 
 		Separator();
+
+		Textline($"Loaded scripts: {Service.Scripts.Count}", 2);
 
 		foreach ((string name, ScriptContainer script) in Service.Scripts) {
 			ImGui.Spacing();

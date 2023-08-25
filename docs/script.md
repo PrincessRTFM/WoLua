@@ -61,6 +61,9 @@ The following methods are avilable on the `Script` API object.
 - `nil QueueAction(function, any...)`
   Adds the given function to the script's action queue, to be called with the provided arguments. WoLua API calls can be queued in this manner, allowing you to space out messages printed to the local chatlog or sent to the server, or to create [toast messages](toast.md) after a pause.
 
+- `boolean HasPlugin(string)`
+  Checks if a plugin with the provided **internal** name is both installed _and_ currently loaded. Please note that the internal name of a plugin is **not** the same as the name displayed in the plugin installer window, and it **is** case sensitive. You can use the `/wolua debug` window to see a list of all installed plugins (disabled ones will be greyed out) with their internal name, display name, and version.
+
 - `table|nil ParseJson(string)`
   Parses the provided string as JSON into a table. On success, returns the deserialised table. On failure, returns nil.
   Note that MoonSharp (the lua engine used by WoLua) also provides a `json` lua API by itself, with `json.parse(string)` and `json.serialize(table)` methods; however, if the provided JSON string for `json.parse()` is invalid, a _lua_ error will be thrown. If you don't catch it using `pcall`/`xpcall`, your entire script will error and be disabled.

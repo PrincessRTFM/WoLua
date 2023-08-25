@@ -3,6 +3,7 @@ namespace PrincessRTFM.WoLua.Lua.Api;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using ImGuiNET;
 
@@ -191,7 +192,12 @@ public class ScriptApi: ApiBase {
 
 	#endregion
 
-	// TODO check if a given plugin is installed
+	#region Non-game Dalamud access
+
+	public static bool HasPlugin(string pluginName) => Service.Interface.InstalledPlugins.Any(p => p.InternalName == pluginName && p.IsLoaded);
+
+	#endregion
+
 	// TODO ImGui toasts?
 
 	#region Metamethods
