@@ -10,6 +10,9 @@ The following properties exist on the `Game` API object.
 - `Player`, API
   Access to the [Player API](player.md).
 
+- `Chocobo`, API
+  Access to the [Chocobo API](chocobo.md).
+
 - `Toast`, API
   Access to the [Toast API](toast.md).
 

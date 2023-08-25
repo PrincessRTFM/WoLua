@@ -18,12 +18,14 @@ public class GameApi: ApiBase {
 	[MoonSharpHidden]
 	internal GameApi(ScriptContainer source) : base(source) {
 		this.Player = new(this.Owner);
+		this.Chocobo = new(this.Owner);
 		this.Toast = new(this.Owner);
 	}
 
 	#endregion
 
 	public PlayerApi Player { get; private set; }
+	public ChocoboApi Chocobo { get; private set; }
 	public ToastApi Toast { get; private set; }
 
 	public void PrintMessage(params DynValue[] messages) {
