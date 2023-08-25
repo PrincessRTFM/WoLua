@@ -87,6 +87,16 @@ internal class DebugWindow: BaseWindow {
 		foreach (InstalledPluginState p in plugins) {
 			ImGui.BeginDisabled(!p.IsLoaded);
 			Textline($"[{p.InternalName}] {p.Name} v{p.Version}", 0);
+			if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) {
+				ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+				if (!ImGui.IsKeyDown(ImGuiKey.ModShift)) {
+					ImGui.BeginTooltip();
+					Textline($"Click to copy \"{p.InternalName}\" to clipboard", 0);
+					ImGui.EndTooltip();
+				}
+			}
+			if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+				ImGui.SetClipboardText(p.InternalName);
 			ImGui.EndDisabled();
 		}
 		ImGui.Spacing();
