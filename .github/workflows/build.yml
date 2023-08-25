@@ -43,7 +43,7 @@ jobs:
       - name: Load values
         id: data
         run: |
-          buildVersion=$(grep -Ei '<version>[^<]+</version>' "${{ env.SOLUTION_NAME }}/${{ env.SOLUTION_NAME }}.csproj" | sed -e 's/.\+<version>\([^<]\+\)<.\+/\1/i' -)
+          buildVersion=$(grep -Ei '<version>[^<]+</version>' "${{ env.INTERNAL_NAME }}/${{ env.INTERNAL_NAME }}.csproj" | sed -e 's/.\+<version>\([^<]\+\)<.\+/\1/i' -)
           echo "buildVersion=$buildVersion" >> "$GITHUB_OUTPUT"
           echo "tagName=v$buildVersion" >> "$GITHUB_OUTPUT"
         shell: bash
