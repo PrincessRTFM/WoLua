@@ -2,8 +2,10 @@ namespace PrincessRTFM.WoLua;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -27,6 +29,7 @@ public class Plugin: IDalamudPlugin {
 	public const InteropAccessMode TypeRegistrationMode = InteropAccessMode.BackgroundOptimized;
 
 	public string Name { get; } = "WoLua";
+	public string Version { get; init; }
 	public string Command => $"/{this.Name.ToLower()}";
 
 	public WindowSystem Windows { get; } = new();
@@ -40,6 +43,7 @@ public class Plugin: IDalamudPlugin {
 	}
 
 	public Plugin(DalamudPluginInterface i) {
+		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
 		i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase());
 		Service.Sounds = new PlaySound();
 

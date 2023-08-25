@@ -15,7 +15,7 @@ internal class MainWindow: BaseWindow {
 	private bool registerCommands;
 	private bool experimentalPathNormalisation;
 
-	public MainWindow() : base($"{Service.Plugin.Name}##MainWindow", CreationFlags) {
+	public MainWindow() : base($"{Service.Plugin.Name} v{Service.Plugin.Version}##MainWindow", CreationFlags) {
 		this.SizeConstraints = new() {
 			MinimumSize = new(Width, 100),
 			MaximumSize = new(Width, 800),
