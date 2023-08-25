@@ -1,5 +1,7 @@
 namespace PrincessRTFM.WoLua.Ui;
 
+using System.Numerics;
+
 using Dalamud.Interface.Windowing;
 
 using ImGuiNET;
@@ -19,12 +21,16 @@ internal abstract class BaseWindow: Window {
 		Textline(text, spacing);
 	}
 
-	protected static void Textline(string? text = null, uint spacing = 1) {
+	protected static void Textline(string? text = null, uint spacing = 1, Vector4? colour = null) {
 		if (spacing > 0) {
 			for (uint i = 0; i < spacing; ++i)
 				ImGui.Spacing();
 		}
+		if (colour is not null)
+			ImGui.PushStyleColor(ImGuiCol.Text, colour.Value);
 		ImGui.TextUnformatted(text ?? string.Empty);
+		if (colour is not null)
+			ImGui.PopStyleColor();
 		if (spacing > 0) {
 			for (uint i = 0; i < spacing; ++i)
 				ImGui.Spacing();
