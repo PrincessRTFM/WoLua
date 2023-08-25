@@ -53,9 +53,9 @@ public sealed partial class ScriptContainer: IDisposable {
 		PluginNameSuffix,
 	};
 
-	public static string NameToSlug(in string name) {
+	public static string NameToSlug(in string name, in bool forceNormalisation = false) {
 		IEnumerable<Regex> regexen = standardRemovals;
-		if (Service.Configuration.ExperimentalPathNormalisation)
+		if (forceNormalisation || Service.Configuration.ExperimentalPathNormalisation)
 			regexen = regexen.Concat(experimentalRemovals);
 		return regexen.Aggregate(name, aggregator);
 	}
@@ -73,14 +73,15 @@ public sealed partial class ScriptContainer: IDisposable {
 		if (this.CommandRegistered)
 			return true;
 
-		this.CommandRegistered = Service.CommandManager.AddHandler($"/{DirectInvocationCommandPrefix}{this.InternalName}", new(this.redirectCommandInvocation) {
+		string shortform = $"/{DirectInvocationCommandPrefix}{this.InternalName}".ToLower();
+		this.CommandRegistered = Service.CommandManager.AddHandler(shortform, new(this.redirectCommandInvocation) {
 			HelpMessage = $"Run the {this.InternalName} script from {Service.Plugin.Name}",
 			ShowInHelp = false,
 		});
 		if (this.CommandRegistered)
-			this.log($"Registered /{DirectInvocationCommandPrefix}{this.InternalName}", LogTag.PluginCore, true);
+			this.log($"Registered {shortform}", LogTag.PluginCore, true);
 		else
-			this.log("Unable to register direct command with Dalamud", LogTag.PluginCore, true);
+			this.log($"Unable to register direct command \"{shortform}\" with Dalamud", LogTag.PluginCore, true);
 		return this.CommandRegistered;
 	}
 	public void UnregisterCommand() {

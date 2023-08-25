@@ -22,11 +22,44 @@ internal class MainWindow: BaseWindow {
 		};
 		this.basePath = Service.Configuration.BasePath;
 		this.registerCommands = Service.Configuration.RegisterDirectCommands;
+		this.experimentalPathNormalisation = Service.Configuration.ExperimentalPathNormalisation;
 	}
 
 	public override void OnOpen() => this.basePath = Service.Configuration.BasePath;
 
 	public override void Draw() {
+		string
+			exampleScriptName = "MyScript",
+			exampleScriptNamePrefixed = $"{Service.Plugin.Name}.{exampleScriptName}",
+
+			exampleScriptSlug = ScriptContainer.NameToSlug(exampleScriptName).ToLower(),
+			exampleScriptSlugPrefixed = ScriptContainer.NameToSlug(exampleScriptNamePrefixed).ToLower(),
+			exampleNormalisedSlug = ScriptContainer.NameToSlug(exampleScriptName, true).ToLower(),
+			exampleNormalisedSlugPrefixed = ScriptContainer.NameToSlug(exampleScriptNamePrefixed, true).ToLower(),
+
+			exampleScriptCall = $"{Service.Plugin.Command} call {exampleScriptSlug}",
+			exampleScriptCallPrefixed = $"{Service.Plugin.Command} call {exampleScriptSlugPrefixed}",
+			exampleNormalisedScriptCall = $"{Service.Plugin.Command} call {exampleNormalisedSlug}",
+			exampleNormalisedScriptCallPrefixed = $"{Service.Plugin.Command} call {exampleNormalisedSlugPrefixed}",
+
+			exampleShortCall = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleScriptSlug}",
+			exampleShortCallPrefixed = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleScriptSlugPrefixed}",
+			exampleNormalisedShortCall = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleNormalisedSlug}",
+			exampleNormalisedShortCallPrefixed = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleNormalisedSlugPrefixed}",
+
+			exampleCall = Service.Configuration.RegisterDirectCommands
+				? exampleShortCall
+				: exampleScriptCall,
+			exampleCallPrefixed = Service.Configuration.RegisterDirectCommands
+				? exampleShortCallPrefixed
+				: exampleScriptCallPrefixed,
+			exampleNormalisedCall = Service.Configuration.RegisterDirectCommands
+				? exampleNormalisedShortCall
+				: exampleNormalisedScriptCall,
+			exampleNormalisedCallPrefixed = Service.Configuration.RegisterDirectCommands
+				? exampleNormalisedShortCallPrefixed
+				: exampleNormalisedScriptCallPrefixed;
+
 		ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
 
 		if (Section("Introduction")) {
@@ -55,7 +88,7 @@ internal class MainWindow: BaseWindow {
 			Textline($"Since the documentation for writing {Service.Plugin.Name} scripts is necessarily so extensive, it's located online, on the plugin repository.");
 
 			if (ImGui.Button("Open documentation page")) {
-				Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua/tree/master/docs") { UseShellExecute = true });
+				Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua/tree/master/docs#wolua-scripting") { UseShellExecute = true });
 			}
 		}
 
@@ -88,7 +121,7 @@ internal class MainWindow: BaseWindow {
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
 			Textline($"In order to reduce collisions, each command is registered as `/{ScriptContainer.DirectInvocationCommandPrefix}<script>`.", 0);
-			Textline($"For example, a script named `myscript` will get the command `/{ScriptContainer.DirectInvocationCommandPrefix}myscript` as a shortcut.", 0);
+			Textline($"For example, a script named `{exampleScriptNamePrefixed}` will get the command `{exampleShortCallPrefixed}` as a shortcut.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 
@@ -101,10 +134,25 @@ internal class MainWindow: BaseWindow {
 			ImGui.Indent();
 			ImGui.BeginDisabled();
 			Textline("If this is enabled, script paths will undergo additional transformations to produce a \"cleaner\" name.", 0);
-			Textline($"For example, leading \"{Service.Plugin.Name.ToLower()}.\" and trailing \".{Service.Plugin.Name.ToLower()}\" strings will be removed.", 0);
-			Textline($"This means that a script folder named \"{Service.Plugin.Name}.MyScript\" will be called via \"{Service.Plugin.Command} call myscript\".", 0);
+			Textline($"For example, leading `{Service.Plugin.Name.ToLower()}.` and trailing `.{Service.Plugin.Name.ToLower()}` strings will be removed.", 0);
+			Textline($"This means that a script folder named `{exampleScriptNamePrefixed}` will be called via `{exampleNormalisedCallPrefixed}`.", 0);
 			Textline("This feature is still being experimented with, and may be subject to change at any time.", 0);
 			Textline("Any scripts affected by this option will LOSE existing script storage values unless the file is manually renamed!", 0);
+			ImGui.Unindent();
+			ImGui.EndDisabled();
+
+			Textline();
+			Separator();
+			ImGui.BeginDisabled();
+			Textline("Given your current settings, a script named", 0);
+			ImGui.Indent();
+			Textline(exampleScriptNamePrefixed, 0);
+			ImGui.Unindent();
+			Textline("will be called via", 0);
+			ImGui.Indent();
+			Textline(exampleScriptCallPrefixed, 0);
+			if (Service.Configuration.RegisterDirectCommands)
+				Textline(exampleShortCallPrefixed, 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 		}
