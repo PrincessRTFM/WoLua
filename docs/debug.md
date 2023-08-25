@@ -11,22 +11,22 @@ Further note that all debugging methods will _only_ produce output if you explic
 ## Properties
 The following properties exist on the `Debug` API object.
 
-- `Enabled`, writable boolean
+- `Enabled`, writable boolean\
   Controls all output from the Debug API. Defaults to false; if you're debugging your script, you probably want it enabled at the top with `Script.Debug.Enabled = true`.
 
 ## Methods
 The following methods are avilable on the `Debug` API object.
 
-- `nil PrintString(string)`
+- `nil PrintString(string)`\
   Prints the given string as-is to the debug log.
 
-- `nil Print(any...)`
+- `nil Print(any...)`\
   Prints the given values to the debug log, concatenated by one space. Special values will be given more useful representations, such as tables rendering as JSON.
 
-- `nil DumpStorage()`
+- `nil DumpStorage()`\
   Prints the script's _current_ persistent storage as a JSON table. Does not touch the stored disk file, if it exists.
 
-- `nil Dump(any...)`
+- `nil Dump(any...)`\
   Prints all of the given values on individual lines with indices. Special values will be given more useful representations, such as tables rendering as JSON.
 
 ## Special

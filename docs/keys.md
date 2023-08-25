@@ -7,16 +7,16 @@ The Keys API is a sub-component of the [Script API](script.md), which means it's
 ### Properties
 The following properties exist on the `Keys` API object.
 
-- `Control`, readonly boolean
+- `Control`, readonly boolean\
   Whether or not the _control_ modifier key is down.
 
-- `Ctrl`, readonly boolean
+- `Ctrl`, readonly boolean\
   Another name for the `Control` property.
 
-- `Alt`, readonly boolean
+- `Alt`, readonly boolean\
   Whether or not the _alt_ modifier key is down.
 
-- `Shift`, readonly boolean
+- `Shift`, readonly boolean\
   Whether or not the _shift_ modifier key is down.
 
 ## Future plans

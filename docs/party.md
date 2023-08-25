@@ -7,13 +7,13 @@ The Party API is a sub-component of the [Player API](player.md), which means it'
 ## Properties
 The following properties exist on the `Party` API object.
 
-- `Size`, readonly number|nil (technically signed integer)
+- `Size`, readonly number|nil (technically signed integer)\
   The size of the current character's current party.
 
-- `InAlliance`, readonly boolean|nil
+- `InAlliance`, readonly boolean|nil\
   If player data is available and valid (see `Loaded` in the [Player API](player.md)), represents whether the current character is in an alliance. Otherwise, this will be `nil`.
 
-- `InParty`, readonly boolean|nil
+- `InParty`, readonly boolean|nil\
   If player data is available and valid (see `Loaded` in the [Player API](player.md)), represents whether the current character is in a party. Otherwise, this will be `nil`.
 
 ## Special

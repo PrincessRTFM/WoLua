@@ -7,13 +7,13 @@ In vanilla, game macros are able to use `<wait.SECONDS>` to pause for up to sixt
 ## Caveats
 Using the action queue is fairly simple, but has a few important things to remember:
 
-- **Each script has one action queue.** This means that scripts won't interfere with each other, but it also means that if your script runs again while its queue isn't empty (such as if you queued a delay that hasn't expired yet) then anything your script queues on its _new_ run will be added to the end of the existing queue.
+- **Each script has one action queue.** This means that scripts won't interfere with each other, but it also means that if your script runs again while its queue isn't empty (such as if you queued a delay that hasn't expired yet) then anything your script queues on its _new_ run will be added to the end of the existing queue.\
   To get around this, you can see how many items are left in the queue via `Script.QueueSize` (to figure out what step it's currently on) and clear anything currently in the queue with `Script.ClearQueue()`.
 
 - **Queues are halted and wiped when reloading scripts.** This is to prevent stale actions from being executed anyway, as scripts may be changed or even removed between script reloads.
 
-- **You queue _functions_ (and delays), not chat inputs.** WoLua is like vanilla macros, only better. A queued action (function) can do everything that you can do elsewhere in a WoLua script - including even queueing _more_ things!
-  Yes, you can technically create infinite emote loops - just be sure you have a way to end the loop too...
+- **You queue _functions_ (and delays), not chat inputs.** WoLua is like vanilla macros, only better. A queued action (function) can do everything that you can do elsewhere in a WoLua script - including even queueing _more_ things!\
+  Yes, you can technically create infinite emote loops - just be sure you have a way to end the loop too.
 
 ## Usage
 There are only three methods relating to the action queue, and one property. All of them are on the top-level [Script API](script.md).
