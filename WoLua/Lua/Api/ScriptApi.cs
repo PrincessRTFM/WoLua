@@ -4,6 +4,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+
+using Dalamud.Interface.Internal.Notifications;
 
 using ImGuiNET;
 
@@ -196,9 +199,25 @@ public class ScriptApi: ApiBase {
 
 	public static bool HasPlugin(string pluginName) => Service.Interface.InstalledPlugins.Any(p => p.InternalName == pluginName && p.IsLoaded);
 
-	#endregion
+	private void showNotification(string content, NotificationType type, double durationModifier = 1) {
+		int initialDuration = 5000;
+		initialDuration += 50 * content.Length;
+		initialDuration += 25 * content.Split(' ', '\n', '\r', '\t').Length;
+		initialDuration += 10 * content.Count(char.IsPunctuation);
+		uint duration = (uint)Math.Abs(Math.Ceiling(initialDuration * durationModifier));
+		this.Log($"Displaying notification (type {type}) of {content.Length:N} chars for {duration:N}ms ({initialDuration:D}ms x {durationModifier:F2})", LogTag.DebugMessage);
+		Service.Interface.UiBuilder.AddNotification(content, $"{Service.Plugin.Name}: {this.Title}", type, duration);
+	}
+	public void NotifyDebug(string content) {
+		if (this.Debug.Enabled)
+			this.showNotification(content, NotificationType.None);
+	}
+	public void NotifyInfo(string content) => this.showNotification(content, NotificationType.Info);
+	public void NotifySuccess(string content) => this.showNotification(content, NotificationType.Success);
+	public void NotifyWarning(string content) => this.showNotification(content, NotificationType.Warning, 1.1);
+	public void NotifyError(string content) => this.showNotification(content, NotificationType.Error, 1.2);
 
-	// TODO ImGui toasts?
+	#endregion
 
 	#region Metamethods
 
