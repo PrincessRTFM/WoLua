@@ -28,16 +28,16 @@ public class PlayerApi: ApiBase {
 
 	public bool Loaded
 		=> !this.Disposed
-		&& Service.Client.LocalPlayer is not null
-		&& Service.Client.LocalContentId is not 0;
+		&& Service.ClientState.LocalPlayer is not null
+		&& Service.ClientState.LocalContentId is not 0;
 	public static implicit operator bool(PlayerApi? player) => player?.Loaded ?? false;
 
 	public ulong? CharacterId
 		=> this.Loaded
-			? Service.Client.LocalContentId
+			? Service.ClientState.LocalContentId
 		: null;
 
-	public EntityWrapper Entity => new(this ? Service.Client.LocalPlayer : null);
+	public EntityWrapper Entity => new(this ? Service.ClientState.LocalPlayer : null);
 
 	public MountData Mount => this.Entity.Mount;
 
@@ -45,7 +45,7 @@ public class PlayerApi: ApiBase {
 
 	public string? Name
 		=> this.Loaded
-			? Service.Client.LocalPlayer!.Name!.TextValue
+			? Service.ClientState.LocalPlayer!.Name!.TextValue
 		: null;
 
 	public string? Firstname
@@ -63,8 +63,8 @@ public class PlayerApi: ApiBase {
 	#region Location
 
 	public uint? MapZone
-		=> this.Loaded && Service.Client.TerritoryType > 0
-			? Service.Client.TerritoryType
+		=> this.Loaded && Service.ClientState.TerritoryType > 0
+			? Service.ClientState.TerritoryType
 		: null;
 
 	#endregion
@@ -73,93 +73,93 @@ public class PlayerApi: ApiBase {
 
 	public bool? InCombat
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.InCombat]
-			|| Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.InCombat)
+			? Service.Condition[ConditionFlag.InCombat]
+			|| Service.ClientState.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.InCombat)
 		: null;
 
 	public bool Mounted => this.Mount.Active;
 
 	public bool? Crafting
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Crafting]
-			|| Service.Conditions[ConditionFlag.Crafting40]
-			|| Service.Conditions[ConditionFlag.PreparingToCraft]
+			? Service.Condition[ConditionFlag.Crafting]
+			|| Service.Condition[ConditionFlag.Crafting40]
+			|| Service.Condition[ConditionFlag.PreparingToCraft]
 		: null;
 
 	public bool? Gathering
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Gathering]
-			|| Service.Conditions[ConditionFlag.Gathering42]
+			? Service.Condition[ConditionFlag.Gathering]
+			|| Service.Condition[ConditionFlag.Gathering42]
 		: null;
 
 	public bool? Fishing
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Fishing]
+			? Service.Condition[ConditionFlag.Fishing]
 		: null;
 
 	public bool? Performing
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Performing]
+			? Service.Condition[ConditionFlag.Performing]
 		: null;
 
 	public bool? Casting
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Casting]
-			|| Service.Conditions[ConditionFlag.Casting87]
-			|| Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.IsCasting)
+			? Service.Condition[ConditionFlag.Casting]
+			|| Service.Condition[ConditionFlag.Casting87]
+			|| Service.ClientState.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.IsCasting)
 		: null;
 
 	public bool? InCutscene
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.WatchingCutscene]
-			|| Service.Conditions[ConditionFlag.WatchingCutscene78]
-			|| Service.Conditions[ConditionFlag.OccupiedInCutSceneEvent]
-			|| Service.Conditions[ConditionFlag.BetweenAreas]
-			|| Service.Conditions[ConditionFlag.BetweenAreas51]
+			? Service.Condition[ConditionFlag.WatchingCutscene]
+			|| Service.Condition[ConditionFlag.WatchingCutscene78]
+			|| Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+			|| Service.Condition[ConditionFlag.BetweenAreas]
+			|| Service.Condition[ConditionFlag.BetweenAreas51]
 		: null;
 
 	public bool? Trading
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.TradeOpen]
+			? Service.Condition[ConditionFlag.TradeOpen]
 		: null;
 
 	public bool? Flying
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.InFlight]
+			? Service.Condition[ConditionFlag.InFlight]
 		: null;
 
 	public bool? Swimming
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Swimming]
+			? Service.Condition[ConditionFlag.Swimming]
 		: null;
 
 	public bool? Diving
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Diving]
+			? Service.Condition[ConditionFlag.Diving]
 		: null;
 
 	public bool? Jumping
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.Jumping]
-			|| Service.Conditions[ConditionFlag.Jumping61]
+			? Service.Condition[ConditionFlag.Jumping]
+			|| Service.Condition[ConditionFlag.Jumping61]
 		: null;
 
 	public bool? InDuty
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.BoundByDuty]
-			|| Service.Conditions[ConditionFlag.BoundByDuty56]
-			|| Service.Conditions[ConditionFlag.BoundByDuty95]
-			|| Service.Conditions[ConditionFlag.BoundToDuty97]
+			? Service.Condition[ConditionFlag.BoundByDuty]
+			|| Service.Condition[ConditionFlag.BoundByDuty56]
+			|| Service.Condition[ConditionFlag.BoundByDuty95]
+			|| Service.Condition[ConditionFlag.BoundToDuty97]
 		: null;
 
 	public bool? UsingFashionAccessory
 		=> this.Loaded
-			? Service.Conditions[ConditionFlag.UsingParasol]
+			? Service.Condition[ConditionFlag.UsingParasol]
 		: null;
 
 	public bool? WeaponDrawn
 		=> this.Loaded
-			? Service.Client.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.WeaponOut)
+			? Service.ClientState.LocalPlayer!.StatusFlags.HasFlag(StatusFlags.WeaponOut)
 		: null;
 
 	public static unsafe bool Moving

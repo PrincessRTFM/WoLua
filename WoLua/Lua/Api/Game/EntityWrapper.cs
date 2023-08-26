@@ -141,8 +141,8 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 		: null;
 	public float? DistanceFrom(PlayerApi player) => this.DistanceFrom(player.Entity);
 
-	public float? FlatDistance => this.FlatDistanceFrom(Service.Client.LocalPlayer);
-	public float? Distance => this.DistanceFrom(Service.Client.LocalPlayer);
+	public float? FlatDistance => this.FlatDistanceFrom(Service.ClientState.LocalPlayer);
+	public float? Distance => this.DistanceFrom(Service.ClientState.LocalPlayer);
 
 	#endregion
 

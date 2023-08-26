@@ -235,7 +235,7 @@ public class Plugin: IDalamudPlugin {
 			new TextPayload(" " + message),
 			Foreground.Reset
 		});
-		Service.Chat.Print(new SeString(parts));
+		Service.ChatGui.Print(new SeString(parts));
 	}
 	public void Error(string message, Exception? cause = null, string? scriptOrigin = null) {
 		if (this.disposed)
