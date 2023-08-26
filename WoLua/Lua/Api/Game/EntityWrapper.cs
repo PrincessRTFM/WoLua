@@ -12,11 +12,11 @@ using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
 
-using CSChar = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
+using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 [MoonSharpUserData]
 public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> {
-	private unsafe CSChar* cs => this.IsPlayer ? (CSChar*)this.Entity!.Address : null;
+	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
 
 	public static implicit operator GameObject?(EntityWrapper? wrapper) => wrapper?.Entity;
 	public static implicit operator EntityWrapper(GameObject? entity) => new(entity);
@@ -37,10 +37,10 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	public unsafe MountData Mount {
 		get {
-			CSChar* player = this.cs;
+			NativeCharacter* player = this.cs;
 			if (player is null)
 				return new(0);
-			CSChar.MountContainer? mount = player->IsMounted() ? player->Mount : null;
+			NativeCharacter.MountContainer? mount = player->IsMounted() ? player->Mount : null;
 			return new(mount?.MountId ?? 0);
 		}
 	}
@@ -82,9 +82,9 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	public JobData Job {
 		get {
-			if (this && this.Entity is Character self)
-				return new(self.ClassJob!.Id, self.ClassJob!.GameData!.Name!.ToString().ToLower(), self.ClassJob!.GameData!.Abbreviation!.ToString().ToUpper());
-			return new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
+			return this && this.Entity is Character self
+				? new(self.ClassJob!.Id, self.ClassJob!.GameData!.Name!.ToString().ToLower(), self.ClassJob!.GameData!.Abbreviation!.ToString().ToUpper())
+				: new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
 		}
 	}
 
