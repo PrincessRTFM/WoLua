@@ -38,7 +38,7 @@ public abstract class GameFunctionBase<T> where T : Delegate {
 	}
 	[SuppressMessage("Reliability", "CA2020:Prevent from behavioral change", Justification = "If this explodes, we SHOULD be throwing")]
 	internal GameFunctionBase(IntPtr address, int offset = 0) {
-		this.addr = address + offset;
+		this.addr = address + offset; // this will throw on overflow
 		ulong totalOffset = (ulong)this.Address.ToInt64() - (ulong)Service.Scanner.Module.BaseAddress.ToInt64();
 		PluginLog.Information($"[{LogTag.PluginCore}] {this.GetType().Name} loaded; address = 0x{this.Address.ToInt64():X16}, base memory offset = 0x{totalOffset:X16}");
 	}
