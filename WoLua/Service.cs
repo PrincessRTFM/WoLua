@@ -13,6 +13,7 @@ using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 
 using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
@@ -28,17 +29,17 @@ internal class Service {
 
 	[PluginService] public static Framework Framework { get; private set; } = null!;
 	[PluginService] public static ChatGui Chat { get; private set; } = null!;
-	[PluginService] public static GameGui Gui { get; private set; } = null!;
+	[PluginService] public static IGameGui Gui { get; private set; } = null!;
 	[PluginService] public static ToastGui Toast { get; private set; } = null!;
 	[PluginService] public static DalamudPluginInterface Interface { get; private set; } = null!;
-	[PluginService] public static SigScanner Scanner { get; private set; } = null!;
-	[PluginService] public static CommandManager CommandManager { get; private set; } = null!;
-	[PluginService] public static ClientState Client { get; private set; } = null!;
+	[PluginService] public static ISigScanner Scanner { get; private set; } = null!;
+	[PluginService] public static ICommandManager CommandManager { get; private set; } = null!;
+	[PluginService] public static IClientState Client { get; private set; } = null!;
 	[PluginService] public static Condition Conditions { get; private set; } = null!;
-	[PluginService] public static TargetManager Targets { get; private set; } = null!;
-	[PluginService] public static DataManager DataManager { get; private set; } = null!;
-	[PluginService] public static PartyList Party { get; private set; } = null!;
-	[PluginService] public static ObjectTable Objects { get; private set; } = null!;
+	[PluginService] public static ITargetManager Targets { get; private set; } = null!;
+	[PluginService] public static IDataManager DataManager { get; private set; } = null!;
+	[PluginService] public static IPartyList Party { get; private set; } = null!;
+	[PluginService] public static IObjectTable Objects { get; private set; } = null!;
 
 	public static PlaySound Sounds { get; internal set; } = null!;
 }
