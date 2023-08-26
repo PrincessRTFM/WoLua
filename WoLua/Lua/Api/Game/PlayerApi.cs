@@ -178,16 +178,29 @@ public class PlayerApi: ApiBase {
 	public EntityWrapper Target => new(this.Loaded ? Service.Targets.Target : null);
 	public bool? HasTarget => this.Loaded ? this.Target : null;
 
-	public EntityWrapper FocusTarget => new(this.Loaded ? Service.Targets.FocusTarget : null);
-	public bool? HasFocusTarget => this.Loaded ? this.FocusTarget : null;
-
-	public EntityWrapper MouseOverTarget => new(this.Loaded ? Service.Targets.MouseOverTarget : null);
-	public bool? HasMouseoverTarget => this.Loaded ? this.MouseOverTarget : null;
-
 	public EntityWrapper SoftTarget => new(this.Loaded ? Service.Targets.SoftTarget : null);
 	public bool? HasSoftTarget => this.Loaded ? this.SoftTarget : null;
 
-	// TODO UI mouseover target, field mouseover target, and change MouseOverTarget to use whichever is found
+	public EntityWrapper FocusTarget => new(this.Loaded ? Service.Targets.FocusTarget : null);
+	public bool? HasFocusTarget => this.Loaded ? this.FocusTarget : null;
+
+	public EntityWrapper FieldMouseOverTarget => new(this.Loaded ? Service.Targets.MouseOverTarget : null);
+	public bool? HasFieldMouseoverTarget => this.Loaded ? this.MouseOverTarget : null;
+
+	public EntityWrapper UiMouseOverTarget => new(this.Loaded ? Service.Hooks.UITarget : null);
+	public bool? HasUiMouseoverTarget => this.Loaded ? this.MouseOverTarget : null;
+
+	public EntityWrapper MouseOverTarget {
+		get {
+			if (!this.Loaded)
+				return new(null);
+			EntityWrapper found = this.UiMouseOverTarget;
+			if (!found)
+				found = this.FieldMouseOverTarget;
+			return found;
+		}
+	}
+	public bool? HasMouseoverTarget => this.Loaded ? this.MouseOverTarget : null;
 
 	#endregion
 

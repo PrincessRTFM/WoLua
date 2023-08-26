@@ -44,7 +44,8 @@ public class Plugin: IDalamudPlugin {
 	public Plugin(DalamudPluginInterface i) {
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
 		i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase());
-		Service.Sounds = new PlaySound();
+		Service.Sounds = new();
+		Service.Hooks = new();
 
 		PlayerApi.InitialiseEmotes();
 
@@ -277,6 +278,7 @@ public class Plugin: IDalamudPlugin {
 		if (disposing) {
 			PluginLog.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
 			Service.Configuration.Save();
+			Service.Hooks.Dispose();
 			Service.Common.Dispose();
 			Service.Interface.UiBuilder.Draw -= this.Windows.Draw;
 			Service.Interface.UiBuilder.OpenConfigUi -= this.ToggleConfigUi;

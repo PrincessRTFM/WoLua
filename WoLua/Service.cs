@@ -42,4 +42,5 @@ internal class Service {
 	[PluginService] public static IObjectTable Objects { get; private set; } = null!;
 
 	public static PlaySound Sounds { get; internal set; } = null!;
+	public static Hooks Hooks { get; internal set; } = null!;
 }

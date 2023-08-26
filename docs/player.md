@@ -34,14 +34,38 @@ The following properties exist on the `Player` API object.
 - `Target`, readonly object\
   Access to an [entity container](entity.md) representing the current character's hard target.
 
-- `FocusTarget`, readonly object\
-  Access to an [entity container](entity.md) representing the current character's focus target.
-
-- `MouseOverTarget`, readonly object\
-  Access to an [entity container](entity.md) representing the current character's _field_ mouseover target. UI mouseover target is planned but not yet implemented. Note that the `O` in `Over` is capitalised.
+- `HasTarget`, readonly boolean|nil\
+  Whether the current character _has_ a target. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.Target.Exists`.
 
 - `SoftTarget`, readonly object\
   Access to an [entity container](entity.md) representing the current character's soft target.
+
+- `HasSoftTarget`, readonly boolean|nil\
+  Whether the current character _has_ a soft target. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.SoftTarget.Exists`.
+
+- `FocusTarget`, readonly object\
+  Access to an [entity container](entity.md) representing the current character's focus target.
+
+- `HasFocusTarget`, readonly boolean|nil\
+  Whether the current character _has_ a focus target. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.FocusTarget.Exists`.
+
+- `FieldMouseOverTarget`, readonly object\
+  Access to an [entity container](entity.md) representing the current character's _field_ mouseover target. Note that the `O` in `Over` is capitalised.
+
+- `HasFieldMouseOverTarget`, readonly boolean|nil\
+  Whether the current character _has_ a field mouseover target. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.FieldMouseOverTarget.Exists`.
+
+- `UiMouseOverTarget`, readonly object\
+  Access to an [entity container](entity.md) representing the current character's _UI_ mouseover target. Note that the `O` in `Over` is capitalised.
+
+- `HasUiMouseOverTarget`, readonly boolean|nil\
+  Whether the current character _has_ a UI mouseover target. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.UiMouseOverTarget.Exists`.
+
+- `MouseOverTarget`, readonly object\
+  Access to an [entity container](entity.md) representing the current character's _UI_ mouseover target if there is one, or their _field_ mouseover target otherwise. Note that the `O` in `Over` is capitalised.
+
+- `HasMouseOverTarget`, readonly boolean|nil\
+  Whether the current character _has_ a mouseover target, be it field or UI. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `Game.Player.MouseOverTarget.Exists`.
 
 - `MapZone`, readonly number|nil (unsigned integer)\
   The user's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate.
