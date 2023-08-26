@@ -24,10 +24,13 @@ public class GameApi: ApiBase {
 
 	#endregion
 
+	#region Sub-APIs
 	public PlayerApi Player { get; private set; }
 	public ChocoboApi Chocobo { get; private set; }
 	public ToastApi Toast { get; private set; }
+	#endregion
 
+	#region Chat
 	public void PrintMessage(params DynValue[] messages) {
 		if (this.Disposed)
 			return;
@@ -62,6 +65,7 @@ public class GameApi: ApiBase {
 			Service.Common.Functions.Chat.SendMessage(cleaned);
 		}
 	}
+	#endregion
 
 	public bool? PlaySoundEffect(int id) {
 		if (this.Disposed)
@@ -76,6 +80,9 @@ public class GameApi: ApiBase {
 	}
 
 	// TODO map flags?
-	// TODO allow examining the object table directly? (would allow searching for objects matching criteria, could be useful)
+	// TODO allow examining the object table directly (would allow searching for objects matching criteria, could be useful)
+	// TODO allow examining the FATE table directly (would allow effectively recreating TinyCmd's `/fate` command)
+	// TODO allow checking game settings via Service.GameConfig
+	// TODO allow accessing job gauge data via Service.JobGauges
 
 }
