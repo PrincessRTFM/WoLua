@@ -31,6 +31,10 @@ public class ActionQueue: IDisposable {
 		=> this.queue.Enqueue(action);
 
 	public bool? PullEvent() {
+		if (Service.GameLifecycle.LogoutToken.IsCancellationRequested || Service.GameLifecycle.DalamudUnloadingToken.IsCancellationRequested || Service.GameLifecycle.GameShuttingDownToken.IsCancellationRequested) {
+			this.clear();
+			return null;
+		}
 		if (DateTime.Now < this.ActionThreshold)
 			return null;
 		if (!this.queue.TryDequeue(out ScriptAction? action))
