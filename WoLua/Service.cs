@@ -3,29 +3,17 @@ namespace PrincessRTFM.WoLua;
 using System.Collections.Generic;
 
 using Dalamud.Game;
-using Dalamud.Game.ClientState.Aetherytes;
-using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Fates;
-using Dalamud.Game.ClientState.GamePad;
-using Dalamud.Game.ClientState.JobGauge;
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
-using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Config;
-using Dalamud.Game.DutyState;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
-using Dalamud.Game.Gui.FlyText;
-using Dalamud.Game.Gui.PartyFinder;
 using Dalamud.Game.Gui.Toast;
-using Dalamud.Game.Libc;
-using Dalamud.Game.Network;
-using Dalamud.Interface;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 
+using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
 
@@ -37,7 +25,7 @@ internal class Service {
 	[PluginService] public static Plugin Plugin { get; private set; } = null!;
 	[PluginService] public static PluginConfiguration Configuration { get; private set; } = null!;
 	[PluginService] public static XivCommonBase Common { get; private set; } = null!;
-	
+
 	[PluginService] public static DalamudPluginInterface Interface { get; private set; } = null!;
 
 	// [PluginService] public static IAetheryteList AetheryteList { get; private set; } = null!;
@@ -48,7 +36,7 @@ internal class Service {
 	[PluginService] public static ICommandManager CommandManager { get; private set; } = null!;
 	[PluginService] public static Condition Condition { get; private set; } = null!;
 	[PluginService] public static IDataManager DataManager { get; private set; } = null!;
-	[PluginService] public static IDtrBar DtrBar { get; private set; } = null!; // TODO dtr bar entry with number of loaded scripts
+	[PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
 	// [PluginService] public static IDutyState DutyState { get; private set; } = null!;
 	[PluginService] public static IFateTable FateTable { get; private set; } = null!;
 	// [PluginService] public static FlyTextGui FlyTextGui { get; private set; } = null!;
@@ -71,4 +59,10 @@ internal class Service {
 
 	public static PlaySound Sounds { get; internal set; } = null!;
 	public static Hooks Hooks { get; internal set; } = null!;
+	public static DtrBarEntry StatusLine { get; private set; } = null!;
+
+	public Service() {
+		StatusLine = DtrBar.Get($"{Plugin.Name} status", StatusText.Initialising);
+		StatusLine.Shown = true;
+	}
 }

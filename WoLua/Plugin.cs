@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
@@ -16,7 +17,6 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Platforms;
 
 using PrincessRTFM.WoLua.Constants;
-using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api.Game;
 using PrincessRTFM.WoLua.Ui;
@@ -31,6 +31,14 @@ public class Plugin: IDalamudPlugin {
 	public string Version { get; init; }
 	public string Command => $"/{this.Name.ToLower()}";
 
+	public SeString Status {
+		get => this.disposed ? null! : Service.StatusLine.Text ?? string.Empty;
+		set {
+			if (!this.disposed && Service.StatusLine is not null)
+				Service.StatusLine.Text = value;
+		}
+	}
+
 	public WindowSystem Windows { get; } = new();
 	private readonly MainWindow mainWindow;
 	private readonly DebugWindow debugWindow;
@@ -43,7 +51,8 @@ public class Plugin: IDalamudPlugin {
 
 	public Plugin(DalamudPluginInterface i) {
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
-		i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase());
+		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase()) is null)
+			throw new ApplicationException("Failed to initialise service container");
 		Service.Sounds = new();
 		Service.Hooks = new();
 
@@ -164,6 +173,8 @@ public class Plugin: IDalamudPlugin {
 		if (this.disposed)
 			return;
 
+		this.Status = StatusText.LoadingScripts;
+
 		string path = Service.Configuration.BasePath;
 
 		if (File.Exists(path)) {
@@ -210,6 +221,8 @@ public class Plugin: IDalamudPlugin {
 		}
 
 		Service.Configuration.Save();
+
+		this.Status = StatusText.Scripts;
 	}
 
 	#region Chat
@@ -272,6 +285,7 @@ public class Plugin: IDalamudPlugin {
 		if (this.disposed)
 			return;
 
+		this.Status = StatusText.Disposing;
 		this.clearCommands();
 		this.disposed = true;
 
@@ -283,6 +297,7 @@ public class Plugin: IDalamudPlugin {
 			Service.Interface.UiBuilder.Draw -= this.Windows.Draw;
 			Service.Interface.UiBuilder.OpenConfigUi -= this.ToggleConfigUi;
 			Service.CommandManager.RemoveHandler(this.Command);
+			Service.StatusLine.Dispose();
 		}
 
 		PluginLog.Information($"[{LogTag.PluginCore}] {this.Name} unloaded successfully!");
