@@ -24,10 +24,6 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 	public bool Exists => this.Entity is not null && this.Entity.IsValid() && this.Entity.ObjectKind is not ObjectKind.None;
 	public static implicit operator bool(EntityWrapper? entity) => entity?.Exists ?? false;
 
-	public string? Name => this
-		? this.Entity?.Name?.TextValue ?? string.Empty
-		: null;
-
 	public string? Type => this ? this.Entity!.ObjectKind.ToString() : null;
 
 	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
@@ -44,6 +40,22 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 			return new(mount?.MountId ?? 0);
 		}
 	}
+
+	#region Name
+
+	public string? Name => this
+		? this.Entity?.Name?.TextValue ?? string.Empty
+		: null;
+
+	public string? Firstname => this.IsPlayer
+		? this.Name!.Split(' ')[0]
+		: this.Name;
+
+	public string? Lastname => this.IsPlayer
+		? this.Name!.Split(' ')[1]
+		: this.Name;
+
+	#endregion
 
 	#region Worlds
 
