@@ -14,7 +14,7 @@ The following properties exist on the `Chocobo` API object.
   How much time is left on your summoned chocobo, in seconds. If your chocobo is summoned but you're mounted, this value will be frozen, as your chocobo summon timer doesn't tick while you're mounted up. This will be `nil` if you aren't logged in.
 
 - `Summoned`, readonly boolean|nil
-  Whether or not your chocobo is currently summoned. This does _not_ indicate whether it is currently _present_, as it counts as summoned even when you're mounted. This check is equivalent to `Game.Chocobo.TimeLeft > 0`. This will be `nil` if you aren't logged in.
+  Whether or not your chocobo is currently summoned. This does _not_ indicate whether it is currently _present_, as it counts as summoned even when you're mounted. This check is equivalent to `.TimeLeft > 0`. This will be `nil` if you aren't logged in.
 
 - `CurrentXP`, readonly number|nil (unsigned integer)
   Your chocobo's current experience towards the next level. This is _not_ your chocobo's _total_ experience. This will be `nil` if you aren't logged in.

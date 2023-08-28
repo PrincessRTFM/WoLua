@@ -20,13 +20,13 @@ The following properties exist on the `Script` API object.
   The WoLua base command, including the leading slash (`/wolua`, unless it changes in the future for some reason) for convenience in case of forks or changes.
 
 - `Name`, readonly string\
-  The invocation name of the script, valid for passing to `/wolua call`. This may or may not be the same as `Title`, as spaces are stripped out from the folder name on disk.
+  The invocation name of the script, valid for passing to `/wolua call`. This may or may not be the same as `.Title`, as spaces are stripped out from the folder name on disk.
 
 - `Title`, readonly string\
   The original name of the script. This may or may not be the same as `Name`; do _not_ attempt to pass it to `/wolua call` as it may have spaces in it. This value is for display only, and is the name of the folder on disk.
 
 - `CallSelfCommand`, readonly string\
-  A shortcut to join `Script.PluginCommand`, "call", and `Script.Name` with a single space. This provides the entire command necessary to invoke the current script. If you have enabled direct shortcut commands ("shortform" commands), this will instead be the direct-invocation command. For example, `/wolua call myscript` currently becomes `//myscript` in shortform.
+  A shortcut to join `.PluginCommand`, "call", and `.Name` with a single space. This provides the entire command necessary to invoke the current script. If you have enabled direct shortcut commands ("shortform" commands), this will instead be the direct-invocation command. For example, `/wolua call myscript` currently becomes `//myscript` in shortform.
 
 - `QueueSize`, readonly number (integer)\
   The number of actions currently sitting in this script's action queue, waiting to be executed.

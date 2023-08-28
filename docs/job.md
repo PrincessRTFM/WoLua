@@ -17,7 +17,7 @@ The following properties exist on job data objects. All of them are readonly.
   The short-form (three-letter) name of the represented class or job. This value is always in all uppercase. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `ADV`.
 
 - `Valid`, boolean\
-  Indicates whether this object represents a valid job. If not, then `Id` will be `0`, `Name` will be `adventurer`, and `Abbreviation` (and aliases) will be `ADV`.
+  Indicates whether this object represents a valid job. If not, then `.Id` will be `0`, `.Name` will be `adventurer`, and `.Abbreviation` (and aliases) will be `ADV`.
 
 - `IsCrafter`, boolean\
   Whether or not this class is a Disciple of the Hand.
@@ -53,4 +53,4 @@ The following properties exist on job data objects. All of them are readonly.
   Whether or not this specific job is Blue Mage.
 
 - `IsLimited`, boolean\
-  Whether or not this class or job is limited. Currently identical to `IsBlu`, but may change with future game updates.
+  Whether or not this class or job is limited. Currently identical to `.IsBlu`, but may change with future game updates.

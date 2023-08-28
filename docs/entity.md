@@ -15,6 +15,21 @@ The following properties exist on entity container objects. All of them are read
 - `Name`, string|nil\
   The textual name of this game object, if it exists. If there is no object behind this container, this will be `nil`.
 
+- `Firstname`, string|nil\
+  If this object represents a _player_, this will be their first name. If there is no object behind this container, this will be `nil`. In all other cases, this is equivalent to `.Name`.
+
+- `Lastname`, string|nil\
+  If this object represents a _player_, this will be their last name. If there is no object behind this container, this will be `nil`. In all other cases, this is equivalent to `.Name`.
+
+- `IsMale`, boolean|nil\
+  This will be true if the represented entity is considered male by the game. Note that minions are considered male even if the entity they represent (such as the Dress-up Y'shtola) is actually female. If this game object doesn't exist, this will be `nil`.
+
+- `IsFemale`, boolean|nil\
+  This will be true if the represented entity is considered female by the game. If this game object doesn't exist, this will be `nil`.
+
+- `IsGendered`, boolean|nil\
+  This will be true if the represented entity is considered to have a gender by the game. If this game object doesn't exist, this will be `nil`. In all other known cases, this _should_ be true. This is a equivalent for `.IsMale or .IsFemale`.
+
 - `Type`, string|nil\
   The name of the type of this game object as known by Dalamud. If there is no object behind this container, this will be `nil`.
 
@@ -25,10 +40,10 @@ The following properties exist on entity container objects. All of them are read
   The [mount data](mount.md) for this entity. This will never be `nil`, but if this game object is not mounted for any reason, the mount data will represent a lack of mount.
 
 - `HomeWorldId`, number|nil (unsigned short)\
-  The internal (FFXIV) numeric ID of this player's _home_ world. May be useful in niche cases, but you probably want `HomeWorld` instead. Note that if this container does not represent a _player_ then this will be `nil`.
+  The internal (FFXIV) numeric ID of this player's _home_ world. May be useful in niche cases, but you probably want `.HomeWorld` instead. Note that if this container does not represent a _player_ then this will be `nil`.
 
 - `CurrentWorldId`, number|nil (unsigned short)\
-  The internal (FFXIV) numeric ID of this player's _current_ world. May be useful in niche cases, but you probably want `CurrentWorld` instead. Note that if this container does not represent a _player_ then this will be `nil`.
+  The internal (FFXIV) numeric ID of this player's _current_ world. May be useful in niche cases, but you probably want `.CurrentWorld` instead. Note that if this container does not represent a _player_ then this will be `nil`.
 
 - `HomeWorld`, string|nil\
   The textual name of this player's _home_ world. Note that if this container does not represent a _player_ then this will be `nil`.
@@ -139,7 +154,7 @@ The following properties exist on entity container objects. All of them are read
   Whether this entity is currently "casting" an action, which may not be a spell. Using items with a use time also counts, for example. If this entity cannot use items, this will be `false`.
 
 - `CanInterrupt`, boolean\
-  Whether this entity's cast can be interrupted by the player. If `IsCasting` is `false`, this will also be `false`.
+  Whether this entity's cast can be interrupted by the player. If `.IsCasting` is `false`, this will also be `false`.
 
 - `PosX`, number|nil (floating point)\
   The internal (_not_ map coordinate) X position of this entity. This is one of the two horizontal coordinates. If this container does not represent a valid game object, this will be `nil`.
@@ -157,10 +172,10 @@ The following properties exist on entity container objects. All of them are read
   The rotation of this game object in degrees, ranging from `0` to `360`.
 
 - `FlatDistance`, number|nil (floating point)\
-  The two-dimensional (horizontal) euclidean distance between this game object's position and the current character's position, ignoring hitbox radius. If this game object doesn't exist, this will be `nil`. This is a shortcut for calling `FlatDistanceFrom(Game.Player)`.
+  The two-dimensional (horizontal) euclidean distance between this game object's position and the current character's position, ignoring hitbox radius. If this game object doesn't exist, this will be `nil`. This is a shortcut for calling `.FlatDistanceFrom(Game.Player)`.
 
 - `Distance`, number|nil (floating point)\
-  The three-dimensional euclidean distance between this game object's position and the current character's position, ignoring hitbox radius. If this game object doesn't exist, this will be `nil`. This is a shortcut for calling `DistanceFrom(Game.Player)`.
+  The three-dimensional euclidean distance between this game object's position and the current character's position, ignoring hitbox radius. If this game object doesn't exist, this will be `nil`. This is a shortcut for calling `.DistanceFrom(Game.Player)`.
 
 ## Methods
 The following methods are avilable on the `Debug` API object.
@@ -170,3 +185,9 @@ The following methods are avilable on the `Debug` API object.
 
 - `number|nil DistanceFrom(PlayerAPI|EntityContainer)`\
   Returns the three-dimensional euclidean distance between this game object and the one provided. If either game object is invalid, the return value will be `nil`. If you pass a [Player API](player.md) object, the current character will be implicitly used.
+
+- `any|nil MF(any, any)`\
+  If this game object is considered male (`IsMale == true`), the first value will be returned. If it is considered female (`IsFemale == true`), the second value will be returned. In all other cases (which are not currently known to exist), `nil` will be returned.
+
+- `any MFN(any, any, any)`\
+  If this game object is considered male (`IsMale == true`), the first value will be returned. If it is considered female (`IsFemale == true`), the second value will be returned. In all other cases (which are not currently known to exist), the third value will be returned.
