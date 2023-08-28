@@ -207,7 +207,7 @@ public class Plugin: IDalamudPlugin {
 				ScriptContainer script = new(file, name, slug);
 				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
 				Service.Scripts.Add(slug, script);
-				if (direct) {
+				if (direct && script.Active) {
 					if (!script.RegisterCommand())
 						this.Error($"Unable to register //{script.InternalName} - is it already in use?");
 				}

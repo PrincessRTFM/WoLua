@@ -104,7 +104,7 @@ public sealed partial class ScriptContainer: IDisposable {
 	public bool ErrorOnCall { get; private set; } = false;
 
 	internal DynValue callback { get; set; } = DynValue.Void;
-	public bool Ready => this.Engine is not null && this.callback.Type is DataType.Function;
+	public bool Ready => !this.Disposed && this.Engine is not null && this.callback.Type is DataType.Function;
 
 	public bool Active => this.Ready && this.LoadSuccess && !this.ErrorOnCall;
 
