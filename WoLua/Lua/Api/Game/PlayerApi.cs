@@ -55,6 +55,20 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
+	#region Gender
+
+	public bool? IsMale => this.Entity.IsMale;
+	public bool? IsFemale => this.Entity.IsFemale;
+	public bool? IsGendered => this.Entity.IsGendered;
+
+	public string? MF(string male, string female) => this.Entity.MF(male, female);
+	public string? MFN(string male, string female, string neither) => this.Entity.MFN(male, female, neither);
+
+	public DynValue MF(DynValue male, DynValue female) => this.Entity.MF(male, female);
+	public DynValue MFN(DynValue male, DynValue female, DynValue neither) => this.Entity.MFN(male, female, neither);
+
+	#endregion
+
 	#region Location
 
 	public uint? MapZone
