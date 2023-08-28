@@ -13,9 +13,11 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 
 using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
+using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 [MoonSharpUserData]
 public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> {
+	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
 
 	public static implicit operator GameObject?(EntityWrapper? wrapper) => wrapper?.Entity;
@@ -54,6 +56,20 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 	public string? Lastname => this.IsPlayer
 		? this.Name!.Split(' ')[1]
 		: this.Name;
+
+	#endregion
+
+	#region Gender
+
+	public unsafe bool? IsMale => this ? this.go->Gender == 0 : null;
+	public unsafe bool? IsFemale => this ? this.go->Gender == 1 : null;
+	public unsafe bool? IsGendered => this ? (this.IsMale ?? false) || (this.IsFemale ?? false) : null;
+
+	public string? MF(string male, string female) => this.MFN(male, female, null!);
+	public string? MFN(string male, string female, string neither) => this ? (this.IsGendered ?? false) ? (this.IsMale ?? false) ? male : female : neither : null;
+
+	public DynValue MF(DynValue male, DynValue female) => this.MFN(male, female, DynValue.Nil);
+	public DynValue MFN(DynValue male, DynValue female, DynValue neither) => this ? (this.IsGendered ?? false) ? (this.IsMale ?? false) ? male : female : neither : DynValue.Nil;
 
 	#endregion
 
