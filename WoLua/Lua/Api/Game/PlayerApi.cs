@@ -26,15 +26,13 @@ public class PlayerApi: ApiBase {
 		this.Party = new(this.Owner);
 	}
 
-	public bool Loaded
-		=> !this.Disposed
+	public bool Loaded => !this.Disposed
 		&& Service.ClientState.LocalPlayer is not null
 		&& Service.ClientState.LocalContentId is not 0;
 	public static implicit operator bool(PlayerApi? player) => player?.Loaded ?? false;
 
-	public ulong? CharacterId
-		=> this.Loaded
-			? Service.ClientState.LocalContentId
+	public ulong? CharacterId => this.Loaded
+		? Service.ClientState.LocalContentId
 		: null;
 
 	public EntityWrapper Entity => new(this ? Service.ClientState.LocalPlayer : null);
@@ -43,19 +41,16 @@ public class PlayerApi: ApiBase {
 
 	#region Name
 
-	public string? Name
-		=> this.Loaded
-			? Service.ClientState.LocalPlayer!.Name!.TextValue
+	public string? Name => this.Loaded
+		? Service.ClientState.LocalPlayer!.Name!.TextValue
 		: null;
 
-	public string? Firstname
-		=> this.Loaded
-			? this.Name!.Split(' ')[0]
+	public string? Firstname => this.Loaded
+		? this.Name!.Split(' ')[0]
 		: null;
 
-	public string? Lastname
-		=> this.Loaded
-			? this.Name!.Split(' ')[1]
+	public string? Lastname => this.Loaded
+		? this.Name!.Split(' ')[1]
 		: null;
 
 	#endregion
