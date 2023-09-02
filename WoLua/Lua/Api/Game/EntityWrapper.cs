@@ -8,6 +8,10 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility.Numerics;
 
+using FFXIVClientStructs.FFXIV.Client.Game.Character.Data;
+
+using Lumina.Excel.GeneratedSheets;
+
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
@@ -16,6 +20,7 @@ using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character
 using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 [MoonSharpUserData]
+[MoonSharpHideMember(nameof(Entity))]
 public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> {
 	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
@@ -56,6 +61,35 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 	public string? Lastname => this.IsPlayer
 		? this.Name!.Split(' ')[1]
 		: this.Name;
+
+	#endregion
+
+	#region Player titles
+
+	private unsafe Title? playerTitle {
+		get {
+			if (!this.IsPlayer)
+				return null;
+			NativeCharacter* player = this.cs;
+			CharacterData cdata = player->CharacterData;
+			ushort titleId = cdata.TitleID;
+			return titleId == 0
+				? null
+				: ExcelContainer.Titles.GetRow(titleId);
+		}
+	}
+	public bool? HasTitle => this.IsPlayer ? this.playerTitle is not null : null;
+	public string? TitleText {
+		get {
+			if (!this.IsPlayer)
+				return null;
+			Title? title = this.playerTitle;
+			return title is null
+				? string.Empty
+				: this.MF(title.Masculine, title.Feminine);
+		}
+	}
+	public bool? TitleIsPrefix => this.IsPlayer ? this.playerTitle?.IsPrefix : null;
 
 	#endregion
 

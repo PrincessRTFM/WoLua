@@ -55,6 +55,14 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
+	#region Player titles
+
+	public bool? HasTitle => this.Entity.HasTitle;
+	public string? TitleText => this.Entity.TitleText;
+	public bool? TitleIsPrefix => this.Entity.TitleIsPrefix;
+
+	#endregion
+
 	#region Gender
 
 	public bool? IsMale => this.Entity.IsMale;
