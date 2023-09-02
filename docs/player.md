@@ -31,6 +31,16 @@ The following properties exist on the `Player` API object.
 - `IsGendered`, readonly boolean|nil\
   This will be true if the current character is considered to have a gender by the game. This should never be false. This is a shortcut for `.Entity.IsGendered`.
 
+- `HasTitle`, boolean|nil\
+  This will be `true` if the current character has a title and `false` if they don't. This is a shortcut for `.Entity.HasTitle`.
+
+- `TitleText`, string|nil\
+  This will be the active title of the current character if one is present, or an empty string if not. This is a shortcut for `.Entity.TitleText`.\
+  Note that some titles have different forms for male and female characters, such as "God of War" versus "Goddess of War". This property will automatically return the form that is appropriate for the current character.
+
+- `TitleIsPrefix`, boolean|nil\
+  This will be `true` if the current character has a title that is a prefix (displays _above_ their name in their nameplate), `false` if their title is a suffix, or `nil` if they do not currently have a title. This is a shortcut for `.Entity.TitleIsPrefix`.
+
 - `Party`, API\
   Access to the [Party API](party.md).
 

@@ -30,6 +30,16 @@ The following properties exist on entity container objects. All of them are read
 - `IsGendered`, boolean|nil\
   This will be true if the represented entity is considered to have a gender by the game. If this game object doesn't exist, this will be `nil`. In all other known cases, this _should_ be true. This is a equivalent for `.IsMale or .IsFemale`.
 
+- `HasTitle`, boolean|nil\
+  This will be `true` if the represented entity is a player who currently has a title, `false` if the represented entity is a player who does _not_ have a title, and `nil` if this object does not represent a (valid) player.
+
+- `TitleText`, string|nil\
+  If the represented entity is a player, this will either be their current title (accounting for gender where necessary) or an empty string if they don't have one. If the represented entity is not a (valid) player, this will be `nil`.\
+  Note that some titles have different forms for male and female characters, such as "God of War" versus "Goddess of War". This property will automatically return the form that is appropriate for the represented player.
+
+- `TitleIsPrefix`, boolean|nil\
+  If the represented entity is a player, this will be `true` if they have a title that is a prefix (displays _above_ their name in their nameplate), `false` if their title is a suffix, or `nil` if they do not currently have a title. This will also be `nil` if the represented entity is not a (valid) player.
+
 - `Type`, string|nil\
   The name of the type of this game object as known by Dalamud. If there is no object behind this container, this will be `nil`.
 
