@@ -4,10 +4,11 @@ using Dalamud.Configuration;
 
 internal class PluginConfiguration: IPluginConfiguration {
 	public static class Defaults {
-		public static string BasePath => @"C:\WoLua";
+		public const string BasePath = @"C:\WoLua";
+		public const string DirectInvocationCommandPrefix = "/";
 
-		public static bool RegisterDirectCommands = false;
-		public static bool PathNormalisation = false;
+		public const bool RegisterDirectCommands = false;
+		public const bool PathNormalisation = false;
 	}
 
 	public void Save()
@@ -16,6 +17,8 @@ internal class PluginConfiguration: IPluginConfiguration {
 	public int Version { get; set; } = 1;
 
 	public string BasePath { get; set; } = Defaults.BasePath;
+
+	public string DirectInvocationCommandPrefix { get; set; } = Defaults.DirectInvocationCommandPrefix;
 
 	public bool RegisterDirectCommands { get; set; } = Defaults.RegisterDirectCommands;
 

@@ -9,9 +9,10 @@ using PrincessRTFM.WoLua.Lua;
 internal class MainWindow: BaseWindow {
 	public const ImGuiWindowFlags CreationFlags = ImGuiWindowFlags.None
 		| ImGuiWindowFlags.AlwaysAutoResize;
-	public const int Width = 650;
+	public const int Width = 700;
 
 	private string basePath;
+	private string directInvocationCommandPrefix;
 	private bool registerCommands;
 	private bool experimentalPathNormalisation;
 
@@ -21,6 +22,7 @@ internal class MainWindow: BaseWindow {
 			MaximumSize = new(Width, 800),
 		};
 		this.basePath = Service.Configuration.BasePath;
+		this.directInvocationCommandPrefix = Service.Configuration.DirectInvocationCommandPrefix;
 		this.registerCommands = Service.Configuration.RegisterDirectCommands;
 		this.experimentalPathNormalisation = Service.Configuration.ExperimentalPathNormalisation;
 	}
@@ -42,10 +44,10 @@ internal class MainWindow: BaseWindow {
 			exampleNormalisedScriptCall = $"{Service.Plugin.Command} call {exampleNormalisedSlug}",
 			exampleNormalisedScriptCallPrefixed = $"{Service.Plugin.Command} call {exampleNormalisedSlugPrefixed}",
 
-			exampleShortCall = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleScriptSlug}",
-			exampleShortCallPrefixed = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleScriptSlugPrefixed}",
-			exampleNormalisedShortCall = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleNormalisedSlug}",
-			exampleNormalisedShortCallPrefixed = $"/{ScriptContainer.DirectInvocationCommandPrefix}{exampleNormalisedSlugPrefixed}",
+			exampleShortCall = $"/{this.directInvocationCommandPrefix}{exampleScriptSlug}",
+			exampleShortCallPrefixed = $"/{this.directInvocationCommandPrefix}{exampleScriptSlugPrefixed}",
+			exampleNormalisedShortCall = $"/{this.directInvocationCommandPrefix}{exampleNormalisedSlug}",
+			exampleNormalisedShortCallPrefixed = $"/{this.directInvocationCommandPrefix}{exampleNormalisedSlugPrefixed}",
 
 			exampleCall = Service.Configuration.RegisterDirectCommands
 				? exampleShortCall
@@ -59,6 +61,10 @@ internal class MainWindow: BaseWindow {
 			exampleNormalisedCallPrefixed = Service.Configuration.RegisterDirectCommands
 				? exampleNormalisedShortCallPrefixed
 				: exampleNormalisedScriptCallPrefixed;
+
+		ImGuiStylePtr style = ImGui.GetStyle();
+		float imguiPadding = style.CellPadding.X * 2;
+		float imguiSpacing = style.ItemSpacing.X;
 
 		ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
 
@@ -95,13 +101,16 @@ internal class MainWindow: BaseWindow {
 		if (Section("Settings")) {
 
 			Textline("Base lua script folder:");
-			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - (ImGui.CalcTextSize("Rescan").X + imguiPadding + imguiSpacing));
 			ImGui.InputTextWithHint("###BaseFolderPath", PluginConfiguration.Defaults.BasePath, ref this.basePath, byte.MaxValue);
 			if (ImGui.IsItemDeactivatedAfterEdit()) {
 				Service.Configuration.BasePath = this.basePath;
 				Service.Configuration.Save();
 				Service.Plugin.Rescan();
 			}
+			ImGui.SameLine();
+			if (ImGui.Button("Rescan"))
+				Service.Plugin.Rescan();
 			ImGui.Indent();
 			ImGui.BeginDisabled();
 			Textline("This is where all of your lua command scripts will go.", 0);
@@ -120,8 +129,30 @@ internal class MainWindow: BaseWindow {
 			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
-			Textline($"In order to reduce collisions, each command is registered as `/{ScriptContainer.DirectInvocationCommandPrefix}<script>`.", 0);
+			Textline($"In order to reduce collisions, each command is registered with a prefix, set below.", 0);
+			ImGui.Unindent();
+			ImGui.EndDisabled();
+
+			Textline();
+			Textline("Direct script command prefix:");
+			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+			ImGui.BeginDisabled(!Service.Configuration.RegisterDirectCommands);
+			if (ImGui.InputTextWithHint("###DirectInvocationCommandPrefix", PluginConfiguration.Defaults.DirectInvocationCommandPrefix, ref this.directInvocationCommandPrefix, byte.MaxValue))
+				this.directInvocationCommandPrefix = this.directInvocationCommandPrefix.Replace(" ", "");
+			ImGui.EndDisabled();
+			if (ImGui.IsItemDeactivatedAfterEdit()) {
+				if (string.IsNullOrWhiteSpace(this.directInvocationCommandPrefix))
+					this.directInvocationCommandPrefix = PluginConfiguration.Defaults.DirectInvocationCommandPrefix;
+				Service.Configuration.DirectInvocationCommandPrefix = this.directInvocationCommandPrefix;
+				Service.Configuration.Save();
+				Service.Plugin.Rescan();
+			}
+			ImGui.Indent();
+			ImGui.BeginDisabled();
+			Textline("When direct script commands are enabled, they will be registered with this prefix before the script name.", 0);
 			Textline($"For example, a script named `{exampleScriptNamePrefixed}` will get the command `{exampleShortCallPrefixed}` as a shortcut.", 0);
+			Textline("This is done in order to reduce collisions with other plugins and vanilla game commands.", 0);
+			Textline("For that reason, this value CANNOT contain spaces or be left empty.", 0);
 			ImGui.Unindent();
 			ImGui.EndDisabled();
 

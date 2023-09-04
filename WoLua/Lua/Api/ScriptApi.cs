@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Dalamud.Interface.Internal.Notifications;
 
@@ -139,7 +138,7 @@ public class ScriptApi: ApiBase {
 
 	public string Title => this.Owner.PrettyName;
 
-	public string CallSelfCommand => Service.Configuration.RegisterDirectCommands ? $"/{ScriptContainer.DirectInvocationCommandPrefix}{this.Name}" : PluginCommand + " call " + this.Name;
+	public string CallSelfCommand => Service.Configuration.RegisterDirectCommands ? $"/{Service.Configuration.DirectInvocationCommandPrefix}{this.Name}" : PluginCommand + " call " + this.Name;
 
 	#endregion
 
