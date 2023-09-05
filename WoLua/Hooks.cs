@@ -1,4 +1,4 @@
-﻿namespace PrincessRTFM.WoLua;
+namespace PrincessRTFM.WoLua;
 
 using System;
 

@@ -1,4 +1,4 @@
-﻿namespace PrincessRTFM.WoLua.Lua.Api.Game;
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 using Dalamud.Memory;
 

@@ -1,4 +1,5 @@
-﻿namespace PrincessRTFM.WoLua.Constants;
+namespace PrincessRTFM.WoLua.Constants;
+
 using System.Collections.Generic;
 using System.Linq;
 
