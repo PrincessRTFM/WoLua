@@ -18,7 +18,7 @@ The following methods are avilable on the `Dalamud` API object.
   Please note that the internal name of a plugin is **not** the same as the name displayed in the plugin installer window, and it **is** case sensitive. You can use the `/wolua debug` window to see a list of all installed plugins (disabled ones will be greyed out) with their internal name, display name, and version.
 
 - `boolean HasPlugin(string, string)`\
-  Checks if a plugin with the provided **internal** name is both installed _and_ currently loaded, _and_ that the provided version is compatible with the loaded version. Plugin versions are in the form of `MAJOR.MINOR.BUILD.REVISION`. Version compatibility checks are performed as follows:\
+  Checks if a plugin with the provided **internal** name is both installed _and_ currently loaded, _and_ that the provided version is compatible with the loaded version. Plugin versions are in the form of `MAJOR.MINOR.BUILD.REVISION`. Version compatibility checks are performed as follows:
   - If the `MAJOR` components are different, the versions are _not_ compatible.
   - If the loaded `MINOR` component is _greater_ than the requested one, they _are_ compatible.
   - If the loaded `MINOR` component is _less_ than the requested one, they are _not_ compatible.
