@@ -20,14 +20,18 @@ public class GameApi: ApiBase {
 		this.Player = new(this.Owner);
 		this.Chocobo = new(this.Owner);
 		this.Toast = new(this.Owner);
+		this.Dalamud = new(this.Owner);
 	}
 
 	#endregion
 
 	#region Sub-APIs
+
 	public PlayerApi Player { get; private set; }
 	public ChocoboApi Chocobo { get; private set; }
 	public ToastApi Toast { get; private set; }
+	public DalamudApi Dalamud { get; private set; }
+
 	#endregion
 
 	#region Chat
