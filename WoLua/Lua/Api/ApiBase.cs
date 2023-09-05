@@ -19,6 +19,7 @@ public abstract class ApiBase: IDisposable {
 	public string DefaultMessageTag { get; init; }
 
 	private readonly PropertyInfo[] disposables;
+	private readonly MemberInfo[] wipeOnDispose;
 
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source) {
@@ -28,6 +29,15 @@ public abstract class ApiBase: IDisposable {
 		this.disposables = this.GetType()
 			.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 			.Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead)
+			.ToArray();
+		this.wipeOnDispose = this.GetType()
+			.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+			.Where(p => p.CanWrite)
+			.Cast<MemberInfo>()
+			.Concat(this.GetType()
+				.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+				.Where(f => !f.IsInitOnly))
+			.Where(p => p.GetCustomAttribute<WipeOnDisposeAttribute>()?.Value is true)
 			.ToArray();
 	}
 
@@ -85,6 +95,11 @@ public abstract class ApiBase: IDisposable {
 			(disposable.GetValue(this) as IDisposable)?.Dispose();
 			if (disposable.CanWrite)
 				disposable.SetValue(this, null);
+		}
+
+		foreach (MemberInfo item in this.wipeOnDispose) {
+			(item as PropertyInfo)?.SetValue(this, null);
+			(item as FieldInfo)?.SetValue(this, null);
 		}
 
 		this.Owner = null!;
