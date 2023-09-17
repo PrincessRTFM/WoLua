@@ -80,7 +80,7 @@ public class PlayerApi: ApiBase {
 	#region Location
 
 	public uint? MapZone
-		=> this.Loaded && Service.ClientState.TerritoryType > 0
+		=> this.Loaded
 			? Service.ClientState.TerritoryType
 		: null;
 

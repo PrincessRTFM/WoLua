@@ -22,14 +22,17 @@ using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 [MoonSharpUserData]
 [MoonSharpHideMember(nameof(Entity))]
 public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> {
+	#region Conversions
 	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
 
 	public static implicit operator GameObject?(EntityWrapper? wrapper) => wrapper?.Entity;
 	public static implicit operator EntityWrapper(GameObject? entity) => new(entity);
 
-	public bool Exists => this.Entity is not null && this.Entity.IsValid() && this.Entity.ObjectKind is not ObjectKind.None;
 	public static implicit operator bool(EntityWrapper? entity) => entity?.Exists ?? false;
+	#endregion
+
+	public bool Exists => this.Entity is not null && this.Entity.IsValid() && this.Entity.ObjectKind is not ObjectKind.None;
 
 	public string? Type => this ? this.Entity!.ObjectKind.ToString() : null;
 

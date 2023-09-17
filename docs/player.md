@@ -87,7 +87,7 @@ The following properties exist on the `Player` API object.
   Whether the current character _has_ a mouseover target, be it field or UI. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `.MouseOverTarget.Exists`.
 
 - `MapZone`, readonly number|nil (unsigned integer)\
-  The user's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate.
+  The the current character's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate. If you aren't logged in, this will be `nil`.
 
 - `InCombat`, readonly boolean|nil\
   Whether or not the user is currently considered to be in combat by the game.
