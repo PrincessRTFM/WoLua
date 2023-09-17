@@ -61,6 +61,12 @@ The following properties exist on entity container objects. All of them are read
 - `CurrentWorld`, string|nil\
   The textual name of this player's _current_ world. Note that if this container does not represent a _player_ then this will be `nil`.
 
+- `Target`, object\
+  The entity container for this game object's target, if any. If there is no target, this container will exist but will represent nothing. See `.Exists`.
+
+- `HasTarget`, boolean\
+  Whether or not this game object has a target. This is a shortcut for `.Target.Exists`.
+
 - `IsPlayer`, boolean\
   Indicates whether this container represents a valid game object that is a player. If this container does not represent a valid object, this will be `false`, _not_ `nil`.
 

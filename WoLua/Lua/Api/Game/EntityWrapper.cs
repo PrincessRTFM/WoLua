@@ -211,6 +211,13 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	#endregion
 
+	#region Target
+	
+	public EntityWrapper Target => new(this ? this.Entity!.TargetObject : null);
+	public bool? HasTarget => this.Target;
+
+	#endregion
+
 	#region IEquatable
 	public bool Equals(EntityWrapper? other) => this.Entity == other?.Entity;
 	public override int GetHashCode() => this.Entity?.GetHashCode() ?? 0;
