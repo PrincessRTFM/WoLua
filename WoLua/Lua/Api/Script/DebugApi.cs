@@ -28,6 +28,12 @@ public class DebugApi: ApiBase {
 	public bool Enabled { get; set; } = false;
 #endif
 
+#if DEBUG
+	public static bool PluginDebugBuild => true;
+#else
+	public static bool PluginDebugBuild => false;
+#endif
+
 	public void PrintString(string message) {
 		if (this.Disposed)
 			return;
