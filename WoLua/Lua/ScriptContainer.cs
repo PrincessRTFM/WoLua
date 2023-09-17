@@ -19,8 +19,8 @@ public sealed partial class ScriptContainer: IDisposable {
 	public const CoreModules ScriptModules = CoreModules.None
 #if DEBUG
 		| CoreModules.Debug
-		| CoreModules.Metatables
 #endif
+		| CoreModules.Metatables
 		| CoreModules.GlobalConsts
 		| CoreModules.TableIterators
 		| CoreModules.String
