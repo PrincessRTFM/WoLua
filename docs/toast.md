@@ -7,25 +7,38 @@ The Toast API is a sub-component of the [Game API](game.md), which means it's ac
 ## Methods
 The following methods are avilable on the `Toast` API object.
 
+### Normal toasts
+
+![Example](images/toast-normal.png)
+
 - `nil Short(string)`\
   Creates a toast popup with the "normal" look for around two seconds.
 
 - `nil Long(string)`\
   Creates a toast popup with the "normal" look for around four seconds.
 
+### Error toasts
+
+![Example](images/toast-error.png)
+
 - `nil Error(string)`\
   Creates a toast popup with the "error" look.
+
+### Task toasts
+
+![Example, no check](images/toast-task-plain.png)
+![Example, with check](images/toast-task-check.png)
 
 - `nil TaskComplete(string)`\
   Creates a toast popup with the "quest objective complete" look. Includes the checkmark appearing and the sound effect.
 
 - `nil TaskComplete(string, boolean)`\
-  Creates a toast popup with the "quest objective complete" look. Includes the checkmark appearing. The boolean indicates whether to suppress the sound effect.
+  Creates a toast popup with the "quest objective complete" look. Includes the checkmark appearing. The boolean indicates whether to **suppress** the sound effect.
 
 - `nil TaskComplete(string, unsigned integer)`\
   Creates a toast popup with the "quest objective complete" look. Uses the game icon represented by the number in the second parameter, or `0` to not use any icon. If an icon is used, the standard sound effect will play.\
   Icon IDs are well beyond the scope of this document.
 
 - `nil TaskComplete(string, unsigned integer, boolean)`\
-  Creates a toast popup with the "quest objective complete" look. Uses the game icon represented by the number in the second parameter, or `0` to not use any icon. The boolean indicates whether to suppress the sound effect. If no icon is used, the sound will not play regardless.\
+  Creates a toast popup with the "quest objective complete" look. Uses the game icon represented by the number in the second parameter, or `0` to not use any icon. The boolean indicates whether to **suppress** the sound effect. If no icon is used, the sound will not play regardless.\
   Icon IDs are well beyond the scope of this document.

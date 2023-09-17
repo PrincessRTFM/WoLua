@@ -4,8 +4,10 @@ _Despite the name, it's only one part of the scripting API._
 ## Usage
 The Script API is top-level, which means it's accessible through the global `Script`.
 
-### Properties
+## Properties
 The following properties exist on the `Script` API object.
+
+### APIs
 
 - `Storage`, readonly table\
   Access to the [persistent storage table](storage.md).
@@ -15,6 +17,8 @@ The following properties exist on the `Script` API object.
 
 - `Keys`, API\
   Access to the [Keys API](keys.md).
+
+### Script metadata
 
 - `PluginCommand`, readonly string\
   The WoLua base command, including the leading slash (`/wolua`, unless it changes in the future for some reason) for convenience in case of forks or changes.
@@ -31,11 +35,15 @@ The following properties exist on the `Script` API object.
 - `QueueSize`, readonly number (integer)\
   The number of actions currently sitting in this script's action queue, waiting to be executed.
 
+### Other
+
 - `Clipboard`, writable string\
   The current text on the system clipboard. Can be set as well, in order to set the clipboard text.
 
-### Methods
+## Methods
 The following methods are avilable on the `Script` API object.
+
+### Storage
 
 - `boolean SaveStorage()`\
   Saves the script's persistent storage to disk. This is NEVER done automatically, and MUST be done to save storage between plugin loads, although _script_ reloads do not reset unsaved persistent storage.\
@@ -52,6 +60,8 @@ The following methods are avilable on the `Script` API object.
 - `nil SetStorage(table)`\
   Replaces the **in-memory** persistent storage with the table provided; nothing on disk is touched, so you have to save manually if you want to keep the changes.
 
+### Action queueing
+
 - `nil ClearQueue()`\
   Immediately empties this script's action queue. This can be useful if you want to restart from the beginning when the script command is rerun, like how vanilla macros work. Please note that, due to technical reasons, if the queue is non-empty and your script queues more things, the existing queue will _not_ be replaced, nor will a new queue be created to run in parallel.
 
@@ -61,10 +71,7 @@ The following methods are avilable on the `Script` API object.
 - `nil QueueAction(function, any...)`\
   Adds the given function to the script's action queue, to be called with the provided arguments. WoLua API calls can be queued in this manner, allowing you to space out messages printed to the local chatlog or sent to the server, or to create [toast messages](toast.md) after a pause.
 
-- `boolean HasPlugin(string)`\
-  Checks if a plugin with the provided **internal** name is both installed _and_ currently loaded. Please note that the internal name of a plugin is **not** the same as the name displayed in the plugin installer window, and it **is** case sensitive. You can use the `/wolua debug` window to see a list of all installed plugins (disabled ones will be greyed out) with their internal name, display name, and version.\
-  :warning: **This function is deprecated and will be removed in the future!** Please replace all calls with [`Game.Dalamud.HasPlugin(string)`](dalamud.md) instead.\
-  A warning is printed to your chatlog any time it is used to help you update your scripts.
+### JSON
 
 - `table|nil ParseJson(string)`\
   Parses the provided string as JSON into a table. On success, returns the deserialised table. On failure, returns nil.\
@@ -76,5 +83,5 @@ The following methods are avilable on the `Script` API object.
   Note that MoonSharp (the lua engine used by WoLua) also provides a `json` lua API by itself, with `json.parse(string)` and `json.serialize(table)` methods; however, if the provided value for `json.serialize()` is invalid, a _lua_ error will be thrown. If you don't catch it using `pcall`/`xpcall`, your entire script will error and be disabled.\
 :warning: **You cannot serialise non-table values.** The MoonSharp API itself does not support anything but lua tables, which are represented as objects or arrays in JSON syntax depending on their keys.
 
-### Special
+## Special
 When invoked as a function (`Script()`), requires one argument which must be a function, and registers that function as the script's callback when it's used via `/wolua call`. The registered function _may_ take one argument, which will be a string: if any additional text is provided to `/wolua call`, that text will be passed to the callback function; otherwise, the function will receive an empty string.

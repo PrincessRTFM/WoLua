@@ -7,11 +7,15 @@ The Player API is a sub-component of the [Game API](game.md), which means it's a
 ## Properties
 The following properties exist on the `Player` API object.
 
+### Validation
+
 - `Loaded`, readonly boolean\
   Indicates whether or not character data is loaded and available. Will be false if not logged in, in which case all of the following properties and methods will return `nil`.
 
 - `CharacterId`, readonly number|nil (unsigned long)\
   The current character's unique ID. This does not change even if you change your name or homeworld, so it can be used to associate storage with a particular character.
+
+### Display
 
 - `Name`, readonly string|nil\
   The current character's name, first and last. Can be combined with `.Homeworld` below using `@` as a separator in order to identify a character for sending chat tells.
@@ -41,6 +45,8 @@ The following properties exist on the `Player` API object.
 - `TitleIsPrefix`, boolean|nil\
   This will be `true` if the current character has a title that is a prefix (displays _above_ their name in their nameplate), `false` if their title is a suffix, or `nil` if they do not currently have a title. This is a shortcut for `.Entity.TitleIsPrefix`.
 
+### Worlds
+
 - `HomeWorldId`, number|nil (unsigned short)\
   The internal (FFXIV) numeric ID of the current character's _home_ world. May be useful in niche cases, but you probably want `.HomeWorld` instead. This is a shortcut for `.Entity.HomeWorldId`.
 
@@ -53,14 +59,7 @@ The following properties exist on the `Player` API object.
 - `CurrentWorld`, string|nil\
   The textual name of the current character's _current_ world. This is a shortcut for `.Entity.CurrentWorld`.
 
-- `Party`, API\
-  Access to the [Party API](party.md).
-
-- `Mount`, API\
-  Access to the [mount data](mount.md) for the current character.
-
-- `Entity`, readonly object\
-  Access to an [entity container](entity.md) representing the current character.
+### Targets
 
 - `Target`, readonly object\
   Access to an [entity container](entity.md) representing the current character's hard target.
@@ -98,23 +97,7 @@ The following properties exist on the `Player` API object.
 - `HasMouseOverTarget`, readonly boolean|nil\
   Whether the current character _has_ a mouseover target, be it field or UI. This will be `nil` if you aren't logged in, but is _otherwise_ equivalent to `.MouseOverTarget.Exists`.
 
-- `MapZone`, readonly number|nil (unsigned integer)\
-  The the current character's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate. If you aren't logged in, this will be `nil`.
-
-- `PosX`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) X position of the current character. This is one of the two horizontal coordinates. If you aren't logged in, this will be `nil`.
-
-- `PosY`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Y position of the current character. This is the vertical coordinate. If you aren't logged in, this will be `nil`.
-
-- `PosZ`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Z position of the current character. This is one of the two horizontal coordinates. If you aren't logged in, this will be `nil`.
-
-- `RotationRadians`, number|nil (floating point)\
-  The rotation of the current character in radians, ranging from `0` to `2*Pi`. If you aren't logged in, this will be `nil`.
-
-- `RotationDegrees`, number|nil (floating point)\
-  The rotation of the current character in degrees, ranging from `0` to `360`. If you aren't logged in, this will be `nil`.
+### Conditions
 
 - `InCombat`, readonly boolean|nil\
   Whether or not the user is currently considered to be in combat by the game.
@@ -166,6 +149,37 @@ The following properties exist on the `Player` API object.
 
 - `Moving`, readonly boolean|nil\
   Whether the game says the user is currently moving.
+
+### Position
+
+- `MapZone`, readonly number|nil (unsigned integer)\
+  The the current character's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate.
+
+- `PosX`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) X position of the current character. This is one of the two horizontal coordinates.
+
+- `PosY`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) Y position of the current character. This is the vertical coordinate.
+
+- `PosZ`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) Z position of the current character. This is one of the two horizontal coordinates.
+
+- `RotationRadians`, number|nil (floating point)\
+  The rotation of the current character in radians, ranging from `0` to `2*Pi`.
+
+- `RotationDegrees`, number|nil (floating point)\
+  The rotation of the current character in degrees, ranging from `0` to `360`.
+
+### Other
+
+- `Party`, API\
+  Access to the [Party API](party.md).
+
+- `Mount`, readonly object\
+  Access to the [mount data](mount.md) for the current character.
+
+- `Entity`, readonly object\
+  Access to an [entity container](entity.md) representing the current character.
 
 ## Methods
 The following methods are avilable on the `Player` API object.

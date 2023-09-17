@@ -7,8 +7,15 @@ Job data is exposed via the `Job` property of an [entity container](entity.md), 
 ## Properties
 The following properties exist on job data objects. All of them are readonly.
 
+### Validation
+
 - `Id`, number (unsigned integer)\
   The internal (FFXIV) numeric ID of the current class or job. Unique for each; jobs do not share IDs with their classes. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `0`.
+
+- `Valid`, boolean\
+  Indicates whether this object represents a valid job. If not, then `.Id` will be `0`, `.Name` will be `adventurer`, and `.Abbreviation` (and aliases) will be `ADV`.
+
+### Display
 
 - `Name`, string|nil\
   The long-form (full) name of the represented class or job. This value is always in all lowercase. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `adventurer`.
@@ -16,8 +23,7 @@ The following properties exist on job data objects. All of them are readonly.
 - `Abbreviation`, `Abbr`, `ShortName`, string|nil\
   The short-form (three-letter) name of the represented class or job. This value is always in all uppercase. If you access job data for an invalid entity (such as the current character while it isn't loaded), this will be `ADV`.
 
-- `Valid`, boolean\
-  Indicates whether this object represents a valid job. If not, then `.Id` will be `0`, `.Name` will be `adventurer`, and `.Abbreviation` (and aliases) will be `ADV`.
+### Roles
 
 - `IsCrafter`, boolean\
   Whether or not this class is a Disciple of the Hand.
