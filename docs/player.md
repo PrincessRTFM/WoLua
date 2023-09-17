@@ -101,6 +101,21 @@ The following properties exist on the `Player` API object.
 - `MapZone`, readonly number|nil (unsigned integer)\
   The the current character's current map zone, used to separate worldspaces. Will be zero if the current zone is indeterminate. If you aren't logged in, this will be `nil`.
 
+- `PosX`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) X position of the current character. This is one of the two horizontal coordinates. If you aren't logged in, this will be `nil`.
+
+- `PosY`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) Y position of the current character. This is the vertical coordinate. If you aren't logged in, this will be `nil`.
+
+- `PosZ`, readonly number|nil (floating point)\
+  The internal (_not_ map coordinate) Z position of the current character. This is one of the two horizontal coordinates. If you aren't logged in, this will be `nil`.
+
+- `RotationRadians`, number|nil (floating point)\
+  The rotation of the current character in radians, ranging from `0` to `2*Pi`. If you aren't logged in, this will be `nil`.
+
+- `RotationDegrees`, number|nil (floating point)\
+  The rotation of the current character in degrees, ranging from `0` to `360`. If you aren't logged in, this will be `nil`.
+
 - `InCombat`, readonly boolean|nil\
   Whether or not the user is currently considered to be in combat by the game.
 

@@ -94,6 +94,14 @@ public class PlayerApi: ApiBase {
 			? Service.ClientState.TerritoryType
 		: null;
 
+	// X and Z are the horizontal coordinates, Y is the vertical one
+	public float? PosX => this.Entity.PosX;
+	public float? PosY => this.Entity.PosY;
+	public float? PosZ => this.Entity.PosZ;
+
+	public double? RotationRadians => this.Entity.RotationRadians;
+	public double? RotationDegrees => this.Entity.RotationDegrees;
+
 	#endregion
 
 	#region Condition flags
