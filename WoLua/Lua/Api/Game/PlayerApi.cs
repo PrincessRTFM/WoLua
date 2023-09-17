@@ -77,6 +77,16 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
+	#region Worlds
+
+	public ushort? HomeWorldId => this.Entity.HomeWorldId;
+	public string? HomeWorld => this.Entity.HomeWorld;
+
+	public ushort? CurrentWorldId => this.Entity.CurrentWorldId;
+	public string? CurrentWorld => this.Entity.CurrentWorld;
+
+	#endregion
+
 	#region Location
 
 	public uint? MapZone

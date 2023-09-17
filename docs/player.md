@@ -41,6 +41,18 @@ The following properties exist on the `Player` API object.
 - `TitleIsPrefix`, boolean|nil\
   This will be `true` if the current character has a title that is a prefix (displays _above_ their name in their nameplate), `false` if their title is a suffix, or `nil` if they do not currently have a title. This is a shortcut for `.Entity.TitleIsPrefix`.
 
+- `HomeWorldId`, number|nil (unsigned short)\
+  The internal (FFXIV) numeric ID of the current character's _home_ world. May be useful in niche cases, but you probably want `.HomeWorld` instead. This is a shortcut for `.Entity.HomeWorldId`.
+
+- `CurrentWorldId`, number|nil (unsigned short)\
+  The internal (FFXIV) numeric ID of the current character's _current_ world. May be useful in niche cases, but you probably want `.CurrentWorld` instead. This is a shortcut for `.Entity.CurrentWorldId`.
+
+- `HomeWorld`, string|nil\
+  The textual name of the current character's _home_ world. This is a shortcut for `.Entity.HomeWorld`.
+
+- `CurrentWorld`, string|nil\
+  The textual name of the current character's _current_ world. This is a shortcut for `.Entity.CurrentWorld`.
+
 - `Party`, API\
   Access to the [Party API](party.md).
 
