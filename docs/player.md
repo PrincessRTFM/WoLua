@@ -45,6 +45,9 @@ The following properties exist on the `Player` API object.
 - `TitleIsPrefix`, boolean|nil\
   This will be `true` if the current character has a title that is a prefix (displays _above_ their name in their nameplate), `false` if their title is a suffix, or `nil` if they do not currently have a title. This is a shortcut for `.Entity.TitleIsPrefix`.
 
+- `CompanyTag`, readonly string|nil\
+  The FC tag for this character's FC, if any. If there is no tag, this will be an empty string.
+
 ### Worlds
 
 - `HomeWorldId`, number|nil (unsigned short)\

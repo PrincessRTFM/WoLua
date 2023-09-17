@@ -39,7 +39,7 @@ public class PlayerApi: ApiBase {
 
 	public MountData Mount => this.Entity.Mount;
 
-	#region Name
+	#region Player display
 
 	public string? Name => this.Loaded
 		? Service.ClientState.LocalPlayer!.Name!.TextValue
@@ -53,13 +53,11 @@ public class PlayerApi: ApiBase {
 		? this.Name!.Split(' ')[1]
 		: null;
 
-	#endregion
-
-	#region Player titles
-
 	public bool? HasTitle => this.Entity.HasTitle;
 	public string? TitleText => this.Entity.TitleText;
 	public bool? TitleIsPrefix => this.Entity.TitleIsPrefix;
+
+	public string? CompanyTag => this.Entity.CompanyTag;
 
 	#endregion
 

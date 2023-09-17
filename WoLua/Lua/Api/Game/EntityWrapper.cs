@@ -51,7 +51,7 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 		}
 	}
 
-	#region Name
+	#region Player display
 
 	public string? Name => this
 		? this.Entity?.Name?.TextValue ?? string.Empty
@@ -64,10 +64,6 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 	public string? Lastname => this.IsPlayer
 		? this.Name!.Split(' ')[1]
 		: this.Name;
-
-	#endregion
-
-	#region Player titles
 
 	private unsafe Title? playerTitle {
 		get {
@@ -93,6 +89,8 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 		}
 	}
 	public bool? TitleIsPrefix => this.IsPlayer ? this.playerTitle?.IsPrefix : null;
+
+	public string? CompanyTag => this && this.Entity is Character self ? self.CompanyTag.TextValue : null;
 
 	#endregion
 
@@ -152,8 +150,6 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 				: new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
 		}
 	}
-
-	public string? CompanyTag => this && this.Entity is Character self ? self.CompanyTag.TextValue : null;
 
 	public uint? Hp => this && this.Entity is Character self && self.MaxHp > 0 ? self.CurrentHp : null;
 	public uint? MaxHp => this && this.Entity is Character self ? self.MaxHp : null;
