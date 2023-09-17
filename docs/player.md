@@ -62,6 +62,38 @@ The following properties exist on the `Player` API object.
 - `CurrentWorld`, string|nil\
   The textual name of the current character's _current_ world. This is a shortcut for `.Entity.CurrentWorld`.
 
+### Stats
+
+- `Level`, readonly number|nil (unsigned byte)\
+  The current character's level. Note that this _will_ represent level sync effects.
+
+- `Hp`, readonly number|nil (unsigned integer)\
+  The current character's _current_ HP.
+
+- `MaxHp`, readonly number|nil (unsigned integer)\
+  The current character's _maximum_ HP at the current level.
+
+- `Mp`, readonly number|nil (unsigned integer)\
+  The current character's _current_ MP.
+
+- `MaxMp`, readonly number|nil (unsigned integer)\
+  The current character's _maximum_ MP at the current level.
+
+- `Gp`, readonly number|nil (unsigned integer)\
+  The current character's _current_ GP. If you aren't currently a gatherer, this will be `nil`.
+
+- `MaxGp`, readonly number|nil (unsigned integer)\
+  The current character's _maximum_ GP at the current level. If you aren't currently a gatherer, this will be `nil`.
+
+- `Cp`, readonly number|nil (unsigned integer)\
+  The current character's _current_ CP. If you aren't currently a crafter, this will be `nil`.
+
+- `MaxCp`, readonly number|nil (unsigned integer)\
+  The current character's _maximum_ CP at the current level. If you aren't currently a crafter, this will be `nil`.
+
+- `Job`, readonly object\
+  The [job data](job.md) for the current character.
+
 ### Targets
 
 - `Target`, readonly object\

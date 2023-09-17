@@ -85,6 +85,26 @@ public class PlayerApi: ApiBase {
 
 	#endregion
 
+	#region Stats
+
+	public byte? Level => this.Entity.Level;
+
+	public JobData Job => this.Entity.Job;
+
+	public uint? Hp => this.Entity.Hp;
+	public uint? MaxHp => this.Entity.MaxHp;
+
+	public uint? Mp => this.Entity.Mp;
+	public uint? MaxMp => this.Entity.MaxMp;
+
+	public uint? Cp => this.Entity.Cp;
+	public uint? MaxCp => this.Entity.MaxCp;
+
+	public uint? Gp => this.Entity.Gp;
+	public uint? MaxGp => this.Entity.MaxGp;
+
+	#endregion
+
 	#region Location
 
 	public uint? MapZone
