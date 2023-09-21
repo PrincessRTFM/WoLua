@@ -16,21 +16,16 @@ public class GameApi: ApiBase {
 	#region Initialisation
 
 	[MoonSharpHidden]
-	internal GameApi(ScriptContainer source) : base(source) {
-		this.Player = new(this.Owner);
-		this.Chocobo = new(this.Owner);
-		this.Toast = new(this.Owner);
-		this.Dalamud = new(this.Owner);
-	}
+	internal GameApi(ScriptContainer source) : base(source) { }
 
 	#endregion
 
 	#region Sub-APIs
 
-	public PlayerApi Player { get; private set; }
-	public ChocoboApi Chocobo { get; private set; }
-	public ToastApi Toast { get; private set; }
-	public DalamudApi Dalamud { get; private set; }
+	public PlayerApi Player { get; private set; } = null!;
+	public ChocoboApi Chocobo { get; private set; } = null!;
+	public ToastApi Toast { get; private set; } = null!;
+	public DalamudApi Dalamud { get; private set; } = null!;
 
 	#endregion
 

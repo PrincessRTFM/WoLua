@@ -26,8 +26,6 @@ public class ScriptApi: ApiBase {
 	internal ScriptApi(ScriptContainer source) : base(source) {
 		this.Storage = new(source.Engine);
 		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.Owner.InternalName), "json");
-		this.Debug = new(this.Owner);
-		this.Keys = new(this.Owner);
 	}
 
 	protected string StoragePath { get; }
@@ -44,9 +42,9 @@ public class ScriptApi: ApiBase {
 
 	#region Sub-API access
 
-	public DebugApi Debug { get; private set; }
+	public DebugApi Debug { get; private set; } = null!;
 
-	public KeysApi Keys { get; private set; }
+	public KeysApi Keys { get; private set; } = null!;
 
 	#endregion
 

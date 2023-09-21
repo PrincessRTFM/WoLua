@@ -22,9 +22,7 @@ using PrincessRTFM.WoLua.Constants;
 public class PlayerApi: ApiBase {
 
 	[MoonSharpHidden]
-	internal PlayerApi(ScriptContainer source) : base(source) {
-		this.Party = new(this.Owner);
-	}
+	internal PlayerApi(ScriptContainer source) : base(source) { }
 
 	public bool Loaded => !this.Disposed
 		&& Service.ClientState.LocalPlayer is not null
@@ -222,7 +220,7 @@ public class PlayerApi: ApiBase {
 
 	#region Party/alliance
 
-	public PartyApi Party { get; private set; }
+	public PartyApi Party { get; private set; } = null!;
 
 	#endregion
 

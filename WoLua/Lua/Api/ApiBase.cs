@@ -44,6 +44,21 @@ public abstract class ApiBase: IDisposable {
 			.Where(p => p.CanWrite)
 			.Where(p => p.GetCustomAttribute<WipeOnDisposeAttribute>()?.Value is true)
 			.ToArray();
+
+		IEnumerable<PropertyInfo> autoAssign = me
+			.GetProperties(bindingAttr: allInstance)
+			.Where(p => p.CanRead && p.CanWrite && !p.PropertyType.IsAbstract && p.PropertyType.IsAssignableTo(apiBase) && p.GetValue(this) is null);
+		Type[] ctorArgTypes = new Type[] { typeof(ScriptContainer) };
+		object?[] ctorArgs = new object?[] { this.Owner };
+		foreach (PropertyInfo p in autoAssign) {
+			ConstructorInfo? ctor = p.PropertyType.GetConstructor(allInstance, ctorArgTypes);
+			if (ctor is null)
+				continue;
+			if (ctor.Invoke(ctorArgs) is not ApiBase inject)
+				continue;
+			p.SetValue(this, inject);
+			this.Log($"Automatically injected {inject.GetType().Name} into {p.DeclaringType?.Name ?? me.Name}.{p.Name}", LogTag.ScriptLoader, true);
+		}
 	}
 
 	protected void Log(string message, string? tag = null, bool force = false) {
