@@ -52,6 +52,33 @@ public abstract class ApiBase: IDisposable {
 
 		this.Owner.log(message, tag ?? this.DefaultMessageTag, force);
 	}
+	protected void DeprecationWarning(string? alternative = null) {
+		StackFrame frame = new(1, true);
+		MethodBase? method = frame.GetMethod();
+		if (method is null) {
+			PluginLog.Warning("Failed to get MethodBase for caller of ApiBase.DeprecationWarning()");
+			return;
+		}
+		string owner = method.DeclaringType?.Name ?? "<unknown API>";
+		string name = method.Name;
+		string descriptor;
+		string action;
+		if (name.StartsWith("get_") || name.StartsWith("set_")) {
+			name = name[4..];
+			descriptor = $"{owner}.{name}";
+			action = name.StartsWith("get_") ? "read from" : "written to";
+		}
+		else {
+			string args = string.Join(", ", method.GetParameters().Select(p => p.ParameterType.Name));
+			descriptor = $"{owner}.{name}({args})";
+			action = "called";
+		}
+		this.Log($"Deprecated API member {descriptor} {action}, issuing a warning to the user", LogTag.DeprecatedApiMember, true);
+		string message = $"{descriptor} is deprecated and should not be used.";
+		if (!string.IsNullOrWhiteSpace(alternative))
+			message += $" Please use {alternative} instead.";
+		Service.Plugin.Print(message, Foreground.Error, this.Owner.PrettyName);
+	}
 
 	protected internal static string ToUsefulString(DynValue value, bool typed = false)
 		=> (typed ? $"{value.Type}: " : "")

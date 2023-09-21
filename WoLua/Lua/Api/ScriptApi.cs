@@ -15,7 +15,6 @@ using MoonSharp.Interpreter.Serialization.Json;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 using PrincessRTFM.WoLua.Lua.Api.Script;
-using PrincessRTFM.WoLua.Ui.Chat;
 
 // This API is for all for everything that doesn't relate to the actual game itself.
 // It also contains script-specific and per-script functionality, like persistent storage.
@@ -199,7 +198,7 @@ public class ScriptApi: ApiBase {
 
 	[Obsolete("Use the DalamudApi version instead")]
 	public bool HasPlugin(string pluginName) {
-		Service.Plugin.Print("Script.HasPlugin(string) is deprecated and will be removed. Please use Game.Dalamud.HasPlugin(string) instead.", Foreground.Error, this.Name);
+		this.DeprecationWarning("Game.Dalamud.HasPlugin(string)");
 		return this.Owner.GameApi.Dalamud.HasPlugin(pluginName);
 	}
 
