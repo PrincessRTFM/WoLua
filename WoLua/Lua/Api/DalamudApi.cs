@@ -22,8 +22,9 @@ public class DalamudApi: ApiBase {
 		return plugins.FirstOrDefault(p => p.InternalName == name);
 	}
 
-	public bool HasPlugin(string pluginName) {
+	public bool HasPlugin(string pluginName, string? version = null) {
 		InstalledPluginState? found = this.findPlugin(pluginName);
+
 		if (found is null) {
 			this.Log($"{pluginName} is not installed");
 			return false;
@@ -32,28 +33,20 @@ public class DalamudApi: ApiBase {
 			this.Log($"{found.Name} is installed but not loaded");
 			return false;
 		}
-		this.Log($"{found.Name} v{found.Version} is loaded");
-		return true;
-	}
-	public bool HasPlugin(string pluginName, string version) {
-		if (!System.Version.TryParse(version, out Version? wanted)) {
-			Service.Plugin.Error($"Invalid version [{version}] in HasPlugin() call, falling back to unversioned check");
-			return this.HasPlugin(pluginName);
+
+		Version? wanted = null;
+		if (!string.IsNullOrEmpty(version)) {
+			if (!System.Version.TryParse(version, out wanted))
+				Service.Plugin.Error($"Invalid version [{version}] in HasPlugin() call, falling back to unversioned check");
 		}
-		InstalledPluginState? found = this.findPlugin(pluginName);
-		if (found is null) {
-			this.Log($"{pluginName} is not installed");
-			return false;
+		if (wanted is not null) {
+			if (found.Version.Major != wanted.Major || found.Version < wanted) {
+				this.Log($"{found.Name} v{found.Version} is loaded, but not compatible with v{wanted}");
+				return false;
+			}
 		}
-		if (!found.IsLoaded) {
-			this.Log($"{found.Name} is installed but not loaded");
-			return false;
-		}
-		if (found.Version.Major != wanted.Major || found.Version < wanted) {
-			this.Log($"{found.Name} v{found.Version} is loaded, but not compatible with v{wanted}");
-			return false;
-		}
-		this.Log($"{found.Name} v{found.Version} is loaded and compatible with v{wanted}");
+
+		this.Log($"{found.Name} v{found.Version} is loaded{(wanted is not null ? $" and compatible with v{wanted}" : string.Empty)}");
 		return true;
 	}
 
