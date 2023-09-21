@@ -176,7 +176,7 @@ public sealed partial class ScriptContainer: IDisposable {
 				this.callback.Function.Call(parameters);
 			}
 			catch (InterpreterException e) when (e is ScriptRuntimeException or SyntaxErrorException or DynamicExpressionException) {
-				Service.Plugin.Error("This script ran into an error and has been disabled. You will need to reload your scripts to re-enable it.", e);
+				Service.Plugin.Error("This script ran into an error and has been disabled. You will need to reload your scripts to re-enable it.", e, this.PrettyName);
 				Service.Plugin.Print(e.Message, Foreground.Debug);
 				this.ErrorOnCall = true;
 				this.callback = DynValue.Void;
@@ -188,13 +188,13 @@ public sealed partial class ScriptContainer: IDisposable {
 			}
 		}
 		else if (this.ErrorOnCall) {
-			Service.Plugin.Print("This script ran into an error during a previous call and has been disabled. You will need to reload your scripts to re-enable it.", Foreground.Error);
+			Service.Plugin.Print("This script ran into an error during a previous call and has been disabled. You will need to reload your scripts to re-enable it.", Foreground.Error, this.PrettyName);
 		}
 		else if (this.LoadSuccess) {
-			Service.Plugin.Print("This script didn't register an on-execute function, so it can't be called.", Foreground.Error);
+			Service.Plugin.Print("This script didn't register an on-execute function, so it can't be called.", Foreground.Error, this.PrettyName);
 		}
 		else {
-			Service.Plugin.Print("This script ran into an error while loading and has been disabled. You can reload your scripts once it's fixed to enable it.", Foreground.Error);
+			Service.Plugin.Print("This script ran into an error while loading and has been disabled. You can reload your scripts once it's fixed to enable it.", Foreground.Error, this.PrettyName);
 		}
 	}
 
