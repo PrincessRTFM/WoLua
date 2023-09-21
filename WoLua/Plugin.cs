@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -42,6 +43,8 @@ public class Plugin: IDalamudPlugin {
 	private readonly MainWindow mainWindow;
 	private readonly DebugWindow debugWindow;
 
+	private Task scriptScanner = Task.CompletedTask;
+
 	static Plugin() {
 		UserData.RegisterAssembly(typeof(Plugin).Assembly, true);
 		Script.GlobalOptions.RethrowExceptionNested = true;
@@ -54,8 +57,6 @@ public class Plugin: IDalamudPlugin {
 			throw new ApplicationException("Failed to initialise service container");
 		Service.Sounds = new();
 		Service.Hooks = new();
-
-		PlayerApi.InitialiseEmotes();
 
 		Service.CommandManager.AddHandler(this.Command, new(this.OnCommand) {
 			ShowInHelp = true,
@@ -70,6 +71,11 @@ public class Plugin: IDalamudPlugin {
 		Service.Interface.UiBuilder.OpenConfigUi += this.ToggleConfigUi;
 		Service.Interface.UiBuilder.Draw += this.Windows.Draw;
 
+		Task.Run(this.delayedPluginSetup);
+	}
+
+	private void delayedPluginSetup() {
+		PlayerApi.InitialiseEmotes();
 		this.Rescan();
 	}
 
@@ -168,9 +174,7 @@ public class Plugin: IDalamudPlugin {
 		}
 	}
 
-	public void Rescan() {
-		if (this.disposed)
-			return;
+	private void scanScripts() {
 
 		this.Status = StatusText.LoadingScripts;
 
@@ -190,7 +194,7 @@ public class Plugin: IDalamudPlugin {
 			}
 		}
 
-		this.clearCommands();
+		clearCommands();
 		PluginLog.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
 		bool direct = Service.Configuration.RegisterDirectCommands;
 		foreach (string dir in Directory.EnumerateDirectories(path)) {
@@ -222,6 +226,16 @@ public class Plugin: IDalamudPlugin {
 		Service.Configuration.Save();
 
 		this.Status = StatusText.Scripts;
+	}
+	public void Rescan() {
+		if (this.disposed)
+			return;
+
+		lock (this) {
+			if (this.scriptScanner.IsCompleted) {
+				this.scriptScanner = Task.Run(this.scanScripts);
+			}
+		}
 	}
 
 	#region Chat
@@ -262,12 +276,9 @@ public class Plugin: IDalamudPlugin {
 
 	#endregion
 
-	public void NYI()
-		=> this.Error("This feature is not yet implemented.");
+	public void NYI() => this.Error("This feature is not yet implemented.");
 
-	private void clearCommands() {
-		if (this.disposed)
-			return;
+	private static void clearCommands() {
 
 		PluginLog.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
 		ScriptContainer[] scripts = Service.Scripts?.Values?.ToArray() ?? Array.Empty<ScriptContainer>();
@@ -283,10 +294,10 @@ public class Plugin: IDalamudPlugin {
 	protected virtual void Dispose(bool disposing) {
 		if (this.disposed)
 			return;
+		this.disposed = true;
 
 		this.Status = StatusText.Disposing;
-		this.clearCommands();
-		this.disposed = true;
+		clearCommands();
 
 		if (disposing) {
 			PluginLog.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
@@ -308,7 +319,7 @@ public class Plugin: IDalamudPlugin {
 
 	public void Dispose() {
 		this.Dispose(true);
-		System.GC.SuppressFinalize(this);
+		GC.SuppressFinalize(this);
 	}
 	#endregion
 }

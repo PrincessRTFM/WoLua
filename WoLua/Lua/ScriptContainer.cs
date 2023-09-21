@@ -85,7 +85,7 @@ public sealed partial class ScriptContainer: IDisposable {
 	}
 	public void UnregisterCommand() {
 		if (this.CommandRegistered)
-			Service.CommandManager.RemoveHandler($"/{Service.Configuration.DirectInvocationCommandPrefix}{this.InternalName}");
+			Service.CommandManager?.RemoveHandler($"/{Service.Configuration.DirectInvocationCommandPrefix}{this.InternalName}");
 		this.CommandRegistered = false;
 	}
 
