@@ -265,6 +265,7 @@ public class PlayerApi: ApiBase {
 		if (emotesLoaded)
 			return;
 		emotesLoaded = true;
+		using MethodTimer logtimer = new();
 		PluginLog.Information($"[{LogTag.Emotes}] Initialising API data");
 
 		ExcelSheet<Emote> emotes = Service.DataManager.GameData.GetExcelSheet<Emote>()!;

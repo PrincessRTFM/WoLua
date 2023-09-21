@@ -52,6 +52,8 @@ public class Plugin: IDalamudPlugin {
 	}
 
 	public Plugin(DalamudPluginInterface i) {
+		using MethodTimer logtimer = new();
+
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
 		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase()) is null)
 			throw new ApplicationException("Failed to initialise service container");
@@ -175,6 +177,7 @@ public class Plugin: IDalamudPlugin {
 	}
 
 	private void scanScripts() {
+		using MethodTimer logtimer = new();
 
 		this.Status = StatusText.LoadingScripts;
 
@@ -279,6 +282,7 @@ public class Plugin: IDalamudPlugin {
 	public void NYI() => this.Error("This feature is not yet implemented.");
 
 	private static void clearCommands() {
+		using MethodTimer logtimer = new();
 
 		PluginLog.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
 		ScriptContainer[] scripts = Service.Scripts?.Values?.ToArray() ?? Array.Empty<ScriptContainer>();
@@ -295,6 +299,7 @@ public class Plugin: IDalamudPlugin {
 		if (this.disposed)
 			return;
 		this.disposed = true;
+		using MethodTimer logtimer = new();
 
 		this.Status = StatusText.Disposing;
 		clearCommands();
