@@ -1,15 +1,22 @@
 namespace PrincessRTFM.WoLua.Lua.Api;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+
+using Dalamud.Logging;
 
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
 using PrincessRTFM.WoLua.Constants;
+using PrincessRTFM.WoLua.Ui.Chat;
 
 public abstract class ApiBase: IDisposable {
+	private const BindingFlags allInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
 	public bool Disposed { get; protected set; } = false;
 
 	[MoonSharpHidden]
@@ -23,20 +30,18 @@ public abstract class ApiBase: IDisposable {
 
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source) {
-		this.Owner = source;
-		this.DefaultMessageTag = this.GetType().Name.ToUpper();
+		Type me = this.GetType();
+		Type apiBase = typeof(ApiBase);
 		Type disposable = typeof(IDisposable);
-		this.disposables = this.GetType()
-			.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+		this.Owner = source;
+		this.DefaultMessageTag = me.Name.ToUpper();
+		this.disposables = me
+			.GetProperties(allInstance)
 			.Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead)
 			.ToArray();
-		this.wipeOnDispose = this.GetType()
-			.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+		this.wipeOnDispose = me
+			.GetProperties(allInstance)
 			.Where(p => p.CanWrite)
-			.Cast<MemberInfo>()
-			.Concat(this.GetType()
-				.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-				.Where(f => !f.IsInitOnly))
 			.Where(p => p.GetCustomAttribute<WipeOnDisposeAttribute>()?.Value is true)
 			.ToArray();
 	}
