@@ -69,13 +69,13 @@ public class DebugApi: ApiBase {
 		if (this.Disposed)
 			return;
 
-		this.Log($"BEGIN VALUE DUMP: {values.Length}", LogTag.DebugMessage);
+		this.PrintString($"BEGIN VALUE DUMP: {values.Length}");
 		int size = values.Length.ToString().Length;
 		for (int i = 0; i < values.Length; ++i) {
 			DynValue v = values[i];
-			this.Log($"{(i + 1).ToString().PadLeft(size)}: {ToUsefulString(v)}", LogTag.DebugMessage);
+			this.PrintString($"{(i + 1).ToString().PadLeft(size)}: {ToUsefulString(v)}");
 		}
-		this.Log("END VALUE DUMP", LogTag.DebugMessage);
+		this.PrintString("END VALUE DUMP");
 	}
 
 }
