@@ -6,7 +6,6 @@ using System.Linq;
 
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Logging;
 
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -266,12 +265,12 @@ public class PlayerApi: ApiBase {
 			return;
 		emotesLoaded = true;
 		using MethodTimer logtimer = new();
-		PluginLog.Information($"[{LogTag.Emotes}] Initialising API data");
+		Service.Log.Information($"[{LogTag.Emotes}] Initialising API data");
 
 		ExcelSheet<Emote> emotes = Service.DataManager.GameData.GetExcelSheet<Emote>()!;
 		try {
 			uint max = emotes.RowCount;
-			PluginLog.Information($"[{LogTag.Emotes}] Indexing {max:N0} emotes...");
+			Service.Log.Information($"[{LogTag.Emotes}] Indexing {max:N0} emotes...");
 			for (uint i = 0; i < max; ++i) {
 				Emote? emote = emotes.GetRow(i);
 				if (emote is not null) {
@@ -290,7 +289,7 @@ public class PlayerApi: ApiBase {
 						emoteUnlocks[command] = emote.UnlockLink;
 				}
 			}
-			PluginLog.Information($"[{LogTag.Emotes}] Cached {emoteUnlocks.Count:N0} emote names");
+			Service.Log.Information($"[{LogTag.Emotes}] Cached {emoteUnlocks.Count:N0} emote names");
 		}
 		catch (Exception e) {
 			Service.Plugin.Error("Unable to load Emote sheet, cannot check emote unlock state!", e);

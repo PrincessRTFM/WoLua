@@ -3,8 +3,6 @@ namespace PrincessRTFM.WoLua.Lua;
 using System.Diagnostics;
 using System.IO;
 
-using Dalamud.Logging;
-
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
@@ -20,11 +18,9 @@ public class ScriptLoader: IScriptLoader {
 	}
 
 	[Conditional("DEBUG")]
-	private void debug(string message)
-		=> PluginLog.Information($"[{LogTag.ScriptLoader}:{this.ScriptName}] {message}");
+	private void debug(string message) => Service.Log.Information($"[{LogTag.ScriptLoader}:{this.ScriptName}] {message}");
 
-	public string Clean(string dirty)
-		=> Path.ChangeExtension(Path.IsPathFullyQualified(dirty) ? dirty : Path.Join(this.BaseDir, dirty), "lua");
+	public string Clean(string dirty) => Path.ChangeExtension(Path.IsPathFullyQualified(dirty) ? dirty : Path.Join(this.BaseDir, dirty), "lua");
 
 	public bool IsPathUnderScriptRoot(string name) {
 		string absolute = Path.GetFullPath(name);

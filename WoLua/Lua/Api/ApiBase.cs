@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-using Dalamud.Logging;
-
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
@@ -71,7 +69,7 @@ public abstract class ApiBase: IDisposable {
 		StackFrame frame = new(1, true);
 		MethodBase? method = frame.GetMethod();
 		if (method is null) {
-			PluginLog.Warning("Failed to get MethodBase for caller of ApiBase.DeprecationWarning()");
+			Service.Log.Warning("Failed to get MethodBase for caller of ApiBase.DeprecationWarning()");
 			return;
 		}
 		string owner = method.DeclaringType?.Name ?? "<unknown API>";

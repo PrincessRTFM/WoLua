@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
-using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 using MoonSharp.Interpreter;
 
@@ -44,8 +44,7 @@ public class ActionQueue: IDisposable {
 		return true;
 	}
 
-	private void tick(Framework framework)
-		=> this.PullEvent();
+	private void tick(IFramework framework) => this.PullEvent();
 
 	#region IDisposable
 	private bool disposed = false;

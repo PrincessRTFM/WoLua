@@ -6,8 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Dalamud.Logging;
-
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
@@ -200,7 +198,7 @@ public sealed partial class ScriptContainer: IDisposable {
 
 	internal void log(string message, string tag, bool force = false) {
 		if (force || this.ScriptApi.Debug.Enabled)
-			PluginLog.Information($"[SCRIPT:{this.PrettyName}|{tag}] {message}");
+			Service.Log.Information($"[SCRIPT:{this.PrettyName}|{tag}] {message}");
 	}
 
 	internal void cleanTable(Table table) {

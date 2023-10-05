@@ -8,14 +8,13 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility.Numerics;
 
-using FFXIVClientStructs.FFXIV.Client.Game.Character.Data;
-
 using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
 
+using CharacterData = FFXIVClientStructs.FFXIV.Client.Game.Character.CharacterData;
 using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 

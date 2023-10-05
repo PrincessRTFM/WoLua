@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-using Dalamud.Logging;
-
 using PrincessRTFM.WoLua.Constants;
 
 public sealed class MethodTimer: IDisposable {
@@ -30,7 +28,7 @@ public sealed class MethodTimer: IDisposable {
 	public void Dispose() {
 		this.timer.Stop();
 #if DEBUG
-		PluginLog.Information($"[{LogTag.MethodTiming}] {this.label}: {this.Elapsed}ms");
+		Service.Log.Information($"[{LogTag.MethodTiming}] {this.label}: {this.Elapsed}ms");
 #endif
 	}
 }

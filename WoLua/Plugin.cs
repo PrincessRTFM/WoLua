@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using Dalamud.Plugin;
 
 using MoonSharp.Interpreter;
@@ -55,7 +54,7 @@ public class Plugin: IDalamudPlugin {
 		using MethodTimer logtimer = new();
 
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
-		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase()) is null)
+		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(i)) is null)
 			throw new ApplicationException("Failed to initialise service container");
 		Service.Sounds = new();
 		Service.Hooks = new();
@@ -198,7 +197,7 @@ public class Plugin: IDalamudPlugin {
 		}
 
 		clearCommands();
-		PluginLog.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
+		Service.Log.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
 		bool direct = Service.Configuration.RegisterDirectCommands;
 		foreach (string dir in Directory.EnumerateDirectories(path)) {
 			string file = Path.Combine(dir, "command.lua");
@@ -209,20 +208,20 @@ public class Plugin: IDalamudPlugin {
 				continue;
 			}
 			if (File.Exists(file)) {
-				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Loading {file}");
+				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Loading {file}");
 				ScriptContainer script = new(file, name, slug);
-				PluginLog.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
+				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
 				Service.Scripts.Add(slug, script);
 				if (direct && script.Active) {
 					if (!script.RegisterCommand())
 						this.Error($"Unable to register //{script.InternalName} - is it already in use?");
 				}
 				if (!script.Ready) {
-					PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");
+					Service.Log.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");
 				}
 			}
 			else {
-				PluginLog.Error($"[{LogTag.ScriptLoader}:{slug}] Cannot load script {name}, no initialisation file exists");
+				Service.Log.Error($"[{LogTag.ScriptLoader}:{slug}] Cannot load script {name}, no initialisation file exists");
 			}
 		}
 
@@ -272,9 +271,9 @@ public class Plugin: IDalamudPlugin {
 
 		this.Print(message, Foreground.Error, scriptOrigin);
 		if (cause is not null)
-			PluginLog.Error(cause, message);
+			Service.Log.Error(cause, message);
 		else
-			PluginLog.Error(message);
+			Service.Log.Error(message);
 	}
 
 	#endregion
@@ -284,12 +283,12 @@ public class Plugin: IDalamudPlugin {
 	private static void clearCommands() {
 		using MethodTimer logtimer = new();
 
-		PluginLog.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
+		Service.Log.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
 		ScriptContainer[] scripts = Service.Scripts?.Values?.ToArray() ?? Array.Empty<ScriptContainer>();
 		foreach (ScriptContainer script in scripts) {
 			script?.Dispose();
 		}
-		PluginLog.Information($"[{LogTag.PluginCore}] Clearing all loaded scripts");
+		Service.Log.Information($"[{LogTag.PluginCore}] Clearing all loaded scripts");
 		Service.Scripts?.Clear();
 	}
 
@@ -305,7 +304,7 @@ public class Plugin: IDalamudPlugin {
 		clearCommands();
 
 		if (disposing) {
-			PluginLog.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
+			Service.Log.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
 			Service.Configuration.Save();
 			Service.Hooks.Dispose();
 			Service.Common.Dispose();
@@ -315,7 +314,7 @@ public class Plugin: IDalamudPlugin {
 			Service.StatusLine.Dispose();
 		}
 
-		PluginLog.Information($"[{LogTag.PluginCore}] {this.Name} unloaded successfully!");
+		Service.Log.Information($"[{LogTag.PluginCore}] {this.Name} unloaded successfully!");
 	}
 
 	~Plugin() {

@@ -21,7 +21,7 @@ public class Hooks: IDisposable {
 		if (ptrUiMouseoverEntity != nint.Zero) {
 			int offset = Dalamud.Memory.MemoryHelper.Read<int>(ptrUiMouseoverEntity + 1);
 			nint ptrHook = ptrUiMouseoverEntity + 5 + offset;
-			this.uiMouseoverEntity = Hook<UiMouseoverEntityFunc>.FromAddress(ptrHook, this.onUiMouseoverEntity);
+			this.uiMouseoverEntity = Service.Interop.HookFromAddress<UiMouseoverEntityFunc>(ptrHook, this.onUiMouseoverEntity);
 			this.uiMouseoverEntity.Enable();
 		}
 	}
