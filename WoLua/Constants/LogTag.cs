@@ -2,6 +2,7 @@ namespace PrincessRTFM.WoLua.Constants;
 
 public static class LogTag {
 	public const string
+		GenerateDocs = "LUADOC",
 		MethodTiming = "TIMER",
 		DeprecatedApiMember = "DEPRECATION",
 		CallbackRegistration = "CALLBACK",

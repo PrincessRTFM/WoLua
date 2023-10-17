@@ -10,11 +10,13 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
 using PrincessRTFM.WoLua.Constants;
+using PrincessRTFM.WoLua.Lua.Docs;
 using PrincessRTFM.WoLua.Ui.Chat;
 
 public abstract class ApiBase: IDisposable {
 	private const BindingFlags allInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+	[LuaDoc("If this is true, the API has been disposed of and **MUST NOT** be used. This should never happen in a running script.")]
 	public bool Disposed { get; protected set; } = false;
 
 	protected internal virtual void PreInit() { }

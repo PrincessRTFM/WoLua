@@ -19,6 +19,7 @@ using MoonSharp.Interpreter.Platforms;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api.Game;
+using PrincessRTFM.WoLua.Lua.Docs;
 using PrincessRTFM.WoLua.Ui;
 using PrincessRTFM.WoLua.Ui.Chat;
 
@@ -53,6 +54,7 @@ public class Plugin: IDalamudPlugin {
 	private readonly DebugWindow debugWindow;
 
 	public SingleExecutionTask ScriptScanner { get; init; }
+	public SingleExecutionTask DocumentationGenerator { get; init; }
 
 	static Plugin() {
 		UserData.RegisterAssembly(typeof(Plugin).Assembly, true);
@@ -64,6 +66,7 @@ public class Plugin: IDalamudPlugin {
 		using MethodTimer logtimer = new();
 
 		this.ScriptScanner = new(this.scanScripts);
+		this.DocumentationGenerator = new(this.writeLuaDocs);
 
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
 		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(i)) is null)
@@ -156,6 +159,12 @@ public class Plugin: IDalamudPlugin {
 				break;
 			case "debug":
 				this.debugWindow.IsOpen = true;
+				break;
+			case "make-docs":
+			case "make-api-ref":
+			case "gen-docs":
+			case "api":
+				this.DocumentationGenerator.Run();
 				break;
 			default:
 				this.Error($"Unknown command \"{subcmd}\"");
@@ -250,6 +259,27 @@ public class Plugin: IDalamudPlugin {
 			return;
 
 		this.ScriptScanner.Run();
+	}
+
+	private void writeLuaDocs() {
+		using MethodTimer timer = new();
+		string contents;
+		try {
+			contents = LuadocGenerator.GenerateLuaApiDocumentation();
+		}
+		catch (Exception e) {
+			this.Error("Failed to generate lua API reference", e);
+			return;
+		}
+		try {
+			string path = Path.Combine(Service.Configuration.BasePath, "api.lua");
+			File.WriteAllText(path, contents);
+			this.Print($"Lua API reference written to {path}");
+		}
+		catch (Exception e) {
+			this.Error("Failed to write lua API definition file", e);
+			return;
+		}
 	}
 
 	#region Chat

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Dalamud.Interface.Internal.Notifications;
 
@@ -15,6 +16,7 @@ using MoonSharp.Interpreter.Serialization.Json;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 using PrincessRTFM.WoLua.Lua.Api.Script;
+using PrincessRTFM.WoLua.Lua.Docs;
 
 // This API is for all for everything that doesn't relate to the actual game itself.
 // It also contains script-specific and per-script functionality, like persistent storage.
@@ -56,8 +58,11 @@ public class ScriptApi: ApiBase {
 
 	#region Storage
 
+	[LuaDoc("The script's persistent storage table")]
 	public Table Storage { get; protected set; }
 
+	[LuaDoc("Completely clears the persistent storage table AND deletes the saved file on disk")]
+	[return: LuaDoc("false if the disk file couldn't be deleted, otherwise true (whether or not it existed before)")]
 	public bool DeleteStorage() {
 		if (this.Disposed)
 			return false;
@@ -75,6 +80,8 @@ public class ScriptApi: ApiBase {
 		}
 	}
 
+	[LuaDoc("Save the current contents of the persistent storage to disk")]
+	[return: LuaDoc("true if the disk file was written successfully, false if there was an error")]
 	public bool SaveStorage() {
 		if (this.Disposed)
 			return false;
@@ -91,6 +98,8 @@ public class ScriptApi: ApiBase {
 		}
 	}
 
+	[LuaDoc("Try to load the saved persistent storage from disk, REPLACING the existing contents")]
+	[return: LuaDoc("true on success, false if no disk file was found, nil if an error occurred")]
 	public bool? ReloadStorage() {
 		if (this.Disposed)
 			return false;
@@ -119,7 +128,8 @@ public class ScriptApi: ApiBase {
 		}
 	}
 
-	public void SetStorage(Table replacement) {
+	[LuaDoc("Replace the script's existing persistent storage table with a new one")]
+	public void SetStorage([LuaDoc("The table to COPY as the new persistent storage")] Table replacement) {
 		if (this.Disposed)
 			return;
 
@@ -136,35 +146,48 @@ public class ScriptApi: ApiBase {
 
 	#region Common strings
 
-	public static string PluginCommand => Plugin.Command;
+	[LuaDoc(Plugin.Name + "'s core chat command")]
+	[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
+	public string PluginCommand => Plugin.Command;
 
+	[LuaDoc("The INTERNAL name of this script, used to call it. May or may not be the same as the title.")]
 	public string Name => this.Owner.InternalName;
 
+	[LuaDoc("The PRETTY name of this script, for display purposes **ONLY**. DO NOT attempt to call the script with this name, as it may not be recognised.")]
 	public string Title => this.Owner.PrettyName;
 
-	public string CallSelfCommand => Service.Configuration.RegisterDirectCommands ? $"/{Service.Configuration.DirectInvocationCommandPrefix}{this.Name}" : PluginCommand + " call " + this.Name;
+	[LuaDoc("The command to call this script, respecting the \"direct script commands\" setting")]
+	public string CallSelfCommand => Service.Configuration.RegisterDirectCommands ? $"/{Service.Configuration.DirectInvocationCommandPrefix}{this.Name}" : this.PluginCommand + " call " + this.Name;
 
 	#endregion
 
 	#region Action queueing
 
+	[LuaDoc("How many actions are currently in this script's action queue")]
 	public int QueueSize => this.Owner.ActionQueue.Count;
 
+	[LuaDoc("Clears this script's action queue entirely, but does NOT interrupt existing functions being run")]
 	public void ClearQueue() => this.Owner.ActionQueue.clear();
 
+	[LuaDoc("Queues a pause of the given number of milliseconds before following actions are processed")]
 	public void QueueDelay(uint milliseconds) => this.Owner.ActionQueue.add(new PauseAction(milliseconds));
 
-	public void QueueAction(Closure func, params DynValue[] arguments)
-		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewClosure(func), arguments));
-	public void QueueAction(CallbackFunction func, params DynValue[] arguments)
-		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewCallback(func), arguments));
+	[LuaDoc("Queues the execution of a function with the provided arguments (if any)")]
+	public void QueueAction(Closure callback, [AsLuaType(LuaType.Any), Optional] params DynValue[] arguments)
+		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewClosure(callback), arguments));
+
+	[SkipDoc("It's a type-only overload of the above")]
+	public void QueueAction(CallbackFunction callback, params DynValue[] arguments)
+		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewCallback(callback), arguments));
 
 	#endregion
 
 	#region Clipboard
 
 	[AllowNull]
-	public static string Clipboard {
+	[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
+	[LuaDoc("The user's current system clipboard contents")]
+	public string Clipboard {
 		get => ImGui.GetClipboardText() ?? string.Empty;
 		set => ImGui.SetClipboardText(value ?? string.Empty);
 	}
@@ -173,6 +196,8 @@ public class ScriptApi: ApiBase {
 
 	#region JSON
 
+	[LuaDoc("Parses a string containing a JSON object/array and turns it into a lua table")]
+	[return: LuaDoc("The resulting lua table, or nil if the JSON wasn't a valid object/array")]
 	public Table? ParseJson(string jsonObject) {
 		this.Log(jsonObject, LogTag.JsonParse);
 		try {
@@ -186,6 +211,8 @@ public class ScriptApi: ApiBase {
 		}
 	}
 
+	[LuaDoc("Serialises a lua table into a JSON object, or an array if all keys are numeric")]
+	[return: LuaDoc("The resulting JSON object/array as a string")]
 	public string SerialiseJson(Table content) {
 		this.Owner.cleanTable(content);
 		string json = JsonTableConverter.TableToJson(content);
@@ -193,6 +220,8 @@ public class ScriptApi: ApiBase {
 		return json;
 	}
 
+	[LuaDoc("Serialises a lua table into a JSON object, or an array if all keys are numeric")]
+	[return: LuaDoc("The resulting JSON object/array as a string")]
 	public string SerializeJson(Table content) => this.SerialiseJson(content); // american spelling
 
 	#endregion
@@ -200,6 +229,7 @@ public class ScriptApi: ApiBase {
 	#region Non-game Dalamud access
 
 	[Obsolete("Use the DalamudApi version instead")]
+	[return: LuaDoc("Whether or not a plugin with the given INTERNAL name is installed and loaded")]
 	public bool HasPlugin(string pluginName) {
 		this.DeprecationWarning("Game.Dalamud.HasPlugin(string)");
 		return this.Owner.GameApi.Dalamud.HasPlugin(pluginName);
@@ -214,13 +244,19 @@ public class ScriptApi: ApiBase {
 		this.Log($"Displaying notification (type {type}) of {content.Length:N} chars for {duration:N}ms ({initialDuration:D}ms x {durationModifier:F2})", LogTag.DebugMessage);
 		Service.Interface.UiBuilder.AddNotification(content, $"{Plugin.Name}: {this.Title}", type, duration);
 	}
+
+	[LuaDoc("Displays a Dalamud popup debug notification in the lower right corner **IF** the script has debug mode enabled")]
 	public void NotifyDebug(string content) {
 		if (this.Debug.Enabled)
 			this.showNotification(content, NotificationType.None);
 	}
+	[LuaDoc("Displays a Dalamud popup informational notification in the lower right corner")]
 	public void NotifyInfo(string content) => this.showNotification(content, NotificationType.Info);
+	[LuaDoc("Displays a Dalamud popup success notification in the lower right corner")]
 	public void NotifySuccess(string content) => this.showNotification(content, NotificationType.Success);
+	[LuaDoc("Displays a Dalamud popup warning notification in the lower right corner")]
 	public void NotifyWarning(string content) => this.showNotification(content, NotificationType.Warning, 1.1);
+	[LuaDoc("Displays a Dalamud popup error notification in the lower right corner")]
 	public void NotifyError(string content) => this.showNotification(content, NotificationType.Error, 1.2);
 
 	#endregion
@@ -233,7 +269,7 @@ public class ScriptApi: ApiBase {
 	[MoonSharpHidden]
 	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]
-	public void RegisterCallbackFunction(DynValue self, DynValue func) {
+	public void RegisterCallbackFunction(DynValue self, [AsLuaType(LuaType.Function)] DynValue func) {
 		if (this.Owner.SetCallback(func)) {
 			this.Log($"Registered on-execute function [{ToUsefulString(func, true)}]", LogTag.CallbackRegistration);
 		}
