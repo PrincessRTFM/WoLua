@@ -17,6 +17,10 @@ public abstract class ApiBase: IDisposable {
 
 	public bool Disposed { get; protected set; } = false;
 
+	protected internal virtual void PreInit() { }
+	protected internal virtual void Init() { }
+	protected internal virtual void PostInit() { }
+
 	[MoonSharpHidden]
 	public ScriptContainer Owner { get; private set; }
 

@@ -16,7 +16,7 @@ internal class MainWindow: BaseWindow {
 	private bool registerCommands;
 	private bool experimentalPathNormalisation;
 
-	public MainWindow() : base($"{Service.Plugin.Name} v{Service.Plugin.Version}##MainWindow", CreationFlags) {
+	public MainWindow() : base($"{Plugin.Name} v{Service.Plugin.Version}##MainWindow", CreationFlags) {
 		this.SizeConstraints = new() {
 			MinimumSize = new(Width, 100),
 			MaximumSize = new(Width, 800),
@@ -32,17 +32,17 @@ internal class MainWindow: BaseWindow {
 	public override void Draw() {
 		string
 			exampleScriptName = "MyScript",
-			exampleScriptNamePrefixed = $"{Service.Plugin.Name}.{exampleScriptName}",
+			exampleScriptNamePrefixed = $"{Plugin.Name}.{exampleScriptName}",
 
 			exampleScriptSlug = ScriptContainer.NameToSlug(exampleScriptName).ToLower(),
 			exampleScriptSlugPrefixed = ScriptContainer.NameToSlug(exampleScriptNamePrefixed).ToLower(),
 			exampleNormalisedSlug = ScriptContainer.NameToSlug(exampleScriptName, true).ToLower(),
 			exampleNormalisedSlugPrefixed = ScriptContainer.NameToSlug(exampleScriptNamePrefixed, true).ToLower(),
 
-			exampleScriptCall = $"{Service.Plugin.Command} call {exampleScriptSlug}",
-			exampleScriptCallPrefixed = $"{Service.Plugin.Command} call {exampleScriptSlugPrefixed}",
-			exampleNormalisedScriptCall = $"{Service.Plugin.Command} call {exampleNormalisedSlug}",
-			exampleNormalisedScriptCallPrefixed = $"{Service.Plugin.Command} call {exampleNormalisedSlugPrefixed}",
+			exampleScriptCall = $"{Plugin.Command} call {exampleScriptSlug}",
+			exampleScriptCallPrefixed = $"{Plugin.Command} call {exampleScriptSlugPrefixed}",
+			exampleNormalisedScriptCall = $"{Plugin.Command} call {exampleNormalisedSlug}",
+			exampleNormalisedScriptCallPrefixed = $"{Plugin.Command} call {exampleNormalisedSlugPrefixed}",
 
 			exampleShortCall = $"/{this.directInvocationCommandPrefix}{exampleScriptSlug}",
 			exampleShortCallPrefixed = $"/{this.directInvocationCommandPrefix}{exampleScriptSlugPrefixed}",
@@ -69,29 +69,29 @@ internal class MainWindow: BaseWindow {
 		ImGui.PushTextWrapPos(ImGui.GetContentRegionMax().X);
 
 		if (Section("Introduction")) {
-			Textline($"Welcome to {Service.Plugin.Name}, where you write your own chat commands!");
+			Textline($"Welcome to {Plugin.Name}, where you write your own chat commands!");
 
 			Textline("Until now, the only way to make your own context-aware chat commands withoug writing a whole entire plugin was to make a macro using TinyCommands."
 				+ " Unfortunately, the conditional commands could be hard to work with, and weren't easy to extend. Chaining them ran the risk of timing issues in the game, too."
-				+ $" {Service.Plugin.Name} aims to fix this, by allowing you to write your own logic in lua, creating a script that interfaces with the game itself.");
+				+ $" {Plugin.Name} aims to fix this, by allowing you to write your own logic in lua, creating a script that interfaces with the game itself.");
 
-			Textline($"If you don't know lua, don't worry! Not only is the language itself fairly easy to learn, but you can get premade command scripts from other users for use in {Service.Plugin.Name}."
+			Textline($"If you don't know lua, don't worry! Not only is the language itself fairly easy to learn, but you can get premade command scripts from other users for use in {Plugin.Name}."
 				+ " As always though, be cautious when running unknown and untrusted code. I've done my best to prevent people from escaping the sandbox, but scripts still have access to your game."
 				+ " A malicious script could easily spam shout chat with bannable message, for example.");
 		}
 
 		if (Section("Usage")) {
-			Textline($"{Service.Plugin.Name} automatically scans for command scripts on startup, when you change the base folder path, and when you use the \"{Service.Plugin.Command} reload\" command."
+			Textline($"{Plugin.Name} automatically scans for command scripts on startup, when you change the base folder path, and when you use the \"{Plugin.Command} reload\" command."
 				+ " Any command scripts found are loaded immediately, and any load errors are printed to your local chatlog.");
 
-			Textline($"Once a command script is loaded, you can use it with the \"{Service.Plugin.Command} call <name> [<optional arguments...>]\" command, with the name of the subfolder it's in."
+			Textline($"Once a command script is loaded, you can use it with the \"{Plugin.Command} call <name> [<optional arguments...>]\" command, with the name of the subfolder it's in."
 				+ " Any following text will be passed to the command itself.");
 
-			Textline($"For a list of commands, you can use \"{Service.Plugin.Command} list\" to output the names of every loaded command.");
+			Textline($"For a list of commands, you can use \"{Plugin.Command} list\" to output the names of every loaded command.");
 		}
 
 		if (Section("Documentation")) {
-			Textline($"Since the documentation for writing {Service.Plugin.Name} scripts is necessarily so extensive, it's located online, on the plugin repository.");
+			Textline($"Since the documentation for writing {Plugin.Name} scripts is necessarily so extensive, it's located online, on the plugin repository.");
 
 			if (ImGui.Button("Open documentation page")) {
 				Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua/tree/master/docs#wolua-scripting") { UseShellExecute = true });
@@ -125,8 +125,8 @@ internal class MainWindow: BaseWindow {
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();
-			Textline($"If this is enabled, {Service.Plugin.Name} will try to register commands with Dalamud for each loaded script.", 0);
-			Textline($"This would let you to skip using `{Service.Plugin.Command} call` when running scripts.", 0);
+			Textline($"If this is enabled, {Plugin.Name} will try to register commands with Dalamud for each loaded script.", 0);
+			Textline($"This would let you to skip using `{Plugin.Command} call` when running scripts.", 0);
 			Textline("This will FAIL for any commands that are already in use, such as by other plugins.", 0);
 			Textline("Due to how Dalamud commands work, this will never override built-in game commands.", 0);
 			Textline($"In order to reduce collisions, each command is registered with a prefix, set below.", 0);
@@ -165,7 +165,7 @@ internal class MainWindow: BaseWindow {
 			ImGui.Indent();
 			ImGui.BeginDisabled();
 			Textline("If this is enabled, script paths will undergo additional transformations to produce a \"cleaner\" name.", 0);
-			Textline($"For example, leading `{Service.Plugin.Name.ToLower()}.` and trailing `.{Service.Plugin.Name.ToLower()}` strings will be removed.", 0);
+			Textline($"For example, leading `{Plugin.Name.ToLower()}.` and trailing `.{Plugin.Name.ToLower()}` strings will be removed.", 0);
 			Textline($"This means that a script folder named `{exampleScriptNamePrefixed}` will be called via `{exampleNormalisedCallPrefixed}`.", 0);
 			Textline("This feature is still being experimented with, and may be subject to change at any time.", 0);
 			Textline("Any scripts affected by this option will LOSE existing script storage values unless the file is manually renamed!", 0);

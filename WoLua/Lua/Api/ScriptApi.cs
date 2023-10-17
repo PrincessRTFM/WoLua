@@ -38,6 +38,12 @@ public class ScriptApi: ApiBase {
 		this.Storage = null!;
 	}
 
+	protected internal override void PreInit() {
+		this.ReloadStorage();
+		this.Owner.Engine.Options.DebugPrint = this.Debug.PrintString;
+		this.Owner.Engine.Options.DebugInput = this.Debug.Input;
+	}
+
 	#endregion
 
 	#region Sub-API access
@@ -113,14 +119,14 @@ public class ScriptApi: ApiBase {
 		}
 	}
 
-	public void SetStorage(Table update) {
+	public void SetStorage(Table replacement) {
 		if (this.Disposed)
 			return;
 
 		this.Log("Replacing script storage", LogTag.ScriptStorage);
 		Table store = new(this.Owner.Engine);
-		this.Owner.cleanTable(update);
-		foreach (TablePair item in update.Pairs) {
+		this.Owner.cleanTable(replacement);
+		foreach (TablePair item in replacement.Pairs) {
 			store[item.Key] = item.Value;
 		}
 		this.Storage = store;
@@ -130,7 +136,7 @@ public class ScriptApi: ApiBase {
 
 	#region Common strings
 
-	public static string PluginCommand => Service.Plugin.Command;
+	public static string PluginCommand => Plugin.Command;
 
 	public string Name => this.Owner.InternalName;
 
@@ -144,11 +150,9 @@ public class ScriptApi: ApiBase {
 
 	public int QueueSize => this.Owner.ActionQueue.Count;
 
-	public void ClearQueue()
-		=> this.Owner.ActionQueue.clear();
+	public void ClearQueue() => this.Owner.ActionQueue.clear();
 
-	public void QueueDelay(uint ms)
-		=> this.Owner.ActionQueue.add(new PauseAction(ms));
+	public void QueueDelay(uint milliseconds) => this.Owner.ActionQueue.add(new PauseAction(milliseconds));
 
 	public void QueueAction(Closure func, params DynValue[] arguments)
 		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewClosure(func), arguments));
@@ -169,26 +173,27 @@ public class ScriptApi: ApiBase {
 
 	#region JSON
 
-	public DynValue ParseJson(string content) {
-		this.Log(content, LogTag.JsonParse);
+	public Table? ParseJson(string jsonObject) {
+		this.Log(jsonObject, LogTag.JsonParse);
 		try {
-			Table table = JsonTableConverter.JsonToTable(content, this.Owner.Engine);
+			Table table = JsonTableConverter.JsonToTable(jsonObject, this.Owner.Engine);
 			this.Owner.cleanTable(table);
-			return DynValue.NewTable(table);
+			return table;
 		}
 		catch (SyntaxErrorException e) {
 			this.Log(e.ToString(), LogTag.JsonParse);
-			return DynValue.Nil;
+			return null;
 		}
 	}
+
 	public string SerialiseJson(Table content) {
 		this.Owner.cleanTable(content);
 		string json = JsonTableConverter.TableToJson(content);
 		this.Log(json, LogTag.JsonDump);
 		return json;
 	}
-	public string SerializeJson(Table content) // american spelling
-		=> this.SerialiseJson(content);
+
+	public string SerializeJson(Table content) => this.SerialiseJson(content); // american spelling
 
 	#endregion
 
@@ -207,7 +212,7 @@ public class ScriptApi: ApiBase {
 		initialDuration += 10 * content.Count(char.IsPunctuation);
 		uint duration = (uint)Math.Abs(Math.Ceiling(initialDuration * durationModifier));
 		this.Log($"Displaying notification (type {type}) of {content.Length:N} chars for {duration:N}ms ({initialDuration:D}ms x {durationModifier:F2})", LogTag.DebugMessage);
-		Service.Interface.UiBuilder.AddNotification(content, $"{Service.Plugin.Name}: {this.Title}", type, duration);
+		Service.Interface.UiBuilder.AddNotification(content, $"{Plugin.Name}: {this.Title}", type, duration);
 	}
 	public void NotifyDebug(string content) {
 		if (this.Debug.Enabled)
@@ -225,11 +230,12 @@ public class ScriptApi: ApiBase {
 	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString() => $"Script[{this.Owner.PrettyName}]";
 
+	[MoonSharpHidden]
 	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]
 	public void RegisterCallbackFunction(DynValue self, DynValue func) {
 		if (this.Owner.SetCallback(func)) {
-			this.Log($"Registered on-execute function [{ApiBase.ToUsefulString(func, true)}]", LogTag.CallbackRegistration);
+			this.Log($"Registered on-execute function [{ToUsefulString(func, true)}]", LogTag.CallbackRegistration);
 		}
 		else {
 			string descriptor = func.Type.ToString() + (func.Type is DataType.UserData ? ("(" + (func.UserData.Object is null ? "static unknown" : func.UserData.Object.GetType().FullName) + ")") : "");

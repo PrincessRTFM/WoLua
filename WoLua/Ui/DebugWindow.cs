@@ -68,7 +68,7 @@ internal class DebugWindow: BaseWindow {
 		"Game",
 	};
 
-	public DebugWindow() : base($"{Service.Plugin.Name} v{Service.Plugin.Version} - Debug##DebugWindow", CreationFlags) {
+	public DebugWindow() : base($"{Plugin.Name} v{Service.Plugin.Version} - Debug##DebugWindow", CreationFlags) {
 		this.SizeConstraints = new() {
 			MinimumSize = new(Width, 100),
 			MaximumSize = new(Width, 800),

@@ -33,6 +33,8 @@ public class GameApi: ApiBase {
 	public void PrintMessage(params DynValue[] messages) {
 		if (this.Disposed)
 			return;
+		if (messages.Length == 0)
+			return;
 
 		string message = string.Join(
 			" ",

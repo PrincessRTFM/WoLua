@@ -9,6 +9,8 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 
 [MoonSharpUserData]
+[MoonSharpHideMember("<Clone>$")]
+[MoonSharpHideMember(nameof(Equals))]
 public sealed record class MountData: IEquatable<MountData> {
 	public bool Active { get; }
 	public ushort Id { get; }

@@ -259,8 +259,7 @@ public class PlayerApi: ApiBase {
 	private static bool emotesLoaded = false;
 	private static readonly Dictionary<string, uint> emoteUnlocks = new();
 
-	[MoonSharpHidden]
-	public static void InitialiseEmotes() {
+	internal static void initialiseEmotes() {
 		if (emotesLoaded)
 			return;
 		emotesLoaded = true;
@@ -297,13 +296,13 @@ public class PlayerApi: ApiBase {
 
 	}
 
-	public unsafe bool? HasEmote(string name) {
+	public unsafe bool? HasEmote(string emote) {
 		if (!this.Loaded)
 			return null;
 
-		string emote = name.StartsWith('/') ? name[1..] : name;
-		this.Log($"Checking whether '{emote}' is unlocked", LogTag.Emotes);
-		if (!emoteUnlocks.TryGetValue(emote, out uint unlockLink)) {
+		string internalName = emote.TrimStart('/');
+		this.Log($"Checking whether '{internalName}' is unlocked", LogTag.Emotes);
+		if (!emoteUnlocks.TryGetValue(internalName, out uint unlockLink)) {
 			this.Log("Can't find unlock link in cached map", LogTag.Emotes);
 			return null;
 		}

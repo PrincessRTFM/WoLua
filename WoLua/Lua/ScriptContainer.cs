@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 using MoonSharp.Interpreter;
@@ -34,13 +35,14 @@ public sealed partial class ScriptContainer: IDisposable {
 	public const string FatalErrorMessage = "The lua engine has encountered a fatal error. Please send your dalamud.log file to the developer and restart your game.";
 
 	#region Path normalisation
+
 	private static string aggregator(string accumulated, Regex pattern) => pattern.Replace(accumulated, string.Empty);
 
 	[GeneratedRegex(@"\s+", RegexOptions.Compiled)]
 	public static partial Regex AllWhitespace();
 
-	public static readonly Regex PluginNamePrefix = new("^" + Regex.Escape($"{Service.Plugin.Name}."), RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	public static readonly Regex PluginNameSuffix = new(Regex.Escape($".{Service.Plugin.Name}") + "$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	public static readonly Regex PluginNamePrefix = new("^" + Regex.Escape($"{Plugin.Name}."), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	public static readonly Regex PluginNameSuffix = new(Regex.Escape($".{Plugin.Name}") + "$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	internal static readonly Regex[] standardRemovals = new Regex[] {
 		AllWhitespace(),
@@ -56,11 +58,14 @@ public sealed partial class ScriptContainer: IDisposable {
 			regexen = regexen.Concat(experimentalRemovals);
 		return regexen.Aggregate(name, aggregator);
 	}
+
 	#endregion
 
 	public string InternalName { get; }
 	public string PrettyName { get; }
 	public string SourcePath { get; }
+
+	#region Direct invocation command
 
 	public bool CommandRegistered { get; private set; } = false;
 	private void redirectCommandInvocation(string command, string argline) => Service.Plugin.Invoke(this.InternalName, argline);
@@ -72,7 +77,7 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		string shortform = $"/{Service.Configuration.DirectInvocationCommandPrefix}{this.InternalName}".ToLower();
 		this.CommandRegistered = Service.CommandManager.AddHandler(shortform, new(this.redirectCommandInvocation) {
-			HelpMessage = $"Run the {this.InternalName} script from {Service.Plugin.Name}",
+			HelpMessage = $"Run the {this.InternalName} script from {Plugin.Name}",
 			ShowInHelp = false,
 		});
 		if (this.CommandRegistered)
@@ -87,12 +92,16 @@ public sealed partial class ScriptContainer: IDisposable {
 		this.CommandRegistered = false;
 	}
 
+	#endregion
+
 	public Script Engine { get; private set; } = new(ScriptModules);
 
 	public ActionQueue ActionQueue { get; private set; }
 
-	public ScriptApi ScriptApi { get; private set; }
-	public GameApi GameApi { get; private set; }
+	[LuaGlobal("Script")]
+	public ScriptApi ScriptApi { get; private set; } = null!;
+	[LuaGlobal("Game")]
+	public GameApi GameApi { get; private set; } = null!;
 
 	public string SourceDir => Path.GetDirectoryName(this.SourcePath)!;
 	public string SourceFile => Path.GetFileName(this.SourcePath);
@@ -114,15 +123,26 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		this.ActionQueue = new(this);
 
-		this.ScriptApi = new(this);
-		this.ScriptApi.ReloadStorage();
+		Type apiBase = typeof(ApiBase);
+		Type self = this.GetType();
+		PropertyInfo[] scriptGlobals = self
+			.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+			.Where(p => p.PropertyType.IsAssignableTo(apiBase) && !p.PropertyType.IsAbstract && p.GetCustomAttribute<LuaGlobalAttribute>() is not null)
+			.ToArray();
 
-		this.GameApi = new(this);
-
-		this.Engine.Options.DebugPrint = this.ScriptApi.Debug.PrintString;
-		this.Engine.Options.DebugInput = this.ScriptApi.Debug.Input;
-		this.Engine.Globals["Script"] = this.ScriptApi;
-		this.Engine.Globals["Game"] = this.GameApi;
+		foreach (PropertyInfo p in scriptGlobals) {
+			LuaGlobalAttribute g = p.GetCustomAttribute<LuaGlobalAttribute>()!;
+			ConstructorInfo ci = p.PropertyType.GetConstructor(new Type[] { self })!;
+			ApiBase o = (ApiBase)ci.Invoke(new object?[] { this });
+			o.PreInit();
+			p.SetValue(this, o);
+			this.Engine.Globals[g.Name] = o;
+			o.Init();
+		}
+		foreach (PropertyInfo p in scriptGlobals) {
+			ApiBase o = (ApiBase)p.GetValue(this)!;
+			o.PostInit();
+		}
 
 		try {
 			this.Engine.DoFile(this.SourceFile);

@@ -1,6 +1,6 @@
 namespace PrincessRTFM.WoLua;
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
@@ -16,7 +16,7 @@ using PrincessRTFM.WoLua.Lua;
 using XivCommon;
 
 internal class Service {
-	public static readonly Dictionary<string, ScriptContainer> Scripts = new();
+	public static ConcurrentDictionary<string, ScriptContainer> Scripts { get; } = new();
 
 	[PluginService] public static Plugin Plugin { get; private set; } = null!;
 	[PluginService] public static PluginConfiguration Configuration { get; private set; } = null!;
@@ -49,6 +49,8 @@ internal class Service {
 
 	public Service() {
 		StatusLine = DtrBar.Get($"{Plugin.Name} status", StatusText.Initialising);
+		StatusLine.Tooltip = StatusText.TooltipInitialising;
+		StatusLine.OnClick = Plugin.Rescan;
 		StatusLine.Shown = true;
 	}
 }

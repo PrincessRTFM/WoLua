@@ -7,6 +7,9 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 
 [MoonSharpUserData]
+[MoonSharpHideMember(nameof(Equals))]
+[MoonSharpHideMember("<Clone>$")]
+[MoonSharpHideMember(nameof(Deconstruct))]
 public sealed record class JobData(uint Id, string? Name, string? Abbreviation): IEquatable<JobData> {
 	public const string
 		InvalidJobName = "adventurer",

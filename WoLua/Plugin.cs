@@ -3,6 +3,7 @@ namespace PrincessRTFM.WoLua;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,16 +26,25 @@ using XivCommon;
 
 public class Plugin: IDalamudPlugin {
 	public const InteropAccessMode TypeRegistrationMode = InteropAccessMode.BackgroundOptimized;
+	public const string Name = "WoLua";
 
-	public string Name { get; } = "WoLua";
+	public static string Command => $"/{Name.ToLower()}";
+
 	public string Version { get; init; }
-	public string Command => $"/{this.Name.ToLower()}";
 
-	public SeString Status {
-		get => this.disposed ? null! : Service.StatusLine.Text ?? string.Empty;
+	public SeString ShortStatus {
+		get => this.disposed ? null! : Service.StatusLine?.Text ?? string.Empty;
 		set {
 			if (!this.disposed && Service.StatusLine is not null)
 				Service.StatusLine.Text = value;
+		}
+	}
+	[AllowNull]
+	public SeString FullStatus {
+		get => this.disposed ? null! : Service.StatusLine?.Tooltip ?? string.Empty;
+		set {
+			if (!this.disposed && Service.StatusLine is not null)
+				Service.StatusLine.Tooltip = value;
 		}
 	}
 
@@ -42,7 +52,7 @@ public class Plugin: IDalamudPlugin {
 	private readonly MainWindow mainWindow;
 	private readonly DebugWindow debugWindow;
 
-	private Task scriptScanner = Task.CompletedTask;
+	public SingleExecutionTask ScriptScanner { get; init; }
 
 	static Plugin() {
 		UserData.RegisterAssembly(typeof(Plugin).Assembly, true);
@@ -53,15 +63,17 @@ public class Plugin: IDalamudPlugin {
 	public Plugin(DalamudPluginInterface i) {
 		using MethodTimer logtimer = new();
 
+		this.ScriptScanner = new(this.scanScripts);
+
 		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
 		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(i)) is null)
 			throw new ApplicationException("Failed to initialise service container");
 		Service.Sounds = new();
 		Service.Hooks = new();
 
-		Service.CommandManager.AddHandler(this.Command, new(this.OnCommand) {
+		Service.CommandManager.AddHandler(Command, new(this.OnCommand) {
 			ShowInHelp = true,
-			HelpMessage = $"The core {this.Name} command. Use alone to display the main interface and help window.",
+			HelpMessage = $"The core {Name} command. Use alone to display the main interface and help window.",
 		});
 
 		this.mainWindow = new();
@@ -76,7 +88,7 @@ public class Plugin: IDalamudPlugin {
 	}
 
 	private void delayedPluginSetup() {
-		PlayerApi.InitialiseEmotes();
+		PlayerApi.initialiseEmotes();
 		this.Rescan();
 	}
 
@@ -128,7 +140,7 @@ public class Plugin: IDalamudPlugin {
 			case "commands":
 			case "list":
 			case "ls": // bit of an easter egg for programmers, I guess
-				if (Service.Scripts.Count > 0) {
+				if (!Service.Scripts.IsEmpty) {
 					this.Print(
 						$"There are {Service.Scripts.Count} command{(Service.Scripts.Count == 1 ? "" : "s")}:"
 							+ string.Join("\n", Service.Scripts.Keys.Select(s => $"- {s}"))
@@ -178,7 +190,8 @@ public class Plugin: IDalamudPlugin {
 	private void scanScripts() {
 		using MethodTimer logtimer = new();
 
-		this.Status = StatusText.LoadingScripts;
+		this.ShortStatus = StatusText.LoadingScripts;
+		this.FullStatus = StatusText.TooltipLoadingScripts;
 
 		string path = Service.Configuration.BasePath;
 
@@ -211,7 +224,7 @@ public class Plugin: IDalamudPlugin {
 				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Loading {file}");
 				ScriptContainer script = new(file, name, slug);
 				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
-				Service.Scripts.Add(slug, script);
+				Service.Scripts.TryAdd(slug, script);
 				if (direct && script.Active) {
 					if (!script.RegisterCommand())
 						this.Error($"Unable to register //{script.InternalName} - is it already in use?");
@@ -225,19 +238,18 @@ public class Plugin: IDalamudPlugin {
 			}
 		}
 
+		Service.Log.Info($"[{LogTag.ScriptLoader}] Finished loading all scripts ({Service.Scripts.Count} found)");
+
 		Service.Configuration.Save();
 
-		this.Status = StatusText.Scripts;
+		this.ShortStatus = StatusText.Scripts;
+		this.FullStatus = StatusText.TooltipLoaded;
 	}
 	public void Rescan() {
 		if (this.disposed)
 			return;
 
-		lock (this) {
-			if (this.scriptScanner.IsCompleted) {
-				this.scriptScanner = Task.Run(this.scanScripts);
-			}
-		}
+		this.ScriptScanner.Run();
 	}
 
 	#region Chat
@@ -248,7 +260,7 @@ public class Plugin: IDalamudPlugin {
 
 		List<Payload> parts = new() {
 			Foreground.Self,
-			new TextPayload($"[{this.Name}]"),
+			new TextPayload($"[{Name}]"),
 			Foreground.Reset,
 		};
 		if (!string.IsNullOrWhiteSpace(scriptOrigin)) {
@@ -300,7 +312,8 @@ public class Plugin: IDalamudPlugin {
 		this.disposed = true;
 		using MethodTimer logtimer = new();
 
-		this.Status = StatusText.Disposing;
+		this.ShortStatus = StatusText.Disposing;
+		this.FullStatus = StatusText.TooltipDisposing;
 		clearCommands();
 
 		if (disposing) {
@@ -310,11 +323,11 @@ public class Plugin: IDalamudPlugin {
 			Service.Common.Dispose();
 			Service.Interface.UiBuilder.Draw -= this.Windows.Draw;
 			Service.Interface.UiBuilder.OpenConfigUi -= this.ToggleConfigUi;
-			Service.CommandManager.RemoveHandler(this.Command);
+			Service.CommandManager.RemoveHandler(Command);
 			Service.StatusLine.Dispose();
 		}
 
-		Service.Log.Information($"[{LogTag.PluginCore}] {this.Name} unloaded successfully!");
+		Service.Log.Information($"[{LogTag.PluginCore}] {Name} unloaded successfully!");
 	}
 
 	~Plugin() {
