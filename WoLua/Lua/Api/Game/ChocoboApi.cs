@@ -9,7 +9,7 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 
 [MoonSharpUserData]
-public class ChocoboApi: ApiBase {
+public class ChocoboApi: ApiBase { // TODO luadoc all of this
 	[MoonSharpHidden]
 	internal ChocoboApi(ScriptContainer source) : base(source) { }
 	private unsafe Buddy? obj {

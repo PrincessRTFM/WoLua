@@ -3,7 +3,7 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
-public class PartyApi: ApiBase {
+public class PartyApi: ApiBase { // TODO luadoc all of this
 	public PartyApi(ScriptContainer source) : base(source) { }
 
 	public int? Size => this.Owner.GameApi.Player.Loaded ? Service.Party.Length : null;

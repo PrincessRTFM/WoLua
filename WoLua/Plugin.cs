@@ -265,7 +265,7 @@ public class Plugin: IDalamudPlugin {
 		using MethodTimer timer = new();
 		string contents;
 		try {
-			contents = LuadocGenerator.GenerateLuaApiDocumentation();
+			contents = LuadocGenerator.GenerateLuadoc();
 		}
 		catch (Exception e) {
 			this.Error("Failed to generate lua API reference", e);

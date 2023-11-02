@@ -8,7 +8,7 @@ using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 [SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "It doesn't matter")]
-public class ToastApi: ApiBase {
+public class ToastApi: ApiBase { // TODO luadoc all of this
 	internal ToastApi(ScriptContainer source) : base(source) { }
 
 	public void Short(string text) {

@@ -16,68 +16,128 @@ using Lumina.Excel.GeneratedSheets;
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
+using PrincessRTFM.WoLua.Lua.Docs;
 
 [MoonSharpUserData]
-public class PlayerApi: ApiBase {
+//[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
+public class PlayerApi: ApiBase { // TODO luadoc all of this
 
 	[MoonSharpHidden]
 	internal PlayerApi(ScriptContainer source) : base(source) { }
 
+	[LuaDoc("Whether or not the player is currently loaded.",
+		"If you aren't logged in, this will be `false`.",
+		"If this is `false`, then all player properties will be `nil`.")]
 	public bool Loaded => !this.Disposed
 		&& Service.ClientState.LocalPlayer is not null
 		&& Service.ClientState.LocalContentId is not 0;
 	public static implicit operator bool(PlayerApi? player) => player?.Loaded ?? false;
 
+	[LuaPlayerDoc("This is the _universally unique_ ID of the character currently logged in.")]
 	public ulong? CharacterId => this.Loaded
 		? Service.ClientState.LocalContentId
 		: null;
 
+	[LuaDoc("This provides an `EntityWrapper` wrapper object around the currently-logged-in player (or around nothing) _at the time of access_.",
+		"If you cache this, it may become invalid, such as if the player logs out.",
+		"It is recommended that you only cache this in a function-local variable, and not rely on it remaining valid between script invocations, especially if you use the action queue.",
+		"This value itself will _never_ be `nil`, but _will_ represent a nonexistent/invalid game entity if the `Loaded` property is `false`.")]
 	public EntityWrapper Entity => new(this ? Service.ClientState.LocalPlayer : null);
 
+	[LuaDoc("This provides a `MountData` wrapper object around the currently-logged-in player's mount (or around nothing) _at the time of access_.",
+		"If you cache this, it may become invalid, such as if the player logs out, changes mounts, or dismounts entirely.",
+		"It is recommended that you only cache this in a function-local variable, and not rely on it remaining valid between script invocations, especially if you use the action queue.",
+		"This value itself will _never_ be `nil`, but _will_ represent a nonexistent/invalid game entity if the `Loaded` property is `false`.",
+		"This property is shorthand for `Entity.Mount`.")]
 	public MountData Mount => this.Entity.Mount;
 
 	#region Player display
 
+	[LuaPlayerDoc("This is the text value of the current character's name.",
+		"Per FFXIV name formatting, it will contain the first name, a single space, and the last name.",
+		"See also the `Firstname` and `Lastname` properties.")]
 	public string? Name => this.Loaded
 		? Service.ClientState.LocalPlayer!.Name!.TextValue
 		: null;
 
+	[LuaPlayerDoc("This is the first name (and only the first name) of the current character.",
+		"Given FFXIV's name formatting, you can concatenate this property, a single space, and the `Lastname` property to produce the character's full name.")]
 	public string? Firstname => this.Loaded
 		? this.Name!.Split(' ')[0]
 		: null;
 
+	[LuaPlayerDoc("This is the last name (and only the last name) of the current character.",
+		"Given FFXIV's name formatting, you can concatenate the `Firstname` property, a single space, and this property to produce the character's full name.")]
 	public string? Lastname => this.Loaded
 		? this.Name!.Split(' ')[1]
 		: null;
 
+	[LuaPlayerDoc("This indicates whether or not the current character is using a title.",
+		"If this is `false`, the `TitleText` property will be an empty string, and `TitleIsPrefix` will be `nil`.",
+		"This property is shorthand for `Entity.HasTitle`.")]
 	public bool? HasTitle => this.Entity.HasTitle;
+	[LuaPlayerDoc("This is the plain text value of the current character's current title, respecting gender-adaptive titles.",
+		"For example, a male character will have `Master of the Land` while a female character will have `Mistress of the Land` instead.",
+		"If the current character doesn't have a title (`HasTitle == false`) this will be an empty string.",
+		"This property is shorthand for `Entity.TitleText`.")]
 	public string? TitleText => this.Entity.TitleText;
+	[LuaPlayerDoc("This indicates whether or not the current character's current title (if any) is a \"prefix\" title or a \"postfix\" title.",
+		"Prefix titles are displayed above the name in the nameplate, while postfix titles are shown after.",
+		"Note that if the current character doesn't have a title (`HasTitle == false`) this will be `nil`.",
+		"This property is shorthand for `Entity.TitleIsPrefix`.")]
 	public bool? TitleIsPrefix => this.Entity.TitleIsPrefix;
 
+	[LuaPlayerDoc("This is the \"tag\" (short abbreviation shown in the nameplate) for the current character's Free Company.",
+		"If the current character is not in a Free Company, this will be an empty string.",
+		"This property is shorthand for `Entity.CompanyTag`.")]
 	public string? CompanyTag => this.Entity.CompanyTag;
 
 	#endregion
 
 	#region Gender
 
+	[LuaPlayerDoc("This indicates whether the game considers the current character to be male.",
+		"All entities in the game are either male or female, including things that aren't alive. The game does not support a third state, even just one of \"entity has no gender\".",
+		"This property is shorthand for `Entity.IsMale`.")]
 	public bool? IsMale => this.Entity.IsMale;
+	[LuaPlayerDoc("The inverse of `IsMale`, this indicates whether the game considers the current character to be female.",
+		"All entities in the game are either male or female, including things that aren't alive. The game does not support a third state, even just one of \"entity has no gender\".",
+		"This property is shorthand for `Entity.IsFemale`.")]
 	public bool? IsFemale => this.Entity.IsFemale;
+	[LuaPlayerDoc("This indicates whether the entity is considered either male _or_ female. This is expected to never be `false`, but is included in case of future expansion.",
+		"This property is shorthand for `Entity.IsGendered`.")]
 	public bool? IsGendered => this.Entity.IsGendered;
 
+	[SkipDoc("It's an internally-useful string-only version of the below")]
 	public string? MF(string male, string female) => this.Entity.MF(male, female);
+	[SkipDoc("It's an internally-useful string-only version of the below")]
 	public string? MFN(string male, string female, string neither) => this.Entity.MFN(male, female, neither);
 
-	public DynValue MF(DynValue male, DynValue female) => this.Entity.MF(male, female);
-	public DynValue MFN(DynValue male, DynValue female, DynValue neither) => this.Entity.MFN(male, female, neither);
+	[LuaPlayerDoc("This function is intended to simplify gender-adaptive code by returning the first value if the current character is male, or the second if they are female.",
+		"In the event that the current character is not gendered by the game (which should never happen, barring a significant engine rewrite), this will return `nil`.")]
+	[return: AsLuaType(LuaType.Any)]
+	public DynValue MF([AsLuaType(LuaType.Any)] DynValue male, [AsLuaType(LuaType.Any)] DynValue female) => this.Entity.MF(male, female);
+	[LuaPlayerDoc("This function is intended to simplify gender-adaptive code by returning the first value if the current character is male, the second if they are female, or the third if they are not gendered.",
+		"Note that, barring a significant engine rewrite, the game should never consider any entity to be ungendered. This feature is included in case of future expansion.")]
+	[return: AsLuaType(LuaType.Any)]
+	public DynValue MFN([AsLuaType(LuaType.Any)] DynValue male, DynValue female, [AsLuaType(LuaType.Any)] DynValue neither) => this.Entity.MFN(male, female, neither);
 
 	#endregion
 
 	#region Worlds
 
+	[LuaPlayerDoc("This is the _internal numeric ID_ of the player's HOME world.",
+		"For most purposes, you'll probably want `HomeWorld` instead for the name of it.")]
 	public ushort? HomeWorldId => this.Entity.HomeWorldId;
+	[LuaPlayerDoc("This is the _plain text name_ of the player's HOME world.",
+		"If you're trying to check if they're on their home world, you may wish to use `HomeWorldId` and `CurrentWorldId` instead.")]
 	public string? HomeWorld => this.Entity.HomeWorld;
 
+	[LuaPlayerDoc("This is the _internal numeric ID_ of the player's CURRENT world.",
+		"For most purposes, you'll probably want `CurrentWorld` instead for the name of it.")]
 	public ushort? CurrentWorldId => this.Entity.CurrentWorldId;
+	[LuaPlayerDoc("This is the _plain text name_ of the player's CURRENT world.",
+		"If you're trying to check if they're on their home world, you may wish to use `HomeWorldId` and `CurrentWorldId` instead.")]
 	public string? CurrentWorld => this.Entity.CurrentWorld;
 
 	#endregion

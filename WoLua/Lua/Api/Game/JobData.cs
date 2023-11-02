@@ -10,7 +10,7 @@ using PrincessRTFM.WoLua.Constants;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class JobData(uint Id, string? Name, string? Abbreviation): IEquatable<JobData> {
+public sealed record class JobData(uint Id, string? Name, string? Abbreviation): IEquatable<JobData> { // TODO luadoc all of this
 	public const string
 		InvalidJobName = "adventurer",
 		InvalidJobAbbr = "ADV";

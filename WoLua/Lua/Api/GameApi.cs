@@ -12,6 +12,7 @@ using PrincessRTFM.WoLua.Ui.Chat;
 
 // This API is for everything pertaining to the actual game, including holding more specific APIs.
 [MoonSharpUserData]
+//[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
 public class GameApi: ApiBase {
 
 	#region Initialisation
@@ -32,7 +33,8 @@ public class GameApi: ApiBase {
 
 	#region Chat
 
-	[LuaDoc("Prints a message into the user's local chat log using the normal default colour")]
+	[LuaDoc($"Prints a message into the user's local chat log using {Plugin.Name}'s default colour.",
+		$"The message will be automatically prefixed with `[{Plugin.Name}]` and the script's name for clarity.")]
 	public void PrintMessage([AsLuaType(LuaType.Any), LuaDoc("Multiple values will be concatenated with a single space")] params DynValue[] messages) {
 		if (this.Disposed)
 			return;
@@ -47,7 +49,8 @@ public class GameApi: ApiBase {
 		Service.Plugin.Print(message, null, this.Owner.PrettyName);
 	}
 
-	[LuaDoc("Prints a message into the user's local chat log in red")]
+	[LuaDoc("Prints a message into the user's local chat log in red.",
+		$"The message will be automatically prefixed with `[{Plugin.Name}]` and the script's name for clarity.")]
 	public void PrintError([AsLuaType(LuaType.Any), LuaDoc("Multiple values will be concatenated with a single space")] params DynValue[] messages) {
 		if (this.Disposed)
 			return;
@@ -60,7 +63,9 @@ public class GameApi: ApiBase {
 		Service.Plugin.Print(message, Foreground.Error, this.Owner.PrettyName);
 	}
 
-	[LuaDoc("Sends text to the game as if the user had typed it into their chat box themselves")]
+	[LuaDoc("Sends text to the game as if the user had typed it into their chat box themselves.",
+		"***THIS IS DANGEROUS.***",
+		"If the text to be sent does NOT start with a '/' then it will be treated as a **plain chat message**. USE **EXTREME** CAUTION.")]
 	public void SendChat(string chatline) {
 		if (this.Disposed)
 			return;
@@ -73,8 +78,9 @@ public class GameApi: ApiBase {
 	}
 	#endregion
 
-	[LuaDoc("Plays one of the sixteen <se.##> sound effects without printing anything to the user's chat")]
-	[return: LuaDoc("true if the provided sound effect ID was a valid sound, false if it wasn't, or nil if there was an internal error")]
+	[LuaDoc("Plays one of the sixteen `<se.##>` sound effects without printing anything to the user's chat.",
+		"Using an ID that isn't in the range of 1-16 (inclusive) will silently fail. With an emphasis on silently.")]
+	[return: LuaDoc("`true` if the provided sound effect ID was a valid sound, `false` if it wasn't, or `nil` if there was an internal error")]
 	public bool? PlaySoundEffect(int id) {
 		if (this.Disposed)
 			return null;

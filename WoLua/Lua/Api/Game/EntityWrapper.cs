@@ -23,7 +23,7 @@ using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> {
+public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> { // TODO luadoc all of this
 	#region Conversions
 	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;

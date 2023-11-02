@@ -16,7 +16,8 @@ using PrincessRTFM.WoLua.Ui.Chat;
 public abstract class ApiBase: IDisposable {
 	private const BindingFlags allInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-	[LuaDoc("If this is true, the API has been disposed of and **MUST NOT** be used. This should never happen in a running script.")]
+	[LuaDoc("If this is `true`, the API has been disposed of and **MUST NOT** be used.",
+		"This should never happen in a running script, but be careful when using coroutines.")]
 	public bool Disposed { get; protected set; } = false;
 
 	protected internal virtual void PreInit() { }

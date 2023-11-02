@@ -2,6 +2,7 @@ namespace PrincessRTFM.WoLua.Lua.Docs;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,9 +16,11 @@ using PrincessRTFM.WoLua.Lua.Api;
 
 internal static class LuadocGenerator {
 	private static readonly Assembly ownAssembly = typeof(LuadocGenerator).Assembly;
+	public const string ApiDefinitionFileName = "api.lua";
+	public static string ApiDefinitionFilePath => Path.Combine(Service.Configuration.BasePath, ApiDefinitionFileName);
 
-	public static Task<string> GenerateLuaApiDocumentationAsync() => Task.Run(GenerateLuaApiDocumentation);
-	public static string GenerateLuaApiDocumentation() {
+	public static Task<string> GenerateLuadocAsync() => Task.Run(GenerateLuadoc);
+	public static string GenerateLuadoc() {
 		static bool propertyIsApi(PropertyInfo p) => !p.PropertyType.IsAbstract && p.PropertyType.GetCustomAttribute<MoonSharpUserDataAttribute>(true) is not null;
 
 		Type apiBase = typeof(ApiBase);
@@ -60,21 +63,12 @@ internal static class LuadocGenerator {
 	private static void addType(StringBuilder docs, Type type, string? name = null) {
 		MoonSharpHideMemberAttribute[] hideMembers = type.GetCustomAttributes<MoonSharpHideMemberAttribute>().ToArray();
 		bool includeMemberInDocs(MemberInfo m) {
-#pragma warning disable IDE0046 // Convert to conditional expression
-			if (m.GetCustomAttribute<MoonSharpHiddenAttribute>() is not null)
-				return false;
-			if (m.GetCustomAttribute<MoonSharpVisibleAttribute>() is { Visible: false })
-				return false;
-			if (m.GetCustomAttribute<SkipDocAttribute>() is not null)
-				return false;
-			if (m is MethodBase { IsSpecialName: true })
-				return false;
-			if (m.DeclaringType?.Assembly != ownAssembly)
-				return false;
-			if (hideMembers.Any(a => a.MemberName == m.Name))
-				return false;
-			return true;
-#pragma warning restore IDE0046 // Convert to conditional expression
+			return m.GetCustomAttribute<MoonSharpHiddenAttribute>() is null
+				&& m.GetCustomAttribute<MoonSharpVisibleAttribute>() is not { Visible: false }
+				&& m.GetCustomAttribute<SkipDocAttribute>() is null
+				&& m is not MethodBase { IsSpecialName: true }
+				&& m.DeclaringType?.Assembly == ownAssembly
+				&& !hideMembers.Any(a => a.MemberName == m.Name);
 		}
 		static bool methodIsToString(MethodInfo m) => m.Name is "ToString" && m.GetParameters().Length is 0 && m.ReturnType == typeof(string);
 		static bool methodIsMeta(MethodInfo m) => methodIsToString(m) || m.GetCustomAttributes<MoonSharpUserDataMetamethodAttribute>().Any();
@@ -177,7 +171,7 @@ internal static class LuadocGenerator {
 				docs.Append(" [READONLY]");
 
 			if (p.GetCustomAttribute<LuaDocAttribute>() is LuaDocAttribute detail)
-				docs.Append($" {detail.Description}");
+				docs.Append($" {detail.Description.Replace("\n", "<br/>")}");
 			else if (p.PropertyType.IsAssignableTo(typeof(ApiBase)))
 				docs.Append($" Provides access to the {p.Name.Replace("Api", string.Empty)} API");
 

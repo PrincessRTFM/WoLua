@@ -8,9 +8,8 @@ using Dalamud.Plugin;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
-public class DalamudApi: ApiBase {
-	public DalamudApi(ScriptContainer source) : base(source) {
-	}
+public class DalamudApi: ApiBase { // TODO luadoc all of this
+	public DalamudApi(ScriptContainer source) : base(source) { }
 
 	public static string Version { get; } = typeof(DalamudPluginInterface).Assembly.GetName().Version?.ToString() ?? "UNKNOWN";
 

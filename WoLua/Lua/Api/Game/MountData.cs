@@ -11,7 +11,7 @@ using PrincessRTFM.WoLua.Constants;
 [MoonSharpUserData]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Equals))]
-public sealed record class MountData: IEquatable<MountData> {
+public sealed record class MountData: IEquatable<MountData> { // TODO luadoc all of this
 	public bool Active { get; }
 	public ushort Id { get; }
 	public string? Name { get; }

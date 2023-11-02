@@ -1,10 +1,12 @@
 namespace PrincessRTFM.WoLua.Ui;
 
 using System.Diagnostics;
+using System.IO;
 
 using ImGuiNET;
 
 using PrincessRTFM.WoLua.Lua;
+using PrincessRTFM.WoLua.Lua.Docs;
 
 internal class MainWindow: BaseWindow {
 	public const ImGuiWindowFlags CreationFlags = ImGuiWindowFlags.None
@@ -77,7 +79,7 @@ internal class MainWindow: BaseWindow {
 
 			Textline($"If you don't know lua, don't worry! Not only is the language itself fairly easy to learn, but you can get premade command scripts from other users for use in {Plugin.Name}."
 				+ " As always though, be cautious when running unknown and untrusted code. I've done my best to prevent people from escaping the sandbox, but scripts still have access to your game."
-				+ " A malicious script could easily spam shout chat with bannable message, for example.");
+				+ " A malicious script could easily spam shout chat with bannable messages, for example.");
 		}
 
 		if (Section("Usage")) {
@@ -96,6 +98,14 @@ internal class MainWindow: BaseWindow {
 			if (ImGui.Button("Open documentation page")) {
 				Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua/tree/master/docs#wolua-scripting") { UseShellExecute = true });
 			}
+
+			Textline($"However, if you're writing your own scripts, you can use \"{Plugin.Command} api\" to generate an API definition file in {LuadocGenerator.ApiDefinitionFilePath}"
+				+ " which can be used as a reference in your IDE to provide documentation, autocompletion, type checking, etc. You can simply re-run the command to regenerate the file"
+				+ " at any time, such as after an update.");
+			Textline($"Note that the generated API definition file does NOT produce a file that will allow you to run your script outside of {Plugin.Name}. It is ONLY for use"
+				+ " with an IDE to provide a live reference.");
+			Textline("Also note that it's possible some IDEs or lua editor plugins may not understand the produced format. It was designed for use with the VSCode lua language server plugin,"
+				+ " so in theory it should be relatively standard, but I cannot control IDE/plugin documentation parsing.");
 		}
 
 		if (Section("Settings")) {
