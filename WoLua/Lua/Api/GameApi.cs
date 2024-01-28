@@ -89,7 +89,7 @@ public class GameApi: ApiBase {
 	[LuaDoc("Iterates over all real and not-dead entities near the player.",
 		"Only objects close enough to be loaded by the client will be seen.",
 		"Order is neither specified nor guaranteed.")]
-	public IEnumerable<EntityWrapper> NearbyEntities => Service.Objects.Where(o => GameObject.IsValid(o) && o.IsTargetable && !o.IsDead).Select(o => new EntityWrapper(o));
+	public IEnumerable<EntityWrapper> NearbyEntities => Service.Objects.Where(o => GameObject.IsValid(o) && o.IsTargetable && !o.IsDead).Select(o => new EntityWrapper(o)).ToList();
 
 	[LuaDoc("Finds the nearest (three-dimensional distance) real and not-dead entity with the given (case-sensitive) name.",
 		"If no such entity could be found, the returned EntityWrapper will point to nothing.",
