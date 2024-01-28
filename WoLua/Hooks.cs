@@ -1,9 +1,9 @@
-namespace PrincessRTFM.WoLua;
-
 using System;
 
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
+
+namespace PrincessRTFM.WoLua;
 
 public class Hooks: IDisposable {
 	private bool disposed;

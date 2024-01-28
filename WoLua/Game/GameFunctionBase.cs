@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Game;
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -7,6 +5,8 @@ using System.Runtime.InteropServices;
 using Dalamud.Hooking;
 
 using PrincessRTFM.WoLua.Constants;
+
+namespace PrincessRTFM.WoLua.Game;
 
 public abstract class GameFunctionBase<T> where T : Delegate {
 	private readonly IntPtr addr = IntPtr.Zero;

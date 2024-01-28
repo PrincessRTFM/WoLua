@@ -1,5 +1,6 @@
-namespace PrincessRTFM.WoLua.Lua.Api;
-
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using MoonSharp.Interpreter;
@@ -9,6 +10,8 @@ using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua.Api.Game;
 using PrincessRTFM.WoLua.Lua.Docs;
 using PrincessRTFM.WoLua.Ui.Chat;
+
+namespace PrincessRTFM.WoLua.Lua.Api;
 
 // This API is for everything pertaining to the actual game, including holding more specific APIs.
 [MoonSharpUserData]

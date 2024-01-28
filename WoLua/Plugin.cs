@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +22,8 @@ using PrincessRTFM.WoLua.Ui;
 using PrincessRTFM.WoLua.Ui.Chat;
 
 using XivCommon;
+
+namespace PrincessRTFM.WoLua;
 
 public class Plugin: IDalamudPlugin {
 	public const InteropAccessMode TypeRegistrationMode = InteropAccessMode.BackgroundOptimized;

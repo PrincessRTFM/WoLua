@@ -1,10 +1,10 @@
-namespace PrincessRTFM.WoLua.Lua.Api;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+namespace PrincessRTFM.WoLua.Lua.Api;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 internal class WipeOnDisposeAttribute: Attribute {

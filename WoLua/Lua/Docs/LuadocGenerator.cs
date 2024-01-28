@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Docs;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +11,8 @@ using MoonSharp.Interpreter.Interop;
 
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
+
+namespace PrincessRTFM.WoLua.Lua.Docs;
 
 internal static class LuadocGenerator {
 	private static readonly Assembly ownAssembly = typeof(LuadocGenerator).Assembly;

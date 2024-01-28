@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Script;
-
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -7,6 +5,8 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
 
 using PrincessRTFM.WoLua.Constants;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
 [MoonSharpUserData]
 public class DebugApi: ApiBase {

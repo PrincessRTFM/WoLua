@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Ui;
-
 using System.Diagnostics;
 using System.IO;
 
@@ -7,6 +5,8 @@ using ImGuiNET;
 
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Docs;
+
+namespace PrincessRTFM.WoLua.Ui;
 
 internal class MainWindow: BaseWindow {
 	public const ImGuiWindowFlags CreationFlags = ImGuiWindowFlags.None

@@ -1,9 +1,9 @@
-namespace PrincessRTFM.WoLua.Constants;
-
 using System.Linq;
 
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+
+namespace PrincessRTFM.WoLua.Constants;
 
 public static class StatusText {
 	public static string IconScripts { get; } = SeIconChar.CrossWorld.ToIconString();

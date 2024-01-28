@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +10,8 @@ using MoonSharp.Interpreter.Serialization.Json;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Docs;
 using PrincessRTFM.WoLua.Ui.Chat;
+
+namespace PrincessRTFM.WoLua.Lua.Api;
 
 public abstract class ApiBase: IDisposable {
 	private const BindingFlags allInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;

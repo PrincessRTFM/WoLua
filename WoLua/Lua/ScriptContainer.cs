@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +10,8 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
 using PrincessRTFM.WoLua.Ui.Chat;
+
+namespace PrincessRTFM.WoLua.Lua;
 
 // Declared as `partial` because of the compile-time Regex generation feature
 public sealed partial class ScriptContainer: IDisposable {

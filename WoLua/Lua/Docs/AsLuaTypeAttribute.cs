@@ -1,9 +1,9 @@
-namespace PrincessRTFM.WoLua.Lua.Docs;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+
+namespace PrincessRTFM.WoLua.Lua.Docs;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
 internal class AsLuaTypeAttribute: Attribute {

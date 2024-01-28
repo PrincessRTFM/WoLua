@@ -1,8 +1,8 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Script;
-
 using ImGuiNET;
 
 using MoonSharp.Interpreter;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
 [MoonSharpUserData]
 public class KeysApi: ApiBase { // TODO luadoc all of this

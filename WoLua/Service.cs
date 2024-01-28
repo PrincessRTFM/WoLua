@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua;
-
 using System.Collections.Concurrent;
 
 using Dalamud.Game;
@@ -14,6 +12,8 @@ using PrincessRTFM.WoLua.Game;
 using PrincessRTFM.WoLua.Lua;
 
 using XivCommon;
+
+namespace PrincessRTFM.WoLua;
 
 internal class Service {
 	public static ConcurrentDictionary<string, ScriptContainer> Scripts { get; } = new();

@@ -1,9 +1,9 @@
-namespace PrincessRTFM.WoLua.Lua.Docs;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+
+namespace PrincessRTFM.WoLua.Lua.Docs;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
 internal partial class LuaDocAttribute: Attribute {

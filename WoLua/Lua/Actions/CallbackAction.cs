@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Actions;
-
 using System;
 using System.Collections.ObjectModel;
 
@@ -7,6 +5,8 @@ using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Api;
+
+namespace PrincessRTFM.WoLua.Lua.Actions;
 
 public class CallbackAction: ScriptAction {
 	public DynValue Function { get; }

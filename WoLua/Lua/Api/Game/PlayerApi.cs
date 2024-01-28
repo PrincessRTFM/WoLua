@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Game;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +15,8 @@ using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Docs;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 //[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]

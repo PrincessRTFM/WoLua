@@ -1,6 +1,6 @@
-namespace PrincessRTFM.WoLua.Lua;
-
 using System;
+
+namespace PrincessRTFM.WoLua.Lua;
 
 [AttributeUsage(AttributeTargets.Property)]
 internal class LuaGlobalAttribute: Attribute {

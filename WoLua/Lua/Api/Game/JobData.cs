@@ -1,10 +1,10 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Game;
-
 using System;
 
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 [MoonSharpHideMember(nameof(Equals))]

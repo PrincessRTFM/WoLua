@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +9,8 @@ using System.Threading.Tasks;
 
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
+
+namespace PrincessRTFM.WoLua;
 
 public static class ExcelContainer {
 	private static Lazy<ExcelSheet<T>> init<T>() where T: ExcelRow {

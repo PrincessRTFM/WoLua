@@ -1,6 +1,6 @@
-namespace PrincessRTFM.WoLua;
-
 using Dalamud.Configuration;
+
+namespace PrincessRTFM.WoLua;
 
 internal class PluginConfiguration: IPluginConfiguration {
 	public static class Defaults {

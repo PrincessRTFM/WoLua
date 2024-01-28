@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Game;
-
 using System;
 using System.Numerics;
 
@@ -17,6 +15,8 @@ using PrincessRTFM.WoLua.Constants;
 using CharacterData = FFXIVClientStructs.FFXIV.Client.Game.Character.CharacterData;
 using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 using NativeGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 [MoonSharpHideMember(nameof(Entity))]

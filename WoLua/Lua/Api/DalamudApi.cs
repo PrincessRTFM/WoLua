@@ -1,11 +1,11 @@
-namespace PrincessRTFM.WoLua.Lua.Api;
-
 using System;
 using System.Linq;
 
 using Dalamud.Plugin;
 
 using MoonSharp.Interpreter;
+
+namespace PrincessRTFM.WoLua.Lua.Api;
 
 [MoonSharpUserData]
 public class DalamudApi: ApiBase { // TODO luadoc all of this

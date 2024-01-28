@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Ui;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +11,8 @@ using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api;
+
+namespace PrincessRTFM.WoLua.Ui;
 
 internal class DebugWindow: BaseWindow {
 	public const ImGuiWindowFlags CreationFlags = ImGuiWindowFlags.None

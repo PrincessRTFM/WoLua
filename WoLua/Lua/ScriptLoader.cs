@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua;
-
 using System.Diagnostics;
 using System.IO;
 
@@ -7,6 +5,8 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
 using PrincessRTFM.WoLua.Constants;
+
+namespace PrincessRTFM.WoLua.Lua;
 
 public class ScriptLoader: IScriptLoader {
 	public string BaseDir { get; }

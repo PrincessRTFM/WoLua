@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api.Game;
-
 using System;
 
 using Lumina.Excel.GeneratedSheets;
@@ -7,6 +5,8 @@ using Lumina.Excel.GeneratedSheets;
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
+
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 [MoonSharpHideMember("<Clone>$")]

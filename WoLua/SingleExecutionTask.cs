@@ -1,7 +1,7 @@
-namespace PrincessRTFM.WoLua;
-
 using System;
 using System.Threading.Tasks;
+
+namespace PrincessRTFM.WoLua;
 
 public class SingleExecutionTask {
 	private readonly Action func;

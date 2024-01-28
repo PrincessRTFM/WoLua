@@ -1,5 +1,3 @@
-namespace PrincessRTFM.WoLua.Lua.Api;
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -17,6 +15,8 @@ using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Actions;
 using PrincessRTFM.WoLua.Lua.Api.Script;
 using PrincessRTFM.WoLua.Lua.Docs;
+
+namespace PrincessRTFM.WoLua.Lua.Api;
 
 // This API is for all for everything that doesn't relate to the actual game itself.
 // It also contains script-specific and per-script functionality, like persistent storage.
