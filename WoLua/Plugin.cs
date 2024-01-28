@@ -92,6 +92,7 @@ public class Plugin: IDalamudPlugin {
 
 	private void delayedPluginSetup() {
 		PlayerApi.InitialiseEmotes();
+		MountWrapper.LoadGameData();
 		this.Rescan();
 	}
 

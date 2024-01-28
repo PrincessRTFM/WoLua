@@ -50,7 +50,7 @@ public class PlayerApi: ApiBase {
 		"It is recommended that you only cache this in a function-local variable, and not rely on it remaining valid between execution frames, especially if you use the action queue.",
 		"This value itself will _never_ be `nil`, but _will_ represent a nonexistent/invalid game entity if the `Loaded` property is `false`.",
 		"This property is shorthand for `.Entity.Mount`.")]
-	public MountData Mount => this.Entity.Mount;
+	public MountWrapper Mount => this.Entity.Mount;
 
 	#region Player display
 

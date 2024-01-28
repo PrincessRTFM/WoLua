@@ -47,7 +47,7 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	public bool? Alive => this ? !this.Entity?.IsDead : null;
 
-	public unsafe MountData Mount {
+	public unsafe MountWrapper Mount {
 		get {
 			NativeCharacter* player = this.cs;
 			if (player is null)
