@@ -119,6 +119,9 @@ public class GameApi: ApiBase {
 		return sound.IsSound();
 	}
 
+	[LuaDoc("Returns an object holding the current Eorzean time as separate hours and minutes.")]
+	public EorzeanTime EorzeanTime => new();
+
 	// TODO map flags?
 	// TODO allow examining the FATE table directly (would allow effectively recreating TinyCmd's `/fate` command)
 	// TODO allow checking game settings via Service.GameConfig
