@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Numerics;
 
 using Dalamud.Game.ClientState.Objects.Types;
+
+using FFXIVClientStructs.FFXIV.Client.Graphics.Environment;
 
 using MoonSharp.Interpreter;
 
@@ -121,6 +121,17 @@ public class GameApi: ApiBase {
 
 	[LuaDoc("Returns an object holding the current Eorzean time as separate hours and minutes.")]
 	public EorzeanTime EorzeanTime => new();
+
+	[LuaDoc("Returns a wrapper for the current weather in the current zone.",
+		"This wrapper provides the raw (internal) numeric (unsigned integer) ID of the weather, the short name, and a small description of what the weather \"looks\" like.")]
+	public unsafe WeatherWrapper Weather {
+		get {
+			EnvManager* env = EnvManager.Instance();
+			return env is null
+				? new(0)
+				: new(env->ActiveWeather);
+		}
+	}
 
 	// TODO map flags?
 	// TODO allow examining the FATE table directly (would allow effectively recreating TinyCmd's `/fate` command)

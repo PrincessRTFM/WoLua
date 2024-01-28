@@ -19,6 +19,7 @@ public static class LogTag {
 		LocalChat = "LOCALCHAT",
 		ServerChat = "SERVERCHAT",
 		Emotes = "EMOTE",
+		Weather = "WEATHER",
 		Cleanup = "CLEAN",
 		ScriptLoader = "LOADER",
 		PluginCore = "CORE",

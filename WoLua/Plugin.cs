@@ -92,6 +92,7 @@ public class Plugin: IDalamudPlugin {
 
 	private void delayedPluginSetup() {
 		PlayerApi.InitialiseEmotes();
+		WeatherWrapper.LoadGameData();
 		MountWrapper.LoadGameData();
 		this.Rescan();
 	}
