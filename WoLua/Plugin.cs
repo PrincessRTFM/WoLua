@@ -11,6 +11,11 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Environment;
+
+using Lumina.Excel.GeneratedSheets;
+
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Platforms;
 
@@ -167,6 +172,56 @@ public class Plugin: IDalamudPlugin {
 			case "gen-docs":
 			case "api":
 				this.DocumentationGenerator.Run();
+				break;
+			case "query":
+				if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer is null) {
+					this.Error("No character is loaded. You are probably not logged in.");
+					break;
+				}
+				if (args.Length >= 2) {
+					switch (args[1].ToLower()) {
+						case "id":
+							this.Print($"Your current character ID is {Service.ClientState.LocalContentId}.");
+							break;
+						case "class":
+						case "job":
+							if (Service.ClientState.LocalPlayer.ClassJob.GameData is ClassJob job) {
+								this.Print($"You current job is {job.RowId} ({job.Abbreviation}, {job.Name}).");
+							}
+							else {
+								this.Error("Cannot determine class/job details.");
+							}
+							break;
+						case "mount":
+							unsafe {
+								Character* player = (Character*)Service.ClientState.LocalPlayer.Address;
+								if (!player->IsMounted()) {
+									this.Print("You are not mounted.");
+								}
+								else {
+									Character.MountContainer mount = player->Mount;
+									ushort id = mount.MountId;
+									this.Print($"You are currently using mount {id} ({MountWrapper.mountArticles[id].ToLower()} {MountWrapper.mountNames[id]}).");
+								}
+							}
+							break;
+						case "zone":
+							this.Print($"Current map zone is {Service.ClientState.TerritoryType}.");
+							break;
+						case "weather":
+							unsafe {
+								EnvManager* env = EnvManager.Instance();
+								this.Print($"Current weather is {(env is null ? "unknown" : env->ActiveWeather)}.");
+							}
+							break;
+						default:
+							this.Error("Unknown query.");
+							break;
+					}
+				}
+				else {
+					this.Print("Valid queries: id, class/job, mount, zone, weather.");
+				}
 				break;
 			default:
 				this.Error($"Unknown command \"{subcmd}\"");
