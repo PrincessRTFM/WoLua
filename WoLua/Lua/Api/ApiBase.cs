@@ -14,7 +14,7 @@ using PrincessRTFM.WoLua.Ui.Chat;
 namespace PrincessRTFM.WoLua.Lua.Api;
 
 public abstract class ApiBase: IDisposable {
-	private const BindingFlags allInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+	private const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 	[LuaDoc("If this is `true`, the API has been disposed of and **MUST NOT** be used.",
 		"This should never happen in a running script, but be careful when using coroutines.")]
@@ -41,22 +41,22 @@ public abstract class ApiBase: IDisposable {
 		this.Owner = source;
 		this.DefaultMessageTag = me.Name.ToUpper();
 		this.disposables = me
-			.GetProperties(allInstance)
+			.GetProperties(AllInstance)
 			.Where(p => p.PropertyType.IsAssignableTo(disposable) && p.CanRead)
 			.ToArray();
 		this.wipeOnDispose = me
-			.GetProperties(allInstance)
+			.GetProperties(AllInstance)
 			.Where(p => p.CanWrite)
 			.Where(p => p.GetCustomAttribute<WipeOnDisposeAttribute>()?.Value is true)
 			.ToArray();
 
 		IEnumerable<PropertyInfo> autoAssign = me
-			.GetProperties(bindingAttr: allInstance)
+			.GetProperties(bindingAttr: AllInstance)
 			.Where(p => p.CanRead && p.CanWrite && !p.PropertyType.IsAbstract && p.PropertyType.IsAssignableTo(apiBase) && p.GetValue(this) is null);
 		Type[] ctorArgTypes = new Type[] { typeof(ScriptContainer) };
 		object?[] ctorArgs = new object?[] { this.Owner };
 		foreach (PropertyInfo p in autoAssign) {
-			ConstructorInfo? ctor = p.PropertyType.GetConstructor(allInstance, ctorArgTypes);
+			ConstructorInfo? ctor = p.PropertyType.GetConstructor(AllInstance, ctorArgTypes);
 			if (ctor is null)
 				continue;
 			if (ctor.Invoke(ctorArgs) is not ApiBase inject)
@@ -70,7 +70,7 @@ public abstract class ApiBase: IDisposable {
 		if (this.Disposed || this.Owner.Disposed)
 			return;
 
-		this.Owner.log(message, tag ?? this.DefaultMessageTag, force);
+		this.Owner.Log(message, tag ?? this.DefaultMessageTag, force);
 	}
 	protected void DeprecationWarning(string? alternative = null) {
 		StackFrame frame = new(1, true);
@@ -141,7 +141,7 @@ public abstract class ApiBase: IDisposable {
 			return;
 		this.Disposed = true;
 
-		this.Owner.log(this.GetType().Name, LogTag.Dispose, true);
+		this.Owner.Log(this.GetType().Name, LogTag.Dispose, true);
 
 		foreach (PropertyInfo disposable in this.disposables) {
 			(disposable.GetValue(this) as IDisposable)?.Dispose();

@@ -216,7 +216,7 @@ internal static class LuadocGenerator {
 
 	private static string getLuaType(Type originalType) {
 		Type realType = originalType;
-		if (originalType.IsGenericType && realType.GetGenericTypeDefinition() == typeof(Nullable<>))
+		if (originalType.IsGenericType && originalType.GetGenericTypeDefinition() == typeof(Nullable<>))
 			realType = originalType.GenericTypeArguments[0];
 		LuaType result = LuaTypeExtensions.FromType(originalType);
 		string generatedName;

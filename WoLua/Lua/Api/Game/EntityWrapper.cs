@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Utility;
 using Dalamud.Utility.Numerics;
 
 using Lumina.Excel.GeneratedSheets;
@@ -11,6 +12,7 @@ using Lumina.Excel.GeneratedSheets;
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
+using PrincessRTFM.WoLua.Lua.Docs;
 
 using CharacterData = FFXIVClientStructs.FFXIV.Client.Game.Character.CharacterData;
 using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
@@ -24,6 +26,8 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
 public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> { // TODO luadoc all of this
+	public static readonly EntityWrapper Empty = new((GameObject?)null);
+
 	#region Conversions
 	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
@@ -182,13 +186,43 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	#region Position
 	// X and Z are the horizontal coordinates, Y is the vertical one
+	// But that's not how the game displays things to the player, because fuck you I guess, so we swap those two around for consistency
 
 	public float? PosX => this ? this.Entity!.Position.X : null;
-	public float? PosY => this ? this.Entity!.Position.Y : null;
-	public float? PosZ => this ? this.Entity!.Position.Z : null;
+	public float? PosY => this ? this.Entity!.Position.Z : null;
+	public float? PosZ => this ? this.Entity!.Position.Y : null;
 
-	public double? RotationRadians => this ? this.Entity!.Rotation + Math.PI : null;
-	public double? RotationDegrees => this ? this.RotationRadians!.Value * 180 / Math.PI : null;
+	private Vector3? uiCoords {
+		get {
+			if (Service.ClientState.TerritoryType > 0 && this.Exists) {
+				Map? map = Service.DataManager.GetExcelSheet<Map>()!.GetRow(Service.ClientState.TerritoryType);
+				TerritoryTypeTransient? territoryTransient = Service.DataManager.GetExcelSheet<TerritoryTypeTransient>()!.GetRow(Service.ClientState.TerritoryType);
+				if (map is not null && territoryTransient is not null) {
+					return MapUtil.WorldToMap(this.Entity!.Position, map, territoryTransient, true);
+				}
+			}
+			return null;
+		}
+	}
+
+	[LuaDoc("The player-friendly map-style X (east/west) coordinate of this entity.")]
+	public float? MapX => this.uiCoords?.X;
+	[LuaDoc("The player-friendly map-style Y (north/south) coordinate of this entity.")]
+	public float? MapY => this.uiCoords?.Y;
+	[LuaDoc("The player-friendly map-style Z (height) coordinate of this entity.")]
+	public float? MapZ => this.uiCoords?.Z;
+
+	public DynValue MapCoords {
+		get {
+			Vector3? coords = this.uiCoords;
+			return coords is not null
+				? DynValue.NewTuple(DynValue.NewNumber(coords.Value.X), DynValue.NewNumber(coords.Value.Y), DynValue.NewNumber(coords.Value.Z))
+				: DynValue.NewTuple(null, null, null);
+		}
+	}
+
+	public double? RotationRadians => this.Entity?.Rotation is float rad ? rad + Math.PI : null;
+	public double? RotationDegrees => this.RotationRadians is double rad ? rad * 180 / Math.PI : null;
 
 	#endregion
 

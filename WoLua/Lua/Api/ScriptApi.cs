@@ -94,7 +94,7 @@ public class ScriptApi: ApiBase {
 		if (this.Disposed)
 			return false;
 
-		this.Owner.cleanTable(this.Storage);
+		this.Owner.CleanTable(this.Storage);
 		this.Log($"Writing to {this.StoragePath}", LogTag.ScriptStorage);
 		try {
 			File.WriteAllText(this.StoragePath, this.Storage.TableToJson());
@@ -120,7 +120,7 @@ public class ScriptApi: ApiBase {
 			Table loaded = JsonTableConverter.JsonToTable(json, this.Owner.Engine);
 			if (loaded is null)
 				return null;
-			this.Owner.cleanTable(loaded);
+			this.Owner.CleanTable(loaded);
 			this.Storage = loaded;
 			return true;
 		}
@@ -146,7 +146,7 @@ public class ScriptApi: ApiBase {
 
 		this.Log("Replacing script storage", LogTag.ScriptStorage);
 		Table store = new(this.Owner.Engine);
-		this.Owner.cleanTable(replacement);
+		this.Owner.CleanTable(replacement);
 		foreach (TablePair item in replacement.Pairs) {
 			store[item.Key] = item.Value;
 		}
@@ -231,7 +231,7 @@ public class ScriptApi: ApiBase {
 		this.Log(jsonObject, LogTag.JsonParse);
 		try {
 			Table table = JsonTableConverter.JsonToTable(jsonObject, this.Owner.Engine);
-			this.Owner.cleanTable(table);
+			this.Owner.CleanTable(table);
 			return table;
 		}
 		catch (SyntaxErrorException e) {
@@ -245,7 +245,7 @@ public class ScriptApi: ApiBase {
 		"This method may also be called as SerializeJson (with a 'z' instead of 's') for the american spelling.")]
 	[return: LuaDoc("The resulting JSON object/array as a string")]
 	public string SerialiseJson(Table content) {
-		this.Owner.cleanTable(content);
+		this.Owner.CleanTable(content);
 		string json = JsonTableConverter.TableToJson(content);
 		this.Log(json, LogTag.JsonDump);
 		return json;

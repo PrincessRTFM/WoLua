@@ -25,22 +25,13 @@ public enum LuaType: ushort {
 }
 
 public static class LuaTypeExtensions {
-	public static string LuaName(this LuaType type) {
+	public static string LuaName(this LuaType type, string? userdataName = null) {
 		return type is LuaType.Any
 			? type.ToString().ToLower()
 			: string.Join("|", Enum.GetValues<LuaType>()
 				.Where(t => t is not LuaType.Any && type.HasFlag(t))
 				.OrderBy(t => (ushort)t)
-				.Select(t => t.ToString().ToLower())
-			);
-	}
-	public static string LuaName(this LuaType type, string userdataName) {
-		return type is LuaType.Any
-			? type.ToString().ToLower()
-			: string.Join("|", Enum.GetValues<LuaType>()
-				.Where(t => t is not LuaType.Any && type.HasFlag(t))
-				.OrderBy(t => (ushort)t)
-				.Select(t => t is LuaType.Userdata ? userdataName : t.ToString().ToLower())
+				.Select(t => t is LuaType.Userdata && !string.IsNullOrEmpty(userdataName) ? userdataName : t.ToString().ToLower())
 			);
 	}
 
@@ -54,7 +45,7 @@ public static class LuaTypeExtensions {
 
 		// apparently you can't do a switch using typeof() cases, so here we fuckin' are
 		if (realType == typeof(DynValue))
-			lua = LuaType.String | LuaType.Boolean | LuaType.Integer | LuaType.Number | LuaType.Table | LuaType.Function | LuaType.Userdata | LuaType.Nil;
+			lua = LuaType.Any;
 		else if (realType == typeof(string))
 			lua |= LuaType.String;
 		else if (realType == typeof(bool))

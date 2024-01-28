@@ -115,7 +115,7 @@ internal class DebugWindow: BaseWindow {
 					? green
 					: red
 			);
-			Textline($"{name} [{ApiBase.ToUsefulString(script.callback, true)}]", 0);
+			Textline($"{name} [{ApiBase.ToUsefulString(script.Callback, true)}]", 0);
 			ImGui.PopStyleColor();
 
 			ImGui.Spacing();

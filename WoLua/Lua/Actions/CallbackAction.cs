@@ -19,7 +19,7 @@ public class CallbackAction: ScriptAction {
 	}
 
 	protected override void Process(ScriptContainer script) {
-		script.log(ApiBase.ToUsefulString(this.Function), LogTag.ActionCallback);
+		script.Log(ApiBase.ToUsefulString(this.Function), LogTag.ActionCallback);
 		try {
 			script.Engine.Call(this.Function, this.arguments);
 		}

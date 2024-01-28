@@ -81,9 +81,9 @@ public sealed partial class ScriptContainer: IDisposable {
 			ShowInHelp = false,
 		});
 		if (this.CommandRegistered)
-			this.log($"Registered {shortform}", LogTag.PluginCore, true);
+			this.Log($"Registered {shortform}", LogTag.PluginCore, true);
 		else
-			this.log($"Unable to register direct command \"{shortform}\" with Dalamud", LogTag.PluginCore, true);
+			this.Log($"Unable to register direct command \"{shortform}\" with Dalamud", LogTag.PluginCore, true);
 		return this.CommandRegistered;
 	}
 	public void UnregisterCommand() {
@@ -109,8 +109,8 @@ public sealed partial class ScriptContainer: IDisposable {
 	public bool LoadSuccess { get; private set; } = false;
 	public bool ErrorOnCall { get; private set; } = false;
 
-	internal DynValue callback { get; set; } = DynValue.Void;
-	public bool Ready => !this.Disposed && this.Engine is not null && this.callback.Type is DataType.Function;
+	internal DynValue Callback { get; set; } = DynValue.Void;
+	public bool Ready => !this.Disposed && this.Engine is not null && this.Callback.Type is DataType.Function;
 
 	public bool Active => this.Ready && this.LoadSuccess && !this.ErrorOnCall;
 
@@ -179,7 +179,7 @@ public sealed partial class ScriptContainer: IDisposable {
 			return false;
 
 		if (func.Type is DataType.Function) {
-			this.callback = func;
+			this.Callback = func;
 		}
 
 		return this.Ready;
@@ -191,18 +191,18 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		if (this.Ready) {
 			try {
-				this.callback.Function.Call(parameters);
+				this.Callback.Function.Call(parameters);
 			}
 			catch (InterpreterException e) when (e is ScriptRuntimeException or SyntaxErrorException or DynamicExpressionException) {
 				Service.Plugin.Error("This script ran into an error and has been disabled. You will need to reload your scripts to re-enable it.", e, this.PrettyName);
 				Service.Plugin.Print(e.Message, Foreground.Debug);
 				this.ErrorOnCall = true;
-				this.callback = DynValue.Void;
+				this.Callback = DynValue.Void;
 			}
 			catch (InternalErrorException e) {
 				Service.Plugin.Error(FatalErrorMessage, e);
 				this.ErrorOnCall = true;
-				this.callback = DynValue.Void;
+				this.Callback = DynValue.Void;
 			}
 		}
 		else if (this.ErrorOnCall) {
@@ -216,26 +216,26 @@ public sealed partial class ScriptContainer: IDisposable {
 		}
 	}
 
-	internal void log(string message, string tag, bool force = false) {
+	internal void Log(string message, string tag, bool force = false) {
 		if (force || this.ScriptApi.Debug.Enabled)
 			Service.Log.Information($"[SCRIPT:{this.PrettyName}|{tag}] {message}");
 	}
 
-	internal void cleanTable(Table table) {
-		this.log("Recursively collecting dead keys", LogTag.Cleanup);
+	internal void CleanTable(Table table) {
+		this.Log("Recursively collecting dead keys", LogTag.Cleanup);
 		Queue<Table> queue = new();
 		queue.Enqueue(table);
 		while (queue.TryDequeue(out Table? target)) {
-			this.log("Clearing dead keys...", LogTag.Cleanup);
+			this.Log("Clearing dead keys...", LogTag.Cleanup);
 			target.CollectDeadKeys();
 			TablePair[] entries = target.Pairs.ToArray();
 			foreach (TablePair entry in entries) {
 				if (entry.Value.Type is DataType.Table) {
-					this.log($"Found subtable {entry.Key}", LogTag.Cleanup);
+					this.Log($"Found subtable {entry.Key}", LogTag.Cleanup);
 					queue.Enqueue(entry.Value.Table);
 				}
 			}
-			this.log("Table finished", LogTag.Cleanup);
+			this.Log("Table finished", LogTag.Cleanup);
 		}
 	}
 
@@ -253,9 +253,9 @@ public sealed partial class ScriptContainer: IDisposable {
 			this.GameApi?.Dispose();
 		}
 
-		this.log(this.GetType().Name, LogTag.Dispose, true);
+		this.Log(this.GetType().Name, LogTag.Dispose, true);
 
-		this.callback = DynValue.Void;
+		this.Callback = DynValue.Void;
 		this.Engine = null!;
 		this.ActionQueue = null!;
 		this.ScriptApi = null!;

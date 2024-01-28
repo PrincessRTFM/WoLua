@@ -39,7 +39,7 @@ public class ActionQueue: IDisposable {
 			return null;
 		if (!this.queue.TryDequeue(out ScriptAction? action))
 			return false;
-		this.Script.log(action.ToString(), LogTag.ActionQueue);
+		this.Script.Log(action.ToString(), LogTag.ActionQueue);
 		action.Run(this.Script);
 		return true;
 	}
@@ -59,7 +59,7 @@ public class ActionQueue: IDisposable {
 			this.clear();
 		}
 
-		this.Script.log(this.GetType().Name, LogTag.Dispose, true);
+		this.Script.Log(this.GetType().Name, LogTag.Dispose, true);
 
 		this.Script = null!;
 	}

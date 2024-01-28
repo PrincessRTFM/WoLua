@@ -91,7 +91,7 @@ public class Plugin: IDalamudPlugin {
 	}
 
 	private void delayedPluginSetup() {
-		PlayerApi.initialiseEmotes();
+		PlayerApi.InitialiseEmotes();
 		this.Rescan();
 	}
 
