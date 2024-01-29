@@ -104,6 +104,20 @@ public class GameApi: ApiBase {
 
 	#endregion
 
+	#region FATE table
+
+	public IEnumerable<FateWrapper> Fates => Service.FateTable.Select(f => new FateWrapper(f)).Where(f => f.Exists).ToList();
+
+	public FateWrapper FindFate(string name) {
+		this.Log($"Searching FATE table for name: {name}", LogTag.FateTable);
+		return this.Fates
+			.Where(f => f.Exists && f.Name == name)
+			.OrderBy(f => f.DistanceToCentre)
+			.FirstOrDefault(FateWrapper.Empty);
+	}
+
+	#endregion
+
 	[LuaDoc("Plays one of the sixteen `<se.##>` sound effects without printing anything to the user's chat.",
 		"Using an ID that isn't in the range of 1-16 (inclusive) will silently fail. With an emphasis on silently.")]
 	[return: LuaDoc("`true` if the provided sound effect ID was a valid sound, `false` if it wasn't, or `nil` if there was an internal error")]
@@ -134,7 +148,6 @@ public class GameApi: ApiBase {
 	}
 
 	// TODO map flags?
-	// TODO allow examining the FATE table directly (would allow effectively recreating TinyCmd's `/fate` command)
 	// TODO allow checking game settings via Service.GameConfig
 	// TODO allow accessing job gauge data via Service.JobGauges
 

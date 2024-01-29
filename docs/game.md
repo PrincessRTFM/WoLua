@@ -25,6 +25,9 @@ The following properties exist on the `Game` API object.
 - `NearbyEntities`, readonly enumerable\
   A sequence of [entity wrappers](entity.md) for nearby game entities. Only objects close enough for your client to load will be available. In areas of sufficient congestion, your client may not load everything, in which case unloaded entities will be missing from this list. Order is neither specified nor guaranteed, as this is read from the game's memory.
 
+- `Fates`, readonly enumerable\
+  A sequence of [FATE wrappers](fate.md) for all FATEs in your current zone. Only FATEs that exist in the world will be returned, including those not yet started but available to begin. Order is neither specified nor guaranteed, as this is read from the game's memory.
+
 ## Methods
 The following methods are avilable on the `Game` API object.
 
@@ -43,3 +46,6 @@ The following methods are avilable on the `Game` API object.
 
 - `EntityWrapper FindNearestEntity(string)`\
   Searches all nearby entities for those whose name _exactly_ matches that provided, and returns the nearest if any are found. If none are found, the returned entity wrapper represents nothing.
+
+- `FATEWrapper FindFate(string)`\
+  Searches all FATEs in your current zone for any whose name _exactly_ matches that provided, and returns it if one is found. If none are found, the returned FATE wrapper represents nothing. If more than one FATE somehow exists with the same name, the one _nearest_ to you is returned.
