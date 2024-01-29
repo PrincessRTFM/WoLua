@@ -36,6 +36,8 @@ public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
 	public bool Valid => this.Id > 0 && !string.IsNullOrEmpty(this.Name) && !string.IsNullOrEmpty(this.Description);
 	public static implicit operator bool(WeatherWrapper? wrapper) => wrapper?.Valid ?? false;
 
+	public override string ToString() => this.Name.ToLower();
+
 	public WeatherWrapper(uint id) {
 		this.Id = id;
 		this.Name = weatherNames.TryGetValue(this.Id, out string? name) ? name : string.Empty;
