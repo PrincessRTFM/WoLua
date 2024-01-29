@@ -15,8 +15,12 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
-	private static readonly Dictionary<uint, string> weatherNames = new();
-	private static readonly Dictionary<uint, string> weatherDescriptions = new();
+	internal static readonly Dictionary<uint, string> weatherNames = new() {
+		{ 0, "unknown" },
+	};
+	internal static readonly Dictionary<uint, string> weatherDescriptions = new() {
+		{ 0, "invalid weather" },
+	};
 
 	[LuaDoc("The raw (internal) numeric (unsigned integer) ID of the weather this wrapper represents.")]
 	public uint Id { get; init; }

@@ -211,7 +211,8 @@ public class Plugin: IDalamudPlugin {
 						case "weather":
 							unsafe {
 								EnvManager* env = EnvManager.Instance();
-								this.Print($"Current weather is {(env is null ? "unknown" : env->ActiveWeather)}.");
+								byte id = env is null ? (byte)0 : env->ActiveWeather;
+								this.Print($"Current weather is {id} ({WeatherWrapper.weatherNames[id]}, {WeatherWrapper.weatherDescriptions[id]}).");
 							}
 							break;
 						default:
