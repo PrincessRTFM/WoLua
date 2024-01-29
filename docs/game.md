@@ -22,6 +22,9 @@ The following properties exist on the `Game` API object.
 - `Weather`, readonly object\
   The current [weather](weather.md) for the current zone.
 
+- `NearbyEntities`, readonly enumerable\
+  A sequence of [entity wrappers](entity.md) for nearby game entities. Only objects close enough for your client to load will be available. In areas of sufficient congestion, your client may not load everything, in which case unloaded entities will be missing from this list. Order is neither specified nor guaranteed, as this is read from the game's memory.
+
 ## Methods
 The following methods are avilable on the `Game` API object.
 
@@ -37,3 +40,6 @@ The following methods are avilable on the `Game` API object.
 
 - `nil SendChat(string)`\
   Treats the given string as if the user had typed it into their chatlog input, except that it doesn't end up in their message history. **This is dangerous** because it can also send plain chat in whatever the user's current chat channel is! Do not accept untrusted input without carefully checking it over!
+
+- `EntityWrapper FindNearestEntity(string)`\
+  Searches all nearby entities for those whose name _exactly_ matches that provided, and returns the nearest if any are found. If none are found, the returned entity wrapper represents nothing.

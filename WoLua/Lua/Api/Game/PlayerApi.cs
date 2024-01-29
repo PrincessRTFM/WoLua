@@ -151,7 +151,7 @@ public class PlayerApi: ApiBase {
 
 	#region Stats
 
-	[LuaPlayerDoc("The current character's level.", // XXX does this reflect level sync effects or not?
+	[LuaPlayerDoc("The current character's level, including level sync effects.",
 		"This property is shorthand for `.Entity.Level`.")]
 	public byte? Level => this.Entity.Level;
 

@@ -181,10 +181,25 @@ The following properties exist on entity container objects.
   The internal (_not_ map coordinate) X position of this entity. This is one of the two horizontal coordinates. If this container does not represent a valid game object, this will be `nil`.
 
 - `PosY`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Y position of this entity. This is the vertical coordinate. If this container does not represent a valid game object, this will be `nil`.
+  The internal (_not_ map coordinate) Y position of this entity. This is one of the two horizontal coordinates. If this container does not represent a valid game object, this will be `nil`.\
+  Note that this is technically the _Z_ coordinate, since the game engine uses X/Z for horizontal position and Y for vertical. For the sake of consistency with the map coordinates displayed to the player, WoLua swaps them.
 
 - `PosZ`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Z position of this entity. This is one of the two horizontal coordinates. If this container does not represent a valid game object, this will be `nil`.
+  The internal (_not_ map coordinate) Z position of this entity. This is the vertical coordinate. If this container does not represent a valid game object, this will be `nil`.\
+  Note that this is technically the _Y_ coordinate, since the game engine uses X/Z for horizontal position and Y for vertical. For the sake of consistency with the map coordinates displayed to the player, WoLua swaps them.
+
+- `MapX`, readonly number|nil (floating point)\
+  The player-friendly map-style X (east/west) coordinate of this entity. If this container does not represent a valid game object, this will be `nil`.
+
+- `MapY`, readonly number|nil (floating point)\
+  The player-friendly map-style Y (north/south) coordinate of this entity. If this container does not represent a valid game object, this will be `nil`.
+
+- `MapZ`, readonly number|nil (floating point)\
+  The player-friendly map-style Z (height) coordinate of this entity. If this container does not represent a valid game object, this will be `nil`.
+
+- `MapCoords`, 3x readonly number|nil (floating point)\
+  This property returns _three_ numbers, corresponding (respectively) to `.MapX`, `.MapY`, and `.MapZ`, for convenience and efficiency when more than one coordinate is desired.\
+  Since WoLua must calculate the coordinates fresh for each of those calls, it is recommended to use this property instead when you want multiple coordinates.
 
 - `RotationRadians`, readonly number|nil (floating point)\
   The rotation of this game object in radians, ranging from `0` to `2*Pi`. If this container does not represent a valid game object, this will be `nil`.

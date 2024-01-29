@@ -194,10 +194,25 @@ The following properties exist on the `Player` API object.
   The internal (_not_ map coordinate) X position of the current character. This is one of the two horizontal coordinates.
 
 - `PosY`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Y position of the current character. This is the vertical coordinate.
+  The internal (_not_ map coordinate) Y position of the current character. This is one of the two horizontal coordinates.\
+  Note that this is technically the _Z_ coordinate, since the game engine uses X/Z for horizontal position and Y for vertical. For the sake of consistency with the map coordinates displayed to the player, WoLua swaps them.
 
 - `PosZ`, readonly number|nil (floating point)\
-  The internal (_not_ map coordinate) Z position of the current character. This is one of the two horizontal coordinates.
+  The internal (_not_ map coordinate) Z position of the current character. This is the vertical coordinate.\
+  Note that this is technically the _Y_ coordinate, since the game engine uses X/Z for horizontal position and Y for vertical. For the sake of consistency with the map coordinates displayed to the player, WoLua swaps them.
+
+- `MapX`, readonly number|nil (floating point)\
+  The player-friendly map-style X (east/west) coordinate of the current character.
+
+- `MapY`, readonly number|nil (floating point)\
+  The player-friendly map-style Y (north/south) coordinate of the current character.
+
+- `MapZ`, readonly number|nil (floating point)\
+  The player-friendly map-style Z (height) coordinate of the current character.
+
+- `MapCoords`, 3x readonly number|nil (floating point)\
+  This property returns _three_ numbers, corresponding (respectively) to `.MapX`, `.MapY`, and `.MapZ`, for convenience and efficiency when more than one coordinate is desired.\
+  Since WoLua must calculate the coordinates fresh for each of those calls, it is recommended to use this property instead when you want multiple coordinates.
 
 - `RotationRadians`, number|nil (floating point)\
   The rotation of the current character in radians, ranging from `0` to `2*Pi`.
