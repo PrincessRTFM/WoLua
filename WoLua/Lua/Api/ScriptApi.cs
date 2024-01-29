@@ -42,9 +42,12 @@ public class ScriptApi: ApiBase {
 	}
 
 	protected internal override void PreInit() {
-		this.ReloadStorage();
 		this.Owner.Engine.Options.DebugPrint = this.Debug.PrintString;
 		this.Owner.Engine.Options.DebugInput = this.Debug.Input;
+	}
+	protected internal override void Init() {
+		this.Log("Loading script storage from disk", LogTag.ScriptLoader);
+		this.ReloadStorage();
 	}
 
 	#endregion
@@ -298,7 +301,6 @@ public class ScriptApi: ApiBase {
 	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString() => $"Script[{this.Owner.PrettyName}]";
 
-	[MoonSharpHidden]
 	[MoonSharpUserDataMetamethod(Metamethod.FunctionCall)]
 	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Lua __call invocations pass target object as first parameter")]
 	public void RegisterCallbackFunction(DynValue self, [AsLuaType(LuaType.Function)] DynValue func) {

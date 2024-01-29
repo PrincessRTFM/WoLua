@@ -24,7 +24,7 @@ public class GameApi: ApiBase {
 	#region Initialisation
 
 	[MoonSharpHidden]
-	internal GameApi(ScriptContainer source) : base(source) { }
+	public GameApi(ScriptContainer source) : base(source) { }
 
 	#endregion
 
