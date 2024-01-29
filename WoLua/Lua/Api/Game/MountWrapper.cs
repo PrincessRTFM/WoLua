@@ -17,6 +17,8 @@ public sealed record class MountWrapper: IEquatable<MountWrapper> { // TODO luad
 	internal static readonly Dictionary<ushort, string> mountNames = new();
 	internal static readonly Dictionary<ushort, string> mountArticles = new();
 	internal static void LoadGameData() {
+		using MethodTimer logtimer = new();
+
 		ExcelSheet<Mount> mounts = Service.DataManager.GetExcelSheet<Mount>()!;
 		foreach (Mount mount in mounts) {
 			mountNames[(ushort)mount.RowId] = mount.Singular;

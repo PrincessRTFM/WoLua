@@ -41,6 +41,8 @@ public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
 	#region Initialisation
 
 	internal static void LoadGameData() {
+		using MethodTimer logtimer = new();
+
 		Service.Log.Information($"[{LogTag.Weather}] Initialising API data");
 
 		Service.Log.Information($"[{LogTag.Weather}] Loading weather types");

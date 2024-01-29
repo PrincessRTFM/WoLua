@@ -277,8 +277,10 @@ public class Plugin: IDalamudPlugin {
 
 		clearCommands();
 		Service.Log.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
+		string[] dirs = Directory.GetDirectories(path);
+		Service.Log.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Found {dirs.Length} script director{(dirs.Length == 1 ? "y" : "ies")}");
 		bool direct = Service.Configuration.RegisterDirectCommands;
-		foreach (string dir in Directory.EnumerateDirectories(path)) {
+		foreach (string dir in dirs) {
 			string file = Path.Combine(dir, "command.lua");
 			string name = new DirectoryInfo(dir).Name;
 			string slug = ScriptContainer.NameToSlug(name);

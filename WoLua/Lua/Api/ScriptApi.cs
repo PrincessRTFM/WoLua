@@ -26,7 +26,7 @@ public class ScriptApi: ApiBase {
 	#region Non-API functionality
 
 	[MoonSharpHidden]
-	internal ScriptApi(ScriptContainer source) : base(source) {
+	public ScriptApi(ScriptContainer source) : base(source) {
 		this.Storage = new(source.Engine);
 		this.StoragePath = Path.ChangeExtension(Path.Combine(Service.Interface.GetPluginConfigDirectory(), this.Owner.InternalName), "json");
 	}

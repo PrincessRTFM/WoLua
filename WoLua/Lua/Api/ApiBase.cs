@@ -51,10 +51,10 @@ public abstract class ApiBase: IDisposable {
 			.ToArray();
 
 		IEnumerable<PropertyInfo> autoAssign = me
-			.GetProperties(bindingAttr: AllInstance)
+			.GetProperties(AllInstance)
 			.Where(p => p.CanRead && p.CanWrite && !p.PropertyType.IsAbstract && p.PropertyType.IsAssignableTo(apiBase) && p.GetValue(this) is null);
 		Type[] ctorArgTypes = new Type[] { typeof(ScriptContainer) };
-		object?[] ctorArgs = new object?[] { this.Owner };
+		object?[] ctorArgs = new object?[] { source };
 		foreach (PropertyInfo p in autoAssign) {
 			ConstructorInfo? ctor = p.PropertyType.GetConstructor(AllInstance, ctorArgTypes);
 			if (ctor is null)

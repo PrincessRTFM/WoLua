@@ -125,6 +125,8 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		Type apiBase = typeof(ApiBase);
 		Type self = this.GetType();
+		Type[] ctorTypes = new Type[] { self };
+		object?[] ctorParams = new object?[] { this };
 		PropertyInfo[] scriptGlobals = self
 			.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 			.Where(p => p.PropertyType.IsAssignableTo(apiBase) && !p.PropertyType.IsAbstract && p.GetCustomAttribute<LuaGlobalAttribute>() is not null)
@@ -132,8 +134,8 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		foreach (PropertyInfo p in scriptGlobals) {
 			LuaGlobalAttribute g = p.GetCustomAttribute<LuaGlobalAttribute>()!;
-			ConstructorInfo ci = p.PropertyType.GetConstructor(new Type[] { self })!;
-			ApiBase o = (ApiBase)ci.Invoke(new object?[] { this });
+			ConstructorInfo ci = p.PropertyType.GetConstructor(ctorTypes)!;
+			ApiBase o = (ApiBase)ci!.Invoke(ctorParams);
 			o.PreInit();
 			p.SetValue(this, o);
 			this.Engine.Globals[g.Name] = o;
