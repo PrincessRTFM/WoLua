@@ -25,14 +25,14 @@ public class ActionQueue: IDisposable {
 
 	public int Count => this.queue.Count;
 
-	internal void clear()
+	internal void Clear()
 		=> this.queue.Clear();
-	internal void add(ScriptAction action)
+	internal void Add(ScriptAction action)
 		=> this.queue.Enqueue(action);
 
 	public bool? PullEvent() {
 		if (Service.GameLifecycle.LogoutToken.IsCancellationRequested || Service.GameLifecycle.DalamudUnloadingToken.IsCancellationRequested || Service.GameLifecycle.GameShuttingDownToken.IsCancellationRequested) {
-			this.clear();
+			this.Clear();
 			return null;
 		}
 		if (DateTime.Now < this.ActionThreshold)
@@ -56,7 +56,7 @@ public class ActionQueue: IDisposable {
 
 		if (disposing) {
 			Service.Framework.Update -= this.tick;
-			this.clear();
+			this.Clear();
 		}
 
 		this.Script.Log(this.GetType().Name, LogTag.Dispose, true);

@@ -191,23 +191,23 @@ public class ScriptApi: ApiBase {
 
 	[LuaDoc("Clears this script's action queue entirely, but does NOT interrupt existing functions being run.",
 		"Any actions not yet started will be discarded, but if the script is already doing something at the same time, it will run that to completion.")]
-	public void ClearQueue() => this.Owner.ActionQueue.clear();
+	public void ClearQueue() => this.Owner.ActionQueue.Clear();
 
 	[LuaDoc("Queues a pause of the given number of milliseconds before following actions are processed.",
 		"This does NOT pause script execution; the delay is added onto the end of the action queue.",
 		"When a delay action is processed, the action queue pauses processing of further actions for the appropriate duration.",
 		"This is NOT guaranteed to be millisecond-accurate. Do not attempt to write scripts that depend on millisecond-level timing.")]
-	public void QueueDelay(uint milliseconds) => this.Owner.ActionQueue.add(new PauseAction(milliseconds));
+	public void QueueDelay(uint milliseconds) => this.Owner.ActionQueue.Add(new PauseAction(milliseconds));
 
 	[LuaDoc("Queues the execution of a function with the provided arguments, if any.",
 		"When this action is processed by the script's queue, the provided function will be invoked on the game's main thread.",
 		"If the function has to do heavy processing (or is poorly written) it may cause game lag.")]
 	public void QueueAction(Closure callback, [AsLuaType(LuaType.Any), Optional] params DynValue[] arguments)
-		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewClosure(callback), arguments));
+		=> this.Owner.ActionQueue.Add(new CallbackAction(DynValue.NewClosure(callback), arguments));
 
 	[SkipDoc("It's a type-only overload of the above")]
 	public void QueueAction(CallbackFunction callback, params DynValue[] arguments)
-		=> this.Owner.ActionQueue.add(new CallbackAction(DynValue.NewCallback(callback), arguments));
+		=> this.Owner.ActionQueue.Add(new CallbackAction(DynValue.NewCallback(callback), arguments));
 
 	#endregion
 
