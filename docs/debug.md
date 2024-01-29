@@ -12,7 +12,8 @@ Further note that all debugging methods will _only_ produce output if you explic
 The following properties exist on the `Debug` API object.
 
 - `Enabled`, writable boolean\
-  Controls all output from the Debug API. Defaults to false; if you're debugging your script, you probably want it enabled at the top with `Script.Debug.Enabled = true`.
+  Controls all output from the Debug API. Defaults to false; if you're debugging your script, you probably want it enabled at the top with `Script.Debug.Enabled = true`.\
+  Please note that if WoLua itself is running as a debug build (`.PluginDebugBuild == true`) then this will _always_ be on and _cannot_ be disabled.
 
 - `PluginDebugBuild`, readonly boolean\
   Indicates whether WoLua itself is a debug build or a release build. If installed through the plugin installer, this will be `false`, but it is possible to compile a debug build and install it as a developer plugin. When WoLua is running as a debug build, the lua `debug` API is available (albeit with limited support) and all scripts are run in debug mode (`.Enabled` is always true).
