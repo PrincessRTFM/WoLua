@@ -33,12 +33,10 @@ public sealed record class MountWrapper: IEquatable<MountWrapper> { // TODO luad
 	public string? UppercaseArticle { get; }
 
 	public MountWrapper(ushort id) {
-		Mount? row = id > 0 ? Service.DataManager.GetExcelSheet<Mount>()!.GetRow(id) : null;
-
-		this.Active = row is not null;
+		this.Active = mountNames.TryGetValue(id, out string? name);
 		this.Id = this.Active ? id : (ushort)0;
-		this.Name = row?.Singular?.RawString;
-		this.UppercaseArticle = row is not null ? "A" + (row.StartsWithVowel > 0 ? "n" : string.Empty) : null;
+		this.Name = name;
+		this.UppercaseArticle = this.Active ? mountArticles[id] : null;
 		this.LowercaseArticle = this.UppercaseArticle?.ToLower();
 	}
 
