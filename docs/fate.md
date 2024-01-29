@@ -125,7 +125,7 @@ The following properties exist on FATE container objects.
   The game defines FATEs as cylinders, with their position being the central point at the bottom. This property does _not_ account for the FATE's radius _or_ height.\
   If this FATE does not _exist_, this will be `nil`.
 
-> :warning: There is method to calculate the three-dimentional distance to the edge of a FATE, due to the inability to get the height of the FATE's bounding cylinder. Attempting to calculate the distance to the cenre minus the radius only provides the distance to a _spherical_ edge around the FATE's position, which is not representative of the actual bounds.
+> :warning: There is method to calculate the three-dimentional distance to the edge of a FATE, due to the inability to get the height of the FATE's bounding cylinder. Attempting to calculate the distance to the centre minus the radius only provides the distance to a _spherical_ edge around the FATE's position, which is not representative of the actual bounds.
 
 ## Special
 Converting a FATE wrapper to a string provides the name, state, minimum level, and maximum level, provided the FATE is _valid_. If it is not, the result is instead `FATE[invalid]`.
