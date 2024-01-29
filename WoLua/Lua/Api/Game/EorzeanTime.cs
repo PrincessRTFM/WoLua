@@ -5,13 +5,14 @@ using MoonSharp.Interpreter;
 
 namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
-[SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "readonly struct")]
 [MoonSharpUserData]
-public readonly struct EorzeanTime: IComparable<EorzeanTime>, IEquatable<EorzeanTime> {
+[MoonSharpHideMember(nameof(Equals))]
+[MoonSharpHideMember("<Clone>$")]
+public record class EorzeanTime: IComparable<EorzeanTime>, IEquatable<EorzeanTime> {
 	public const double ConversionRate = 144d / 7d;
 
-	public readonly byte Hour;
-	public readonly byte Minute;
+	public byte Hour { get; init; }
+	public byte Minute { get; init; }
 
 	[MoonSharpHidden]
 	public EorzeanTime(byte hour, byte minute) {
@@ -28,14 +29,10 @@ public readonly struct EorzeanTime: IComparable<EorzeanTime>, IEquatable<Eorzean
 	public EorzeanTime() : this(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) { }
 
 	[MoonSharpHidden]
-	public override bool Equals(object? obj) => obj is not null && obj is EorzeanTime other && this.Equals(other);
-
-	[MoonSharpHidden]
-	public override int GetHashCode() => (this.Hour * 60) + this.Minute;
-
-	[MoonSharpHidden]
-	public int CompareTo(EorzeanTime other) {
-		return this.Hour > other.Hour
+	public int CompareTo(EorzeanTime? other) {
+		return other is null
+			? 1
+			: this.Hour > other.Hour
 			? 1
 			: this.Hour < other.Hour
 			? -1
@@ -45,15 +42,6 @@ public readonly struct EorzeanTime: IComparable<EorzeanTime>, IEquatable<Eorzean
 			? -1
 			: 0;
 	}
-
-	[MoonSharpHidden]
-	public bool Equals(EorzeanTime other) => this.CompareTo(other) == 0;
-
-	[MoonSharpHidden]
-	public static bool operator ==(EorzeanTime left, EorzeanTime right) => left.Equals(right);
-
-	[MoonSharpHidden]
-	public static bool operator !=(EorzeanTime left, EorzeanTime right) => !(left == right);
 
 	[MoonSharpHidden]
 	public static bool operator <(EorzeanTime left, EorzeanTime right) => left.CompareTo(right) < 0;
