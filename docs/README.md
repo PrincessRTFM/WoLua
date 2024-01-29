@@ -35,6 +35,7 @@ Since there's a fair amount of information exposed, not to mention the functions
 - The [persistent storage table][script storage] isn't technically an API, but it has its own documentation
 - The [action queueing API][action queueing] allows emulation (and better) of vanilla macros' `<wait>` functionality
 - The [Game API][game api] is the overall access point for everything relating to the game itself
+- The [Dalamud API][dalamud api] provides information about Dalamud, such as the current version and loaded plugins
 - The [Player API][player api] has details about the current player
 - The [Chocobo API][chocobo api] has details about the current player's _combat_ chocobo
 - The [Party API][party api] has details about the current player's party and party members
@@ -42,13 +43,14 @@ Since there's a fair amount of information exposed, not to mention the functions
 
 
 
-[script api]: <script.md>
-[debug api]: <debug.md>
-[keys api]: <keys.md>
-[action queueing]: <queue.md>
-[script storage]: <storage.md>
-[game api]: <game.md>
-[player api]: <player.md>
 [chocobo api]: <chocobo.md>
+[dalamud api]: <dalamud.md>
+[debug api]: <debug.md>
+[game api]: <game.md>
+[keys api]: <keys.md>
 [party api]: <party.md>
+[player api]: <player.md>
+[action queueing]: <queue.md>
+[script api]: <script.md>
+[script storage]: <storage.md>
 [toast api]: <toast.md>
