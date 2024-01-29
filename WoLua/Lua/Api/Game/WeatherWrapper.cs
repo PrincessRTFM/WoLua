@@ -25,7 +25,7 @@ public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
 	[LuaDoc("The raw (internal) numeric (unsigned integer) ID of the weather this wrapper represents.")]
 	public uint Id { get; init; }
 
-	[LuaDoc("The player-friendly name of this weather. This is what's shown when you hover over the weather icon on your minimap.")]
+	[LuaDoc("The player-friendly name of this weather, in Title Case. This is what's shown when you hover over the weather icon on your minimap.")]
 	public string Name { get; init; }
 
 	[LuaDoc("A short description of this weather, (mostly) suitable for RP-style usage.",
@@ -36,6 +36,7 @@ public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
 	public bool Valid => this.Id > 0 && !string.IsNullOrEmpty(this.Name) && !string.IsNullOrEmpty(this.Description);
 	public static implicit operator bool(WeatherWrapper? wrapper) => wrapper?.Valid ?? false;
 
+	[LuaDoc("The player-friendly name of this weather, except in lowercase.")]
 	public override string ToString() => this.Name.ToLower();
 
 	public WeatherWrapper(uint id) {
