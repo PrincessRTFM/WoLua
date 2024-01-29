@@ -186,7 +186,7 @@ public class Plugin: IDalamudPlugin {
 						case "class":
 						case "job":
 							if (Service.ClientState.LocalPlayer.ClassJob.GameData is ClassJob job) {
-								this.Print($"You current job is {job.RowId} ({job.Abbreviation}, {job.Name}).");
+								this.Print($"You current job is {job.RowId} ({job.Abbreviation}, {job.Name}) at level {Service.ClientState.LocalPlayer.Level}.");
 							}
 							else {
 								this.Error("Cannot determine class/job details.");

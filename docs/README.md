@@ -41,6 +41,20 @@ Since there's a fair amount of information exposed, not to mention the functions
 - The [Party API][party api] has details about the current player's party and party members
 - The [Toast API][toast api] contains a handful of functions for creating the "toast message" popups, like quest objective completion or moving to a new part of the map
 
+## Querying values
+
+Since a lot of game values are stored as numeric IDs and translated into the client language, trying to check conditions against text strings can be tricky at best. For this reason, WoLua exposes the internal IDs of many things for simpler checks. Unfortunately, this then raises a new problem: how do you _get_ the ID of the thing you want to check for? You could write a script that just prints it into your chat, but WoLua also includes a command to query (at least some of) those IDs for you: `/wolua query`.
+
+In order to query a value, you have to specify _what_ value you're interested in, as an argument to the `query` subcommand. Each one will print relevant information to your chat, or - if for some reason, you aren't logged into a character - an error about the information not being available. Please note that all queries require you to be logged in and _not_ in a loading screen, since the relevant data isn't available when you don't technically "exist" in the game.
+
+- `id` will print your _universally unique_ character ID, which may be useful for storing per-character settings in scripts
+- `class` and `job` will both print your class/job ID, name, and abbreviation, along with your current level as known to scripts (via `Game.Player.Level`)
+- `mount` will print the ID and name (with appropriate `a`/`an` article) of your current mount, if you're mounted
+- `zone` will print the ID of your current map zone; be aware that different wards in housing districts and different estates of the same size each share the _same_ zone ID
+- `weather` will print the ID, the Title Case name, and the description for whatever the current zone's active weather is
+
+If there are other values you would like queryable, please [open an issue][issue tracker] and make a request.
+
 
 
 [chocobo api]: <chocobo.md>
@@ -54,3 +68,5 @@ Since there's a fair amount of information exposed, not to mention the functions
 [script api]: <script.md>
 [script storage]: <storage.md>
 [toast api]: <toast.md>
+
+[issue tracker]: <https://github.com/PrincessRTFM/WoLua/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc>
