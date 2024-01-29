@@ -30,7 +30,7 @@ internal static class LuadocGenerator {
 		);
 		HashSet<Type> documented = new();
 
-		StringBuilder docs = new(1024 * 32); // the first run of the dumper produced ~20k, so 32k should be good
+		StringBuilder docs = new(1024 * 64); // the first run of the dumper produced ~20k, so 64k should be good for a bit
 		docs.AppendLine("---@meta");
 		docs.AppendLine();
 		docs.AppendLine();
