@@ -1,22 +1,32 @@
+using System.Diagnostics.CodeAnalysis;
+
 using ImGuiNET;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Lua.Docs;
+
 namespace PrincessRTFM.WoLua.Lua.Api.Script;
 
 [MoonSharpUserData]
-public class KeysApi: ApiBase { // TODO luadoc all of this
+[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
+public class KeysApi: ApiBase {
 	public KeysApi(ScriptContainer source) : base(source) { }
 
-	public static bool Control
+	[LuaDoc("Whether a control key is currently down.")]
+	public bool Control
 		=> ImGui.IsKeyDown(ImGuiKey.ModCtrl);
-	public static bool Ctrl
-		=> Control;
+	[LuaDoc("Whether a control key is currently down.",
+		"This is an alternative spelling for the `.Control` property.")]
+	public bool Ctrl
+		=> this.Control;
 
-	public static bool Alt
+	[LuaDoc("Whether an alt key is currently down.")]
+	public bool Alt
 		=> ImGui.IsKeyDown(ImGuiKey.ModAlt);
 
-	public static bool Shift
+	[LuaDoc("Whether a shift key is currently down.")]
+	public bool Shift
 		=> ImGui.IsKeyDown(ImGuiKey.ModShift);
 
 }

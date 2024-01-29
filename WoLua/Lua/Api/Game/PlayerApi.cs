@@ -350,7 +350,7 @@ public class PlayerApi: ApiBase {
 		: null;
 
 	[LuaPlayerDoc("Whether the game considers the current character to be in motion.")]
-	public static unsafe bool Moving => AgentMap.Instance() is not null && AgentMap.Instance()->IsPlayerMoving > 0;
+	public unsafe bool Moving => AgentMap.Instance() is not null && AgentMap.Instance()->IsPlayerMoving > 0;
 
 	#endregion
 
