@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -133,7 +134,7 @@ public class Plugin: IDalamudPlugin {
 			case "invoke":
 			case "run":
 				if (args.Length < 2) {
-					this.Error("Invalid usage. You must pass a command name, optionally followed by any parameters.");
+					this.Error("Invalid usage. You must pass a script name, optionally followed by any parameters.");
 				}
 				else {
 					string name = args[1];
@@ -145,6 +146,46 @@ public class Plugin: IDalamudPlugin {
 					if (parameters.Length > 0 && parameters.StartsWith(' '))
 						parameters = parameters[1..];
 					this.Invoke(name, parameters);
+				}
+				break;
+			case "info":
+				if (args.Length < 2) {
+					this.Error("Invalid usage. You must pass a script name.");
+				}
+				else if (this.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
+					this.Print($"\"{script.PrettyName}\" ({script.InternalName}) has {script.ActionQueue.Count} queued action{(script.ActionQueue.Count == 1 ? "" : "s")}");
+				}
+				else {
+					this.Error($"No script could be found with the informal identifier {args[1]}.");
+				}
+				break;
+			case "halt":
+			case "stop":
+			case "clear":
+				if (args.Length < 2) {
+					this.Error("Invalid usage. You must pass a script name.");
+				}
+				else if (this.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
+					int had = script.ActionQueue.Count;
+					script.ActionQueue.Clear();
+					this.Print($"Cleared {had} action{(had == 1 ? "" : "s")} from {script.PrettyName}'s queue.");
+				}
+				else {
+					this.Error($"No script could be found with the informal identifier {args[1]}.");
+				}
+				break;
+			case "halt-all":
+			case "stop-all":
+			case "clear-all":
+			case "haltall":
+			case "stopall":
+			case "clearall":
+				foreach (ScriptContainer script in Service.Scripts.Values) {
+					if (!script.ReportError()) {
+						int had = script.ActionQueue.Count;
+						script.ActionQueue.Clear();
+						this.Print($"Cleared {had} action{(had == 1 ? "" : "s")} from {script.PrettyName}'s queue.");
+					}
 				}
 				break;
 			case "commands":
@@ -230,23 +271,31 @@ public class Plugin: IDalamudPlugin {
 		}
 	}
 
+	internal bool FindScriptByInformalSlug(string identifier, [NotNullWhen(true)] out ScriptContainer? script) {
+		script = null;
+		if (this.disposed)
+			return false;
+
+		string[] tries = new string[] {
+			identifier,
+			identifier.ToLower(),
+			identifier.ToUpper(),
+			identifier.ToLowerInvariant(),
+			identifier.ToUpperInvariant(),
+		};
+		foreach (string attempt in tries) {
+			if (Service.Scripts.TryGetValue(attempt, out script))
+				break;
+		}
+
+		return script is not null;
+	}
+
 	public void Invoke(string name, string parameters) {
 		if (this.disposed)
 			return;
 
-		string[] tries = new string[] {
-			name,
-			name.ToLower(),
-			name.ToUpper(),
-			name.ToLowerInvariant(),
-			name.ToUpperInvariant(),
-		};
-		ScriptContainer? cmd = null;
-		foreach (string attempt in tries) {
-			if (Service.Scripts.TryGetValue(attempt, out cmd))
-				break;
-		}
-		if (cmd is not null) {
+		if (this.FindScriptByInformalSlug(name, out ScriptContainer? cmd)) {
 			cmd.Invoke(parameters);
 		}
 		else {

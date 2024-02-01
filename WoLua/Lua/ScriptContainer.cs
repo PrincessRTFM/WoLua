@@ -176,6 +176,22 @@ public sealed partial class ScriptContainer: IDisposable {
 	public ScriptContainer(string file) : this(file, new DirectoryInfo(Path.GetDirectoryName(file)!).Name) { }
 	public ScriptContainer(string file, string name) : this(file, name, NameToSlug(name)) { }
 
+	internal bool ReportError() {
+		if (!this.LoadSuccess) {
+			Service.Plugin.Error($"\"{this.PrettyName}\" ({this.InternalName}) failed to load due to an error.");
+			return true;
+		}
+		if (!this.Ready) {
+			Service.Plugin.Error($"\"{this.PrettyName}\" ({this.InternalName}) did not register a callback function.");
+			return true;
+		}
+		if (this.ErrorOnCall) {
+			Service.Plugin.Error($"\"{this.PrettyName}\" ({this.InternalName}) encountered an error during a previous call and has been disabled.");
+			return true;
+		}
+		return false;
+	}
+
 	public bool SetCallback(DynValue func) {
 		if (this.Disposed)
 			return false;
