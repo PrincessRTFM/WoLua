@@ -148,7 +148,6 @@ public class GameApi: ApiBase {
 	}
 
 	// TODO map flags?
-	// TODO allow checking game settings via Service.GameConfig
 	// TODO allow accessing job gauge data via Service.JobGauges
 
 }
