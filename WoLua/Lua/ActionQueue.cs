@@ -12,7 +12,7 @@ using PrincessRTFM.WoLua.Lua.Actions;
 namespace PrincessRTFM.WoLua.Lua;
 
 [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "It's a queue for script actions")]
-public class ActionQueue: IDisposable {
+public class ActionQueue: IDisposable { // TODO: allow pause/resume via chat command?
 
 	private readonly ConcurrentQueue<ScriptAction> queue = new();
 	public DateTime ActionThreshold { get; internal set; } = DateTime.MinValue;
@@ -31,7 +31,7 @@ public class ActionQueue: IDisposable {
 		=> this.queue.Enqueue(action);
 
 	public bool? PullEvent() {
-		if (Service.GameLifecycle.LogoutToken.IsCancellationRequested || Service.GameLifecycle.DalamudUnloadingToken.IsCancellationRequested || Service.GameLifecycle.GameShuttingDownToken.IsCancellationRequested) {
+		if (!Service.ClientState.IsLoggedIn || Service.GameLifecycle.LogoutToken.IsCancellationRequested || Service.GameLifecycle.DalamudUnloadingToken.IsCancellationRequested || Service.GameLifecycle.GameShuttingDownToken.IsCancellationRequested) {
 			this.Clear();
 			return null;
 		}
