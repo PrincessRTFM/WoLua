@@ -149,6 +149,7 @@ public class Plugin: IDalamudPlugin {
 				}
 				break;
 			case "info":
+			case "check":
 				if (args.Length < 2) {
 					this.Error("Invalid usage. You must pass a script name.");
 				}
@@ -156,7 +157,7 @@ public class Plugin: IDalamudPlugin {
 					this.Print($"\"{script.PrettyName}\" ({script.InternalName}) has {script.ActionQueue.Count} queued action{(script.ActionQueue.Count == 1 ? "" : "s")}");
 				}
 				else {
-					this.Error($"No script could be found with the informal identifier {args[1]}.");
+					this.Error($"No script could be found by the identifier {args[1]}.");
 				}
 				break;
 			case "halt":
