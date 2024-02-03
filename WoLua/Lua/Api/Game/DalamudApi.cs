@@ -5,7 +5,7 @@ using Dalamud.Plugin;
 
 using MoonSharp.Interpreter;
 
-namespace PrincessRTFM.WoLua.Lua.Api;
+namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 public class DalamudApi: ApiBase { // TODO luadoc all of this
