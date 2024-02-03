@@ -17,6 +17,8 @@ Using the action queue is fairly simple, but has a few important things to remem
 
 - **Arguments to queued functions are evaluated when _queued_, not when _called_.** This is a function of the lua runtime. Queueing a function call necessarily evaluates all of the arguments being queued with it, and then _those_ values are handed to WoLua to queue. If you, eg, mix `Game.Player.Target` and strings using placeholders like `<t>`, output may break if the player changes targets. You should also ensure _in the queued function_ that any [entity wrappers](entity.md) passed as arguments are still valid, as the entity in question may have left the zone.
 
+- **All script queues are cleared when logging out of a character.** Script queues ignore actions while not logged into a character, and automatically clear all actions when logging out or shutting down, to avoid dangling actions that attempt to execute during an invalid game state, or on a different character than initially started them. Depending on run time, it would otherwise be possible to start an RP macro, log out, log in on a _different_ character, and have the macro continue attempting to perform emotes or send messages. It's also possible that scripts not specifically written with mid-run logouts in mind could crash and require a script reload, if the user suddenly didn't have a character or any loaded game state information.
+
 ## Usage
 There are only three methods relating to the action queue, and one property. All of them are on the top-level [Script API](script.md).
 
@@ -27,6 +29,15 @@ If you have things in there that you want to remove, you can clear the entire qu
 In order to queue an _action_ - actually _doing_ something - you want to call `Script.QueueAction()` with the function to execute. This can be a function you write in your script, or it can be a direct API call. If you want to pass arguments to a function, you don't need to make a wrapper - just pass the arguments to `QueueAction()` after the function and they'll be provided when it's called. <!-- Queue totally doesn't sound like a word anymore. -->
 
 Finally, of course, you'll want to be able to queue _delays_ too, in order to space out your actions. Otherwise, what's the point of queueing them? For that, you call `Script.QueueDelay()` with the number of _milliseconds_ to wait for. Don't try using decimals because the call will fail and your script will error.
+
+### Commands
+
+It's possible to check the number of actions (functions and delays both) that a script has queued via the `/wolua info <identifier>` command. If the given identifier isn't valid (no such script _exists_), you'll get an error. Otherwise, if the script _exists_ but isn't _valid_ (has encountered a fatal error), the particular problem will be identified. Finally, if the script is valid, you'll be told how many actions are in its queue.
+
+If you want to stop a script from performing queued actions, you can use the `/wolua stop <identifier>` command to empty out the action queue, although this will _not_ cancel any currently executing functions. As with the `info` subcommand, if there are problems, you'll receive an error in chat explaining them. Otherwise, you'll be told how many actions _were_ queued, before the queue was cleared.
+
+Finally, if you need to abort _all_ queued actions across _every_ loaded script, `/wolua stopall` will do so, and also print the above information for each script, so that you know what was interrupted. This should be done with care and only when necessary, as there is _no way_ to see the specific actions a script had queued, nor to restore them. Depending on how the script was written, it may be left in an indeterminate state.\
+Consider using `/wolua reload` instead, as reloading scripts also aborts and clears all loaded action queues; the main reason to use this command instead is for scripts that are so badly written that they begin a queue loop on load. If you identify any such scripts, you are _strongly recommended_ to remove them immediately.
 
 ## Implementation
 A slightly more technical overview, for those curious.
