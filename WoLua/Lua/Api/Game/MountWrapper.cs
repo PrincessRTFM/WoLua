@@ -24,6 +24,8 @@ public sealed record class MountWrapper: IEquatable<MountWrapper> { // TODO luad
 			mountNames[(ushort)mount.RowId] = mount.Singular;
 			mountArticles[(ushort)mount.RowId] = "A" + (mount.StartsWithVowel > 0 ? "n" : string.Empty);
 		}
+		mountNames.Remove(0);
+		mountArticles.Remove(0);
 	}
 
 	public bool Active { get; }
