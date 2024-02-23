@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Product>WoLua</Product>
-		<Version>3.3.0</Version>
+		<Version>3.4.0</Version>
 		<Description>Warrior of... Lua? Write your own chat commands in lua for FFXIV/Dalamud!</Description>
 		<Copyright>Copyleft VariableVixen 2022</Copyright>
 	</PropertyGroup>
