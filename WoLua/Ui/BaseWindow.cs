@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Numerics;
 
+using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 
 using ImGuiNET;
@@ -10,6 +12,22 @@ internal abstract class BaseWindow: Window {
 	protected BaseWindow(string name, ImGuiWindowFlags flags = ImGuiWindowFlags.None, bool forceMainWindow = false) : base(name, flags, forceMainWindow) {
 		this.RespectCloseHotkey = true;
 		this.IsOpen = false;
+		TitleBarButton kofi = new() {
+			Priority = int.MinValue,
+			Icon = FontAwesomeIcon.Heart,
+			IconOffset = new(2, 1),
+			Click = _ => Process.Start(new ProcessStartInfo("https://ko-fi.com/V7V7IK9UU") { UseShellExecute = true }),
+			ShowTooltip = () => {
+				ImGui.BeginTooltip();
+				ImGui.TextUnformatted("Support me on ko-fi");
+				ImGui.EndTooltip();
+			},
+		};
+		this.TitleBarButtons = new() {
+			kofi,
+		};
+		this.AllowClickthrough = false;
+		this.AllowPinning = true;
 	}
 
 
