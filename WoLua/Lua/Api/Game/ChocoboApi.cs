@@ -12,10 +12,10 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 public class ChocoboApi: ApiBase { // TODO luadoc all of this
 	[MoonSharpHidden]
 	internal ChocoboApi(ScriptContainer source) : base(source) { }
-	private unsafe Buddy? obj {
+	private unsafe CompanionInfo? obj {
 		get {
 			UIState* ui = UIState.Instance();
-			return ui is null ? null : ui->Buddy;
+			return ui is null ? null : ui->Buddy.CompanionInfo;
 		}
 	}
 	public static implicit operator bool(ChocoboApi? bird) => bird?.obj is not null;
@@ -30,17 +30,10 @@ public class ChocoboApi: ApiBase { // TODO luadoc all of this
 	public byte? DefenderLevel => this.obj?.DefenderLevel;
 	public byte? AttackerLevel => this.obj?.AttackerLevel;
 	public byte? HealerLevel => this.obj?.HealerLevel;
-	public unsafe string? Name {
-		get {
-			if (this.obj is null)
-				return null;
-			Buddy bird = this.obj.Value;
-			return MemoryHelper.ReadSeStringNullTerminated((nint)bird.Name).TextValue;
-		}
-	}
+	public unsafe string? Name => this.obj?.Name;
 
-	public uint? CurrentHp => (this.Summoned ?? false) ? (this.obj?.Companion)?.CurrentHealth : null;
-	public uint? MaxHp => (this.Summoned ?? false) ? (this.obj?.Companion)?.MaxHealth : null;
+	public unsafe uint? CurrentHp => (this.Summoned ?? false) ? this.obj!.Value.Companion->CurrentHealth : null;
+	public unsafe uint? MaxHp => (this.Summoned ?? false) ? this.obj!.Value.Companion->MaxHealth : null;
 
 	[MoonSharpUserDataMetamethod(Metamethod.Stringify)]
 	public override string ToString() => this.Name ?? string.Empty;
