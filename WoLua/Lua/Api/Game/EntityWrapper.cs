@@ -4,8 +4,6 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Utility;
-using Dalamud.Utility.Numerics;
 
 using Lumina.Excel.GeneratedSheets;
 
@@ -25,7 +23,7 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityWrapper> { // TODO luadoc all of this
+public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrapper, IEquatable<EntityWrapper> { // TODO luadoc all of this
 	public static readonly EntityWrapper Empty = new((GameObject?)null);
 
 	#region Conversions
@@ -192,29 +190,18 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 	public float? PosY => this ? this.Entity!.Position.Z : null;
 	public float? PosZ => this ? this.Entity!.Position.Y : null;
 
-	private Vector3? uiCoords {
-		get {
-			if (Service.ClientState.TerritoryType > 0 && this.Exists) {
-				Map? map = Service.DataManager.GetExcelSheet<Map>()!.GetRow(Service.ClientState.TerritoryType);
-				TerritoryTypeTransient? territoryTransient = Service.DataManager.GetExcelSheet<TerritoryTypeTransient>()!.GetRow(Service.ClientState.TerritoryType);
-				if (map is not null && territoryTransient is not null) {
-					return MapUtil.WorldToMap(this.Entity!.Position, map, territoryTransient, true);
-				}
-			}
-			return null;
-		}
-	}
+	public WorldPosition Position => new(this.PosX, this.PosY, this.PosZ);
 
 	[LuaDoc("The player-friendly map-style X (east/west) coordinate of this entity.")]
-	public float? MapX => this.uiCoords?.X;
+	public float? MapX => this.Position.MapX;
 	[LuaDoc("The player-friendly map-style Y (north/south) coordinate of this entity.")]
-	public float? MapY => this.uiCoords?.Y;
+	public float? MapY => this.Position.MapY;
 	[LuaDoc("The player-friendly map-style Z (height) coordinate of this entity.")]
-	public float? MapZ => this.uiCoords?.Z;
+	public float? MapZ => this.Position.MapZ;
 
 	public DynValue MapCoords {
 		get {
-			Vector3? coords = this.uiCoords;
+			Vector3? coords = this.Position.UiCoords;
 			return coords is not null
 				? DynValue.NewTuple(DynValue.NewNumber(coords.Value.X), DynValue.NewNumber(coords.Value.Y), DynValue.NewNumber(coords.Value.Z))
 				: DynValue.NewTuple(null, null, null);
@@ -228,18 +215,14 @@ public sealed record class EntityWrapper(GameObject? Entity): IEquatable<EntityW
 
 	#region Distance
 
-	public float? FlatDistanceFrom(EntityWrapper? other) => this.Exists && (other?.Exists ?? false)
-		? Vector3.Distance(this.Entity!.Position.WithY(0), other!.Entity!.Position.WithY(0))
-		: null;
+	public float? FlatDistanceFrom(EntityWrapper? other) => this.Position.FlatDistanceFrom(other);
 	public float? FlatDistanceFrom(PlayerApi player) => this.FlatDistanceFrom(player.Entity);
 
-	public float? DistanceFrom(EntityWrapper? other) => this.Exists && (other?.Exists ?? false)
-		? Vector3.Distance(this.Entity!.Position, other.Entity!.Position)
-		: null;
+	public float? DistanceFrom(EntityWrapper? other) => this.Position.DistanceFrom(other);
 	public float? DistanceFrom(PlayerApi player) => this.DistanceFrom(player.Entity);
 
-	public float? FlatDistance => this.FlatDistanceFrom(Service.ClientState.LocalPlayer);
-	public float? Distance => this.DistanceFrom(Service.ClientState.LocalPlayer);
+	public float? FlatDistance => this.Position.FlatDistance;
+	public float? Distance => this.Position.Distance;
 
 	#endregion
 

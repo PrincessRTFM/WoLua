@@ -1,5 +1,3 @@
-using Dalamud.Memory;
-
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 using MoonSharp.Interpreter;

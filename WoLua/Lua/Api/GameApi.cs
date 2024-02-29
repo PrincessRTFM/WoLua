@@ -5,6 +5,7 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using FFXIVClientStructs.FFXIV.Client.Graphics.Environment;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 using MoonSharp.Interpreter;
 
@@ -114,6 +115,43 @@ public class GameApi: ApiBase {
 			.Where(f => f.Exists && f.Name == name)
 			.OrderBy(f => f.DistanceToCentre)
 			.FirstOrDefault(FateWrapper.Empty);
+	}
+
+	#endregion
+
+	#region Map flag
+
+	[LuaDoc("Indicates whether or not the player's custom map flag marker is currently set.",
+		"If this is false, the `<flag>` chat placeholder will display `(No location set for map link)` instead.")]
+	public unsafe bool HasMapFlag {
+		get {
+			AgentMap* map = AgentMap.Instance();
+			return map is not null && map->IsFlagMarkerSet > 0;
+		}
+	}
+
+	[LuaDoc("Clears the player's custom map flag marker, hiding it from display.")]
+	public unsafe void ClearMapFlag() {
+		AgentMap* map = AgentMap.Instance();
+		if (map is not null)
+			map->IsFlagMarkerSet = 0;
+	}
+
+	[LuaDoc("Sets the player's custom map flag marker to the given x/y coordinates in the current zone.",
+		"The coordinates must be MAP coordinates, not WORLD coordinates.",
+		"If you want to set the flag on an entity or FATE, you can pass the appropriate wrapper instead.")]
+	public unsafe void SetMapFlag(float x, float y) {
+		AgentMap* map = AgentMap.Instance();
+		if (map is null)
+			return;
+		map->IsFlagMarkerSet = 0;
+		map->SetFlagMapMarker(map->CurrentTerritoryId, map->CurrentMapId, x, y);
+	}
+
+	[LuaDoc("Sets the player's custom map flag marker to the location of the provided game world object or position.")]
+	public void SetMapFlag([AsLuaType("EntityWrapper|FateWrapper|WorldPosition")] IWorldObjectWrapper pos) {
+		if (pos.MapX is float x && pos.MapY is float y)
+			this.SetMapFlag(x, y);
 	}
 
 	#endregion

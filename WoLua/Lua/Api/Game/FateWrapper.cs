@@ -1,13 +1,8 @@
 using System.Numerics;
 
 using Dalamud.Game.ClientState.Fates;
-using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Utility;
-using Dalamud.Utility.Numerics;
 
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
-
-using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
@@ -23,7 +18,7 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class FateWrapper(Fate? WorldFate) {
+public sealed record class FateWrapper(Fate? WorldFate): IWorldObjectWrapper {
 	public static readonly FateWrapper Empty = new((Fate?)null);
 
 	internal unsafe FateContext* Struct => this.Valid ? ((FateContext*)this.WorldFate!.Address) : null;
@@ -120,31 +115,20 @@ public sealed record class FateWrapper(Fate? WorldFate) {
 		"For the sake of consistency with the map coordinates displayed to the player, " + Plugin.Name + " swaps them.")]
 	public float? PosZ => this.Exists ? this.WorldFate!.Position.Y : null;
 
-	private Vector3? uiCoords {
-		get {
-			if (Service.ClientState.TerritoryType > 0 && this.Exists) {
-				Map? map = Service.DataManager.GetExcelSheet<Map>()!.GetRow(Service.ClientState.TerritoryType);
-				TerritoryTypeTransient? territoryTransient = Service.DataManager.GetExcelSheet<TerritoryTypeTransient>()!.GetRow(Service.ClientState.TerritoryType);
-				if (map is not null && territoryTransient is not null) {
-					return MapUtil.WorldToMap(this.WorldFate!.Position, map, territoryTransient, true);
-				}
-			}
-			return null;
-		}
-	}
+	public WorldPosition Position => new(this.PosX, this.PosY, this.PosZ);
 
 	[LuaDoc("The player-friendly map-style X (east/west) coordinate of this FATE.")]
-	public float? MapX => this.uiCoords?.X;
+	public float? MapX => this.Position.MapX;
 	[LuaDoc("The player-friendly map-style Y (north/south) coordinate of this FATE.")]
-	public float? MapY => this.uiCoords?.Y;
+	public float? MapY => this.Position.MapY;
 	[LuaDoc("The player-friendly map-style Z (height) coordinate of this FATE.")]
-	public float? MapZ => this.uiCoords?.Z;
+	public float? MapZ => this.Position.MapZ;
 
 	[LuaDoc("Provides three values consisting of this FATE's X (east/west), Y (north/south), and Z (vertical) coordinates.",
 		"If the FATE doesn't exist in the world (`.Exists == false`), all three values will be nil.")]
 	public DynValue MapCoords {
 		get {
-			Vector3? coords = this.uiCoords;
+			Vector3? coords = this.Position.UiCoords;
 			return coords is not null
 				? DynValue.NewTuple(DynValue.NewNumber(coords.Value.X), DynValue.NewNumber(coords.Value.Y), DynValue.NewNumber(coords.Value.Z))
 				: DynValue.NewTuple(null, null, null);
@@ -162,8 +146,8 @@ public sealed record class FateWrapper(Fate? WorldFate) {
 
 	[LuaDoc("The flat (horizontal only) distance between the player and the \"position\" of this FATE.",
 		"FATEs are defined as cylinders, with their position being the central point at the bottom.")]
-	public float? FlatDistanceToCenter => this.Exists && Service.ClientState.LocalPlayer is PlayerCharacter player
-		? Vector3.Distance(this.WorldFate!.Position.WithY(0), player.Position.WithY(0))
+	public float? FlatDistanceToCenter => this.Exists
+		? this.Position.FlatDistance
 		: null;
 	[SkipDoc("alternative spelling only")]
 	public float? FlatDistanceToCentre => this.FlatDistanceToCenter;
@@ -172,8 +156,8 @@ public sealed record class FateWrapper(Fate? WorldFate) {
 		"FATEs are defined as cylinders, with their position being the central point at the bottom.",
 		"Note that this means that if you're above a FATE, the distance to actually \"enter\" it is less than this would suggest.",
 		"However, you probably still need to go about that far in order to reach the ground where the objectives will be.")]
-	public float? DistanceToCenter => this.Exists && Service.ClientState.LocalPlayer is PlayerCharacter player
-		? Vector3.Distance(this.WorldFate!.Position, player.Position)
+	public float? DistanceToCenter => this.Exists
+		? this.Position.Distance
 		: null;
 	[SkipDoc("alternative spelling only")]
 	public float? DistanceToCentre => this.DistanceToCenter;

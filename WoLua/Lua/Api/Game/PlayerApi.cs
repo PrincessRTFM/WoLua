@@ -21,7 +21,7 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
 [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Documentation generation only reflects instance members")]
-public class PlayerApi: ApiBase {
+public class PlayerApi: ApiBase, IWorldObjectWrapper {
 
 	[MoonSharpHidden]
 	internal PlayerApi(ScriptContainer source) : base(source) { }
@@ -33,6 +33,9 @@ public class PlayerApi: ApiBase {
 		&& Service.ClientState.LocalPlayer is not null
 		&& Service.ClientState.LocalContentId is not 0;
 	public static implicit operator bool(PlayerApi? player) => player?.Loaded ?? false;
+
+	[LuaDoc("An alternative name for `.Loaded`, to match that used by entity wrappers.")]
+	public bool Exists => this.Loaded;
 
 	[LuaPlayerDoc("This is the _universally unique_ ID of the character currently logged in.")]
 	public ulong? CharacterId => this.Loaded
@@ -239,6 +242,12 @@ public class PlayerApi: ApiBase {
 	[LuaPlayerDoc("The player-friendly map-style Z (height) coordinate of the current character.",
 		"This property is shorthand for `.Entity.MapZ`.")]
 	public float? MapZ => this.Entity.MapZ;
+
+	[LuaDoc("The position of the player in the world, _at the time of access_.",
+		"If you cache this, it may become invalid, such as if the player logs out.",
+		"It is recommended that you only cache this in a function-local variable, and not rely on it remaining valid between execution frames, especially if you use the action queue.",
+		"This value itself will _never_ be `nil`, but _will_ represent a nonexistent/invalid world position if the `Loaded` property is `false`.")]
+	public WorldPosition Position => this.Entity.Position;
 
 	[LuaDoc("Provides three values consisting of the current character's X (east/west), Y (north/south), and Z (vertical) coordinates.",
 		"If the player isn't loaded, all three values will be nil.",
