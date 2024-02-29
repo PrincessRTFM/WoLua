@@ -19,14 +19,24 @@ internal static class LuadocGenerator {
 	public const string ApiDefinitionFileName = "api.lua";
 	public static string ApiDefinitionFilePath => Path.Combine(Service.Configuration.BasePath, ApiDefinitionFileName);
 
+	private readonly struct NamedApiType {
+		internal readonly Type type;
+		internal readonly string? name;
+		internal NamedApiType(Type type, string? name) {
+			this.type = type;
+			this.name = name;
+		}
+	}
+
 	public static Task<string> GenerateLuadocAsync() => Task.Run(GenerateLuadoc);
 	public static string GenerateLuadoc() {
-		static bool propertyIsApi(PropertyInfo p) => !p.PropertyType.IsAbstract && p.PropertyType.GetCustomAttribute<MoonSharpUserDataAttribute>(true) is not null;
+		static bool typeIsApi(Type t) => !t.IsAbstract && t.GetCustomAttribute<MoonSharpUserDataAttribute>(true) is not null;
 
 		Type apiBase = typeof(ApiBase);
-		Queue<PropertyInfo> apis = new(typeof(ScriptContainer)
+		Queue<NamedApiType> apis = new(typeof(ScriptContainer)
 			.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-			.Where(propertyIsApi)
+			.Where(p => typeIsApi(p.PropertyType))
+			.Select(p => new NamedApiType(p.PropertyType, p.GetCustomAttribute<LuaGlobalAttribute>()?.Name))
 		);
 		HashSet<Type> documented = new();
 
@@ -40,20 +50,26 @@ internal static class LuadocGenerator {
 		addType(docs, apiBase);
 		docs.AppendLine();
 
-		while (apis.TryDequeue(out PropertyInfo? prop)) {
-			if (prop is null) // unpossible!
+		while (apis.TryDequeue(out NamedApiType api)) {
+			if (api.type is null) // unpossible!
 				continue;
 
-			if (documented.Contains(prop.PropertyType))
+			if (documented.Contains(api.type))
 				continue;
-			documented.Add(prop.PropertyType);
+			documented.Add(api.type);
 
-			addType(docs, prop.PropertyType, prop.GetCustomAttribute<LuaGlobalAttribute>()?.Name);
+			addType(docs, api.type, api.name);
 
-			IEnumerable<PropertyInfo> childApis = prop.PropertyType
+			IEnumerable<NamedApiType> childApis = api.type
 				.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-				.Where(propertyIsApi);
-			foreach (PropertyInfo subApi in childApis)
+				.Where(p => typeIsApi(p.PropertyType))
+				.Select(p => new NamedApiType(p.PropertyType, p.GetCustomAttribute<LuaGlobalAttribute>()?.Name))
+				.Concat(api.type
+					.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+					.Where(m => typeIsApi(m.ReturnType))
+					.Select(m => new NamedApiType(m.ReturnType, null))
+				);
+			foreach (NamedApiType subApi in childApis)
 				apis.Enqueue(subApi);
 		}
 
