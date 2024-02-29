@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace PrincessRTFM.WoLua.Lua.Docs;
 
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.ReturnValue, Inherited = true)]
 internal partial class LuaDocAttribute: Attribute {
 	private static readonly Regex lineBreakTag = lineBreakRegex();
 
