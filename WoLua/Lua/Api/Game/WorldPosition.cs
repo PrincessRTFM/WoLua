@@ -8,6 +8,8 @@ using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
 
+using PrincessRTFM.WoLua.Lua.Docs;
+
 namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
 [MoonSharpUserData]
@@ -28,12 +30,12 @@ public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ):
 	[MoonSharpHidden]
 	public Vector3 GameEnginePosition => new(this?.PosX ?? 0, this?.PosZ ?? 0, this?.PosY ?? 0);
 
-	public float? FlatDistanceFrom(IWorldObjectWrapper? other) => this && other?.Exists is true
+	public float? FlatDistanceFrom([AsLuaType("EntityWrapper|FateWrapper|PlayerApi|WorldPosition")] IWorldObjectWrapper? other) => this && other?.Exists is true
 		? Vector2.Distance(this, other.Position)
 		: null;
 	public float? FlatDistance => this.FlatDistanceFrom((WorldPosition)Service.ClientState.LocalPlayer);
 
-	public float? DistanceFrom(IWorldObjectWrapper? other) => this && other?.Exists is true
+	public float? DistanceFrom([AsLuaType("EntityWrapper|FateWrapper|PlayerApi|WorldPosition")] IWorldObjectWrapper? other) => this && other?.Exists is true
 		? Vector3.Distance(this.GameEnginePosition, other!.Position.GameEnginePosition)
 		: null;
 	public float? Distance => this.DistanceFrom((WorldPosition)Service.ClientState.LocalPlayer);

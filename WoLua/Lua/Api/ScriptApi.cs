@@ -202,7 +202,7 @@ public class ScriptApi: ApiBase {
 	[LuaDoc("Queues the execution of a function with the provided arguments, if any.",
 		"When this action is processed by the script's queue, the provided function will be invoked on the game's main thread.",
 		"If the function has to do heavy processing (or is poorly written) it may cause game lag.")]
-	public void QueueAction(Closure callback, [AsLuaType(LuaType.Any), Optional] params DynValue[] arguments)
+	public void QueueAction(Closure callback, [AsLuaType(LuaType.Any), LuaDoc("arguments to be passed to the queued function call"), Optional] params DynValue[] arguments)
 		=> this.Owner.ActionQueue.Add(new CallbackAction(DynValue.NewClosure(callback), arguments));
 
 	[SkipDoc("It's a type-only overload of the above")]

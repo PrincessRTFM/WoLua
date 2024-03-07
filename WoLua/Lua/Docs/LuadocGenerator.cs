@@ -195,6 +195,13 @@ internal static class LuadocGenerator {
 		}
 	}
 
+	private static string getParamName(ParameterInfo[] parameters, int idx) {
+		ParameterInfo p = parameters[idx];
+		return idx == parameters.Length - 1 && p.GetCustomAttribute<ParamArrayAttribute>(false) is not null
+			? "..."
+			: p.Name!;
+	}
+
 	private static void addMethods(StringBuilder docs, string table, IEnumerable<MethodInfo> methods) {
 		foreach (MethodInfo m in methods) {
 			Service.Log.Info($"[{LogTag.GenerateDocs}] Documenting method {m.DeclaringType!.Name}.{m.Name}");
@@ -205,9 +212,11 @@ internal static class LuadocGenerator {
 
 			ParameterInfo[] parameters = m.GetParameters();
 			ParameterInfo returns = m.ReturnParameter;
-			foreach (ParameterInfo p in parameters) {
-				docs.Append($"---@param {p.Name}");
-				if (p.HasDefaultValue || p.IsOptional)
+			for (int i = 0; i < parameters.Length; ++i) {
+				ParameterInfo p = parameters[i];
+				bool isOptional = p.HasDefaultValue || p.IsOptional;
+				docs.Append($"---@param {getParamName(parameters, i)}");
+				if (isOptional)
 					docs.Append('?');
 				docs.Append(' ');
 				docs.Append(p.GetCustomAttribute<AsLuaTypeAttribute>()?.LuaName ?? getLuaType(p.ParameterType));
@@ -225,7 +234,7 @@ internal static class LuadocGenerator {
 			if (m.GetCustomAttribute<ObsoleteAttribute>() is not null)
 				docs.AppendLine("---@deprecated");
 
-			docs.AppendLine($"function {table}.{m.Name}({string.Join(", ", parameters.Select(p => p.Name))}) end");
+			docs.AppendLine($"function {table}.{m.Name}({string.Join(", ", parameters.Select((_, i) => getParamName(parameters, i)))}) end");
 			docs.AppendLine();
 		}
 	}
