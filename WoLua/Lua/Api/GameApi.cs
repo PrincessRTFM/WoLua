@@ -149,7 +149,7 @@ public class GameApi: ApiBase {
 	}
 
 	[LuaDoc("Sets the player's custom map flag marker to the location of the provided game world object or position.")]
-	public void SetMapFlag([AsLuaType("EntityWrapper|FateWrapper|WorldPosition")] IWorldObjectWrapper pos) {
+	public void SetMapFlag([AsLuaType("EntityWrapper|FateWrapper|PlayerApi|WorldPosition")] IWorldObjectWrapper pos) {
 		if (pos.MapX is float x && pos.MapY is float y)
 			this.SetMapFlag(x, y);
 	}
