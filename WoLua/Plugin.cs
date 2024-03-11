@@ -73,7 +73,7 @@ public class Plugin: IDalamudPlugin {
 		this.ScriptScanner = new(this.scanScripts);
 		this.DocumentationGenerator = new(this.writeLuaDocs);
 
-		this.Version = FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion ?? "?.?.?";
+		this.Version = FileVersionInfo.GetVersionInfo(i.AssemblyLocation.FullName).ProductVersion ?? "?.?.?";
 		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(i)) is null)
 			throw new ApplicationException("Failed to initialise service container");
 		Service.Sounds = new();
