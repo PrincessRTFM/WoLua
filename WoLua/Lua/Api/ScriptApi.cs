@@ -276,7 +276,14 @@ public class ScriptApi: ApiBase {
 		initialDuration += 10 * content.Count(char.IsPunctuation);
 		uint duration = (uint)Math.Abs(Math.Ceiling(initialDuration * durationModifier));
 		this.Log($"Displaying notification (type {type}) of {content.Length:N} chars for {duration:N}ms ({initialDuration:D}ms x {durationModifier:F2})", LogTag.DebugMessage);
-		Service.Interface.UiBuilder.AddNotification(content, $"{Plugin.Name}: {this.Title}", type, duration);
+		Service.Notifications.AddNotification(new() {
+			Content = content,
+			Title = $"{Plugin.Name}: {this.Title}",
+			Type = type,
+			InitialDuration = TimeSpan.FromMilliseconds(duration),
+			UserDismissable = true,
+			Minimized = false,
+		});
 	}
 
 	[LuaDoc("Displays a Dalamud popup debug notification in the lower right corner.",

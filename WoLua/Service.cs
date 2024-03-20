@@ -42,6 +42,7 @@ internal class Service {
 	[PluginService] public static ISigScanner Scanner { get; private set; } = null!;
 	[PluginService] public static ITargetManager Targets { get; private set; } = null!;
 	[PluginService] public static IToastGui Toast { get; private set; } = null!;
+	[PluginService] public static INotificationManager Notifications { get; private set; } = null!;
 
 	public static PlaySound Sounds { get; internal set; } = null!;
 	public static Hooks Hooks { get; internal set; } = null!;
