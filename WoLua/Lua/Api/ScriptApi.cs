@@ -180,9 +180,6 @@ public class ScriptApi: ApiBase {
 	#endregion
 
 	#region Action queueing
-	// TODO allow examining the contents of the action queue?
-	// need to figure out how to handle function-call actions for that
-	// maybe allow labelling them?
 
 	[LuaDoc("How many actions are currently in this script's action queue.",
 		"The action queue includes queued function calls AND queued delays.",
