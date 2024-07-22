@@ -16,7 +16,7 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ): IWorldObjectWrapper, IEquatable<WorldPosition>, IComparable<WorldPosition> {
+public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ): IWorldObjectWrapper, IEquatable<WorldPosition>, IComparable<WorldPosition> { // TODO luadoc all of this
 	public static readonly WorldPosition Empty = new(null, null, null);
 
 	public bool Exists => this.PosX is not null && this.PosY is not null;
@@ -25,7 +25,7 @@ public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ):
 	public static implicit operator Vector2(WorldPosition? pos) => new(pos?.PosX ?? 0, pos?.PosY ?? 0);
 	public static implicit operator WorldPosition(Vector2? pos) => new(pos?.X ?? 0, pos?.Y ?? 0, null);
 
-	public static implicit operator WorldPosition(GameObject? thing) => thing is not null ? new(thing.Position.X, thing.Position.Y, thing.Position.Z) : Empty;
+	public static WorldPosition FromGameObject(IGameObject? thing) => thing is not null ? new(thing.Position.X, thing.Position.Y, thing.Position.Z) : Empty;
 
 	[MoonSharpHidden]
 	public Vector3 GameEnginePosition => new(this?.PosX ?? 0, this?.PosZ ?? 0, this?.PosY ?? 0);
@@ -33,12 +33,12 @@ public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ):
 	public float? FlatDistanceFrom([AsLuaType("EntityWrapper|FateWrapper|PlayerApi|WorldPosition")] IWorldObjectWrapper? other) => this && other?.Exists is true
 		? Vector2.Distance(this, other.Position)
 		: null;
-	public float? FlatDistance => this.FlatDistanceFrom((WorldPosition)Service.ClientState.LocalPlayer);
+	public float? FlatDistance => this.FlatDistanceFrom(FromGameObject(Service.ClientState.LocalPlayer));
 
 	public float? DistanceFrom([AsLuaType("EntityWrapper|FateWrapper|PlayerApi|WorldPosition")] IWorldObjectWrapper? other) => this && other?.Exists is true
 		? Vector3.Distance(this.GameEnginePosition, other!.Position.GameEnginePosition)
 		: null;
-	public float? Distance => this.DistanceFrom((WorldPosition)Service.ClientState.LocalPlayer);
+	public float? Distance => this.DistanceFrom(FromGameObject(Service.ClientState.LocalPlayer));
 
 	internal Vector3? UiCoords {
 		get {

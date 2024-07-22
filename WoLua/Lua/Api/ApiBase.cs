@@ -20,7 +20,6 @@ public abstract class ApiBase: IDisposable {
 		"This should never happen in a running script, but be careful when using coroutines.")]
 	public bool Disposed { get; protected set; } = false;
 
-	protected internal virtual void PreInit() { }
 	protected internal virtual void Init() { }
 	protected internal virtual void PostInit() { }
 
@@ -31,7 +30,7 @@ public abstract class ApiBase: IDisposable {
 	public string DefaultMessageTag { get; init; }
 
 	private readonly PropertyInfo[] disposables;
-	private readonly MemberInfo[] wipeOnDispose;
+	private readonly PropertyInfo[] wipeOnDispose;
 
 	[MoonSharpHidden]
 	public ApiBase(ScriptContainer source) {
@@ -53,8 +52,8 @@ public abstract class ApiBase: IDisposable {
 		IEnumerable<PropertyInfo> autoAssign = me
 			.GetProperties(AllInstance)
 			.Where(p => p.CanRead && p.CanWrite && !p.PropertyType.IsAbstract && p.PropertyType.IsAssignableTo(apiBase) && p.GetValue(this) is null);
-		Type[] ctorArgTypes = new Type[] { typeof(ScriptContainer) };
-		object?[] ctorArgs = new object?[] { source };
+		Type[] ctorArgTypes = [typeof(ScriptContainer)];
+		object?[] ctorArgs = [source];
 		foreach (PropertyInfo p in autoAssign) {
 			ConstructorInfo? ctor = p.PropertyType.GetConstructor(AllInstance, ctorArgTypes);
 			if (ctor is null)
@@ -149,9 +148,8 @@ public abstract class ApiBase: IDisposable {
 				disposable.SetValue(this, null);
 		}
 
-		foreach (MemberInfo item in this.wipeOnDispose) {
-			(item as PropertyInfo)?.SetValue(this, null);
-			(item as FieldInfo)?.SetValue(this, null);
+		foreach (PropertyInfo item in this.wipeOnDispose) {
+			item.SetValue(this, null);
 		}
 
 		this.Owner = null!;

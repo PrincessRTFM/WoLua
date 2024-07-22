@@ -44,13 +44,13 @@ public sealed partial class ScriptContainer: IDisposable {
 	public static readonly Regex PluginNamePrefix = new("^" + Regex.Escape($"{Plugin.Name}."), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	public static readonly Regex PluginNameSuffix = new(Regex.Escape($".{Plugin.Name}") + "$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	internal static readonly Regex[] standardRemovals = new Regex[] {
+	internal static readonly Regex[] standardRemovals = [
 		AllWhitespace(),
-	};
-	internal static readonly Regex[] experimentalRemovals = new Regex[] {
+	];
+	internal static readonly Regex[] experimentalRemovals = [
 		PluginNamePrefix,
 		PluginNameSuffix,
-	};
+	];
 
 	public static string NameToSlug(in string name, in bool forceNormalisation = false) {
 		IEnumerable<Regex> regexen = standardRemovals;
@@ -68,7 +68,7 @@ public sealed partial class ScriptContainer: IDisposable {
 	#region Direct invocation command
 
 	public bool CommandRegistered { get; private set; } = false;
-	private void redirectCommandInvocation(string command, string argline) => Service.Plugin.Invoke(this.InternalName, argline);
+	private void redirectCommandInvocation(string command, string argline) => Service.ScriptManager.Invoke(this.InternalName, argline);
 	public bool RegisterCommand() {
 		if (this.Disposed)
 			return false;
@@ -110,8 +110,14 @@ public sealed partial class ScriptContainer: IDisposable {
 	public bool ErrorOnCall { get; private set; } = false;
 
 	internal DynValue Callback { get; set; } = DynValue.Void;
+	/// <summary>
+	/// Indicates whether this script registered succesffuly and is not disposed. It may have encountered errors after registration.
+	/// </summary>
 	public bool Ready => !this.Disposed && this.Engine is not null && this.Callback.Type is DataType.Function;
 
+	/// <summary>
+	/// Indicates whether this script is "active" and in effect: not disposed, with a loaded engine and a valid callback, without having thrown errors.
+	/// </summary>
 	public bool Active => this.Ready && this.LoadSuccess && !this.ErrorOnCall;
 
 	public ScriptContainer(string file, string name, string slug) {
@@ -125,8 +131,8 @@ public sealed partial class ScriptContainer: IDisposable {
 
 		Type apiBase = typeof(ApiBase);
 		Type self = this.GetType();
-		Type[] ctorTypes = new Type[] { self };
-		object?[] ctorParams = new object?[] { this };
+		Type[] ctorTypes = [self];
+		object?[] ctorParams = [this];
 		PropertyInfo[] scriptGlobals = self
 			.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 			.Where(p => p.PropertyType.IsAssignableTo(apiBase) && !p.PropertyType.IsAbstract && p.GetCustomAttribute<LuaGlobalAttribute>() is not null)
@@ -136,7 +142,6 @@ public sealed partial class ScriptContainer: IDisposable {
 			LuaGlobalAttribute g = p.GetCustomAttribute<LuaGlobalAttribute>()!;
 			ConstructorInfo ci = p.PropertyType.GetConstructor(ctorTypes)!;
 			ApiBase o = (ApiBase)ci!.Invoke(ctorParams);
-			o.PreInit();
 			p.SetValue(this, o);
 			this.Engine.Globals[g.Name] = o;
 			o.Init();

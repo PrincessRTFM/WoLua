@@ -9,7 +9,7 @@ using MoonSharp.Interpreter;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Docs;
 
-using Fate = Dalamud.Game.ClientState.Fates.Fate;
+using Fate = Dalamud.Game.ClientState.Fates.IFate;
 
 namespace PrincessRTFM.WoLua.Lua.Api.Game;
 
@@ -24,7 +24,7 @@ public sealed record class FateWrapper(Fate? WorldFate): IWorldObjectWrapper {
 	internal unsafe FateContext* Struct => this.Valid ? ((FateContext*)this.WorldFate!.Address) : null;
 
 	[LuaDoc("Whether this FATE is a valid object in the game's memory. If this is false, this wrapper is meaningless.")]
-	public bool Valid => this.WorldFate is Fate fate && Fate.IsValid(fate);
+	public bool Valid => this.WorldFate is Fate fate && Service.ClientState.LocalPlayer?.IsValid() is true;
 
 	[LuaDoc("Whether this FATE still exists in the world. This will be true if the FATE is valid and has not yet ended, even if it is WAITING to end.")]
 	public bool Exists => this.State is not (FateState.Ended or FateState.Failed);
@@ -180,9 +180,6 @@ public sealed record class FateWrapper(Fate? WorldFate): IWorldObjectWrapper {
 	public override string ToString() => this.Valid ? $"FATE[{this.Name ?? "<ERROR: UNKNOWN FATE>"} - {this.State}, {this.MinLevel}/{this.MaxLevel}]" : "FATE[invalid]";
 
 	#region Conversions
-
-	public static implicit operator Fate?(FateWrapper? wrapper) => wrapper?.WorldFate;
-	public static implicit operator FateWrapper(Fate? fate) => new(fate);
 
 	public static implicit operator bool(FateWrapper? fate) => fate?.Exists ?? false;
 

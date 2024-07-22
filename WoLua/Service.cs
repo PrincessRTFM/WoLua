@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Gui.Dtr;
@@ -9,20 +7,18 @@ using Dalamud.Plugin.Services;
 
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Game;
-using PrincessRTFM.WoLua.Lua;
+using PrincessRTFM.WoLua.Lua.Docs;
 
 using XivCommon;
 
 namespace PrincessRTFM.WoLua;
 
 internal class Service {
-	public static ConcurrentDictionary<string, ScriptContainer> Scripts { get; } = new();
 
 	[PluginService] public static Plugin Plugin { get; private set; } = null!;
 	[PluginService] public static PluginConfiguration Configuration { get; private set; } = null!;
-	[PluginService] public static XivCommonBase Common { get; private set; } = null!;
 
-	[PluginService] public static DalamudPluginInterface Interface { get; private set; } = null!;
+	[PluginService] public static IDalamudPluginInterface Interface { get; private set; } = null!;
 	[PluginService] public static IChatGui ChatGui { get; private set; } = null!;
 	[PluginService] public static IClientState ClientState { get; private set; } = null!;
 	[PluginService] public static ICommandManager CommandManager { get; private set; } = null!;
@@ -46,12 +42,24 @@ internal class Service {
 
 	public static PlaySound Sounds { get; internal set; } = null!;
 	public static Hooks Hooks { get; internal set; } = null!;
-	public static DtrBarEntry StatusLine { get; private set; } = null!;
+	public static IDtrBarEntry StatusLine { get; private set; } = null!;
+	public static SingleExecutionTask DocumentationGenerator { get; private set; } = null!;
+	public static ScriptManager ScriptManager { get; private set; } = null!;
+	public static XivCommonBase Common { get; private set; } = null!;
+	public static ServerChat ServerChat { get; private set; } = null!;
 
 	public Service() {
+		//Common = new(Interface);
+		//ServerChat = Common.Functions.Chat;
+		// XivCommon isn't updated yet, so we're ripping the chat functionality locally
+		ServerChat = new(Scanner);
+		DocumentationGenerator = new(() => LuadocGenerator.WriteLuaDocs());
+		ScriptManager = new();
+		Sounds = new();
+		Hooks = new();
 		StatusLine = DtrBar.Get($"{Plugin.Name} status", StatusText.Initialising);
 		StatusLine.Tooltip = StatusText.TooltipInitialising;
-		StatusLine.OnClick = Plugin.Rescan;
+		StatusLine.OnClick = ScriptManager.Rescan;
 		StatusLine.Shown = true;
 	}
 }

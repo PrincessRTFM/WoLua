@@ -23,7 +23,7 @@ internal class DebugWindow: BaseWindow {
 		green = new(0, 1, 0, 1),
 		red = new(1, 0, 0, 1);
 
-	internal static readonly HashSet<string> ignoredScriptGlobals = new() {
+	internal static readonly HashSet<string> ignoredScriptGlobals = [
 		"_G", // the most critical - this avoids a stack overflow crash
 		"_VERSION",
 		"_MOONSHARP",
@@ -66,7 +66,7 @@ internal class DebugWindow: BaseWindow {
 		"json",
 		"Script",
 		"Game",
-	};
+	];
 
 	public DebugWindow() : base($"{Plugin.Name} v{Service.Plugin.Version} - Debug##DebugWindow", CreationFlags) {
 		this.SizeConstraints = new() {
@@ -78,13 +78,19 @@ internal class DebugWindow: BaseWindow {
 	public override void Draw() {
 
 		Textline($"Base path: {Service.Configuration.BasePath}");
-
 		Separator();
+		drawScriptList();
+		Separator();
+		drawPluginList();
+	}
 
-		InstalledPluginState[] plugins = Service.Interface.InstalledPlugins.OrderBy(p => p.Name).ToArray();
+	private static void drawPluginList() {
+		IExposedPlugin[] plugins = Service.Interface.InstalledPlugins.OrderBy(p => p.Name).ToArray();
+
 		Textline($"Current plugins: {plugins.Length} installed, {plugins.Where(p => p.IsLoaded).Count()} loaded");
 		ImGui.Indent();
-		foreach (InstalledPluginState p in plugins) {
+
+		foreach (IExposedPlugin p in plugins) {
 			ImGui.BeginDisabled(!p.IsLoaded);
 			Textline($"[{p.InternalName}] {p.Name} v{p.Version}", 0);
 			if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) {
@@ -99,13 +105,16 @@ internal class DebugWindow: BaseWindow {
 				ImGui.SetClipboardText(p.InternalName);
 			ImGui.EndDisabled();
 		}
+
+		ImGui.Unindent();
 		ImGui.Spacing();
+	}
+	private static void drawScriptList() {
+		Textline($"Loaded scripts: {Service.ScriptManager.TotalScripts}", 2);
 
-		Separator();
+		foreach (ScriptContainer script in Service.ScriptManager.Scripts) {
+			string name = script.InternalName;
 
-		Textline($"Loaded scripts: {Service.Scripts.Count}", 2);
-
-		foreach ((string name, ScriptContainer script) in Service.Scripts) {
 			ImGui.Spacing();
 			ImGui.Spacing();
 
@@ -167,5 +176,7 @@ internal class DebugWindow: BaseWindow {
 			ImGui.Spacing();
 			ImGui.Spacing();
 		}
+
+		ImGui.Spacing();
 	}
 }

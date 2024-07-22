@@ -14,8 +14,8 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Equals))]
 public sealed record class MountWrapper: IEquatable<MountWrapper> { // TODO luadoc all of this
-	internal static readonly Dictionary<ushort, string> mountNames = new();
-	internal static readonly Dictionary<ushort, string> mountArticles = new();
+	internal static readonly Dictionary<ushort, string> mountNames = [];
+	internal static readonly Dictionary<ushort, string> mountArticles = [];
 	internal static void LoadGameData() {
 		using MethodTimer logtimer = new();
 

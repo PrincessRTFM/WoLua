@@ -28,7 +28,7 @@ public class ChocoboApi: ApiBase { // TODO luadoc all of this
 	public byte? DefenderLevel => this.obj?.DefenderLevel;
 	public byte? AttackerLevel => this.obj?.AttackerLevel;
 	public byte? HealerLevel => this.obj?.HealerLevel;
-	public unsafe string? Name => this.obj?.Name;
+	public unsafe string? Name => this.obj?.NameString;
 
 	public unsafe uint? CurrentHp => (this.Summoned ?? false) ? this.obj!.Value.Companion->CurrentHealth : null;
 	public unsafe uint? MaxHp => (this.Summoned ?? false) ? this.obj!.Value.Companion->MaxHealth : null;

@@ -22,9 +22,7 @@ public class SingleExecutionTask {
 		}
 	}
 
-	public SingleExecutionTask(Action func) {
-		this.func = func;
-	}
+	public SingleExecutionTask(Action func) => this.func = func;
 
 	public bool TryRun() {
 		lock (this) {

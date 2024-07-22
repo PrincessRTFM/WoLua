@@ -116,11 +116,11 @@ internal class MainWindow: BaseWindow {
 			if (ImGui.IsItemDeactivatedAfterEdit()) {
 				Service.Configuration.BasePath = this.basePath;
 				Service.Configuration.Save();
-				Service.Plugin.Rescan();
+				Service.ScriptManager.Rescan();
 			}
 			ImGui.SameLine();
 			if (ImGui.Button("Rescan"))
-				Service.Plugin.Rescan();
+				Service.ScriptManager.Rescan();
 			ImGui.Indent();
 			ImGui.BeginDisabled();
 			Textline("This is where all of your lua command scripts will go.", 0);
@@ -131,7 +131,7 @@ internal class MainWindow: BaseWindow {
 			if (ImGui.Checkbox("Try to register direct commands for each script?###RegisterDirectCommands", ref this.registerCommands)) {
 				Service.Configuration.RegisterDirectCommands = this.registerCommands;
 				Service.Configuration.Save();
-				Service.Plugin.Rescan();
+				Service.ScriptManager.Rescan();
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();
@@ -155,7 +155,7 @@ internal class MainWindow: BaseWindow {
 					this.directInvocationCommandPrefix = PluginConfiguration.Defaults.DirectInvocationCommandPrefix;
 				Service.Configuration.DirectInvocationCommandPrefix = this.directInvocationCommandPrefix;
 				Service.Configuration.Save();
-				Service.Plugin.Rescan();
+				Service.ScriptManager.Rescan();
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();
@@ -170,7 +170,7 @@ internal class MainWindow: BaseWindow {
 			if (ImGui.Checkbox("Enable experimental path normalisation?###ExperimentalPathNormalisation", ref this.experimentalPathNormalisation)) {
 				Service.Configuration.ExperimentalPathNormalisation = this.experimentalPathNormalisation;
 				Service.Configuration.Save();
-				Service.Plugin.Rescan();
+				Service.ScriptManager.Rescan();
 			}
 			ImGui.Indent();
 			ImGui.BeginDisabled();

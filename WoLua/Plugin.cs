@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +21,6 @@ using MoonSharp.Interpreter.Platforms;
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api.Game;
-using PrincessRTFM.WoLua.Lua.Docs;
 using PrincessRTFM.WoLua.Ui;
 using PrincessRTFM.WoLua.Ui.Chat;
 
@@ -34,7 +32,7 @@ public class Plugin: IDalamudPlugin {
 	public const InteropAccessMode TypeRegistrationMode = InteropAccessMode.BackgroundOptimized;
 	public const string Name = "WoLua";
 
-	public static string Command => $"/{Name.ToLower()}";
+	public static string Command { get; } = $"/{Name.ToLower()}";
 
 	public string Version { get; init; }
 
@@ -58,26 +56,20 @@ public class Plugin: IDalamudPlugin {
 	private readonly MainWindow mainWindow;
 	private readonly DebugWindow debugWindow;
 
-	public SingleExecutionTask ScriptScanner { get; init; }
-	public SingleExecutionTask DocumentationGenerator { get; init; }
-
 	static Plugin() {
 		UserData.RegisterAssembly(typeof(Plugin).Assembly, true);
 		Script.GlobalOptions.RethrowExceptionNested = true;
 		Script.GlobalOptions.Platform = new LimitedPlatformAccessor();
 	}
 
-	public Plugin(DalamudPluginInterface i) {
+	#region Initialisation and plugin setup
+
+	public Plugin(IDalamudPluginInterface i) {
 		using MethodTimer logtimer = new();
 
-		this.ScriptScanner = new(this.scanScripts);
-		this.DocumentationGenerator = new(this.writeLuaDocs);
-
 		this.Version = FileVersionInfo.GetVersionInfo(i.AssemblyLocation.FullName).ProductVersion ?? "?.?.?";
-		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration(), new XivCommonBase(i)) is null)
+		if (i.Create<Service>(this, i.GetPluginConfig() ?? new PluginConfiguration()) is null)
 			throw new ApplicationException("Failed to initialise service container");
-		Service.Sounds = new();
-		Service.Hooks = new();
 
 		Service.CommandManager.AddHandler(Command, new(this.OnCommand) {
 			ShowInHelp = true,
@@ -99,8 +91,11 @@ public class Plugin: IDalamudPlugin {
 		PlayerApi.InitialiseEmotes();
 		WeatherWrapper.LoadGameData();
 		MountWrapper.LoadGameData();
-		this.Rescan();
+		Service.ScriptManager.Rescan();
+		Service.DocumentationGenerator.Run();
 	}
+
+	#endregion
 
 	public void ToggleConfigUi() {
 		if (this.disposed)
@@ -125,7 +120,7 @@ public class Plugin: IDalamudPlugin {
 			case "load":
 			case "rescan":
 			case "scan":
-				this.Rescan();
+				Service.ScriptManager.Rescan();
 				break;
 			case "exec":
 			case "execute":
@@ -144,7 +139,7 @@ public class Plugin: IDalamudPlugin {
 						[name.Length..]; // cut off the target name, plus one for a single space - if the user writes more, the command must handle it
 					if (parameters.Length > 0 && parameters.StartsWith(' '))
 						parameters = parameters[1..];
-					this.Invoke(name, parameters);
+					Service.ScriptManager.Invoke(name, parameters);
 				}
 				break;
 			case "info":
@@ -152,7 +147,7 @@ public class Plugin: IDalamudPlugin {
 				if (args.Length < 2) {
 					this.Error("Invalid usage. You must pass a script name.");
 				}
-				else if (this.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
+				else if (Service.ScriptManager.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
 					this.Print($"\"{script.PrettyName}\" ({script.InternalName}) has {script.ActionQueue.Count} queued action{(script.ActionQueue.Count == 1 ? "" : "s")}");
 				}
 				else {
@@ -165,7 +160,7 @@ public class Plugin: IDalamudPlugin {
 				if (args.Length < 2) {
 					this.Error("Invalid usage. You must pass a script name.");
 				}
-				else if (this.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
+				else if (Service.ScriptManager.FindScriptByInformalSlug(args[1], out ScriptContainer? script) && !script.ReportError()) {
 					int had = script.ActionQueue.Count;
 					script.ActionQueue.Clear();
 					this.Print($"Cleared {had} action{(had == 1 ? "" : "s")} from {script.PrettyName}'s queue.");
@@ -180,7 +175,7 @@ public class Plugin: IDalamudPlugin {
 			case "haltall":
 			case "stopall":
 			case "clearall":
-				foreach (ScriptContainer script in Service.Scripts.Values) {
+				foreach (ScriptContainer script in Service.ScriptManager.Scripts) {
 					if (!script.ReportError()) {
 						int had = script.ActionQueue.Count;
 						script.ActionQueue.Clear();
@@ -191,11 +186,9 @@ public class Plugin: IDalamudPlugin {
 			case "commands":
 			case "list":
 			case "ls": // bit of an easter egg for programmers, I guess
-				if (!Service.Scripts.IsEmpty) {
-					this.Print(
-						$"There are {Service.Scripts.Count} command{(Service.Scripts.Count == 1 ? "" : "s")}:"
-							+ string.Join("\n", Service.Scripts.Keys.Select(s => $"- {s}"))
-					);
+				if (!Service.ScriptManager.IsEmpty) {
+					this.Print($"There {(Service.ScriptManager.TotalScripts == 1 ? "is" : "are")} {Service.ScriptManager.TotalScripts} command{(Service.ScriptManager.TotalScripts == 1 ? "" : "s")}:\n"
+						+ string.Join("\n", Service.ScriptManager.Slugs.Select(s => $"- {s}")));
 				}
 				else {
 					this.Print("There are no commands loaded.");
@@ -203,7 +196,6 @@ public class Plugin: IDalamudPlugin {
 				break;
 			case "flush":
 				Service.Configuration.Save();
-				this.Print("Flushed configuration to disk");
 				break;
 			case "debug":
 				this.debugWindow.IsOpen = true;
@@ -212,7 +204,7 @@ public class Plugin: IDalamudPlugin {
 			case "make-api-ref":
 			case "gen-docs":
 			case "api":
-				this.DocumentationGenerator.Run();
+				Service.DocumentationGenerator.Run();
 				break;
 			case "query":
 				if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer is null) {
@@ -240,7 +232,7 @@ public class Plugin: IDalamudPlugin {
 									this.Print("You are not mounted.");
 								}
 								else {
-									Character.MountContainer mount = player->Mount;
+									MountContainer mount = player->Mount;
 									ushort id = mount.MountId;
 									this.Print($"You are currently using mount {id} ({MountWrapper.mountArticles[id].ToLower()} {MountWrapper.mountNames[id]}).");
 								}
@@ -271,149 +263,29 @@ public class Plugin: IDalamudPlugin {
 		}
 	}
 
-	internal bool FindScriptByInformalSlug(string identifier, [NotNullWhen(true)] out ScriptContainer? script) {
-		script = null;
-		if (this.disposed)
-			return false;
-
-		string[] tries = new string[] {
-			identifier,
-			identifier.ToLower(),
-			identifier.ToUpper(),
-			identifier.ToLowerInvariant(),
-			identifier.ToUpperInvariant(),
-		};
-		foreach (string attempt in tries) {
-			if (Service.Scripts.TryGetValue(attempt, out script))
-				break;
-		}
-
-		return script is not null;
-	}
-
-	public void Invoke(string name, string parameters) {
-		if (this.disposed)
-			return;
-
-		if (this.FindScriptByInformalSlug(name, out ScriptContainer? cmd)) {
-			cmd.Invoke(parameters);
-		}
-		else {
-			this.Error($"No such command \"{name}\" exists.");
-		}
-	}
-
-	private void scanScripts() {
-		using MethodTimer logtimer = new();
-
-		this.ShortStatus = StatusText.LoadingScripts;
-		this.FullStatus = StatusText.TooltipLoadingScripts;
-
-		string path = Service.Configuration.BasePath;
-
-		if (File.Exists(path)) {
-			this.Error($"Base script folder \"{path}\" is actually a file");
-			return;
-		}
-		else if (!Directory.Exists(path)) {
-			try {
-				Directory.CreateDirectory(path);
-			}
-			catch (Exception ex) {
-				this.Error($"Unable to create base script folder \"{path}\"", ex);
-				return;
-			}
-		}
-
-		clearCommands();
-		Service.Log.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Scanning root script directory {path}");
-		string[] dirs = Directory.GetDirectories(path);
-		Service.Log.Information($"[{LogTag.ScriptLoader}:{LogTag.PluginCore}] Found {dirs.Length} script director{(dirs.Length == 1 ? "y" : "ies")}");
-		bool direct = Service.Configuration.RegisterDirectCommands;
-		foreach (string dir in dirs) {
-			string file = Path.Combine(dir, "command.lua");
-			string name = new DirectoryInfo(dir).Name;
-			string slug = ScriptContainer.NameToSlug(name);
-			if (Service.Scripts.ContainsKey(slug)) {
-				this.Error($"Duplicate script invocation name {slug} (for {name})");
-				continue;
-			}
-			if (File.Exists(file)) {
-				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Loading {file}");
-				ScriptContainer script = new(file, name, slug);
-				Service.Log.Information($"[{LogTag.ScriptLoader}:{slug}] Registering script container for {slug}");
-				Service.Scripts.TryAdd(slug, script);
-				if (direct && script.Active) {
-					if (!script.RegisterCommand())
-						this.Error($"Unable to register //{script.InternalName} - is it already in use?");
-				}
-				if (!script.Ready) {
-					Service.Log.Error($"[{LogTag.ScriptLoader}:{slug}] Script does not have a registered callback!");
-				}
-			}
-			else {
-				Service.Log.Error($"[{LogTag.ScriptLoader}:{slug}] Cannot load script {name}, no initialisation file exists");
-			}
-		}
-
-		Service.Log.Info($"[{LogTag.ScriptLoader}] Finished loading all scripts ({Service.Scripts.Count} found)");
-
-		Service.Configuration.Save();
-
-		this.ShortStatus = StatusText.Scripts;
-		this.FullStatus = StatusText.TooltipLoaded;
-	}
-	public void Rescan() {
-		if (this.disposed)
-			return;
-
-		this.ScriptScanner.Run();
-	}
-
-	private void writeLuaDocs() {
-		using MethodTimer timer = new();
-		string contents;
-		try {
-			contents = LuadocGenerator.GenerateLuadoc();
-		}
-		catch (Exception e) {
-			this.Error("Failed to generate lua API reference", e);
-			return;
-		}
-		try {
-			string path = Path.Combine(Service.Configuration.BasePath, "api.lua");
-			File.WriteAllText(path, contents);
-			this.Print($"Lua API reference written to {path}");
-		}
-		catch (Exception e) {
-			this.Error("Failed to write lua API definition file", e);
-			return;
-		}
-	}
-
 	#region Chat
 
 	public void Print(string message, UIForegroundPayload? msgCol = null, string? scriptOrigin = null) {
 		if (this.disposed)
 			return;
 
-		List<Payload> parts = new() {
+		List<Payload> parts = [
 			Foreground.Self,
 			new TextPayload($"[{Name}]"),
 			Foreground.Reset,
-		};
+		];
 		if (!string.IsNullOrWhiteSpace(scriptOrigin)) {
-			parts.AddRange(new Payload[] {
+			parts.AddRange([
 				Foreground.Script,
 				new TextPayload($"[{scriptOrigin}]"),
 				Foreground.Reset,
-			});
+			]);
 		}
-		parts.AddRange(new Payload[] {
+		parts.AddRange([
 			msgCol ?? Foreground.Normal,
 			new TextPayload(" " + message),
 			Foreground.Reset
-		});
+		]);
 		Service.ChatGui.Print(new SeString(parts));
 	}
 	public void Error(string message, Exception? cause = null, string? scriptOrigin = null) {
@@ -431,39 +303,24 @@ public class Plugin: IDalamudPlugin {
 
 	public void NYI() => this.Error("This feature is not yet implemented.");
 
-	private static void clearCommands() {
-		using MethodTimer logtimer = new();
-
-		Service.Log.Information($"[{LogTag.PluginCore}] Disposing all loaded scripts");
-		ScriptContainer[] scripts = Service.Scripts?.Values?.ToArray() ?? Array.Empty<ScriptContainer>();
-		foreach (ScriptContainer script in scripts) {
-			script?.Dispose();
-		}
-		Service.Log.Information($"[{LogTag.PluginCore}] Clearing all loaded scripts");
-		Service.Scripts?.Clear();
-	}
-
 	#region Disposable
 	private bool disposed = false;
+
 	protected virtual void Dispose(bool disposing) {
 		if (this.disposed)
 			return;
 		this.disposed = true;
 		using MethodTimer logtimer = new();
 
-		this.ShortStatus = StatusText.Disposing;
-		this.FullStatus = StatusText.TooltipDisposing;
-		clearCommands();
-
 		if (disposing) {
-			Service.Log.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
+			Service.CommandManager.RemoveHandler(Command);
 			Service.Configuration.Save();
+			Service.ScriptManager.Dispose();
 			Service.Hooks.Dispose();
-			Service.Common.Dispose();
+			Service.Common?.Dispose();
 			Service.Interface.UiBuilder.Draw -= this.Windows.Draw;
 			Service.Interface.UiBuilder.OpenConfigUi -= this.ToggleConfigUi;
-			Service.CommandManager.RemoveHandler(Command);
-			Service.StatusLine.Dispose();
+			Service.StatusLine.Remove();
 		}
 
 		Service.Log.Information($"[{LogTag.PluginCore}] {Name} unloaded successfully!");
@@ -477,5 +334,6 @@ public class Plugin: IDalamudPlugin {
 		this.Dispose(true);
 		GC.SuppressFinalize(this);
 	}
+
 	#endregion
 }

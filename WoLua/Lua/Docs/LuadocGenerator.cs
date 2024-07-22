@@ -38,7 +38,7 @@ internal static class LuadocGenerator {
 			.Where(p => typeIsApi(p.PropertyType))
 			.Select(p => new NamedApiType(p.PropertyType, p.GetCustomAttribute<LuaGlobalAttribute>()?.Name))
 		);
-		HashSet<Type> documented = new();
+		HashSet<Type> documented = [];
 
 		StringBuilder docs = new(1024 * 64); // the first run of the dumper produced ~20k, so 64k should be good for a bit
 		docs.AppendLine("---@meta");
@@ -74,6 +74,28 @@ internal static class LuadocGenerator {
 		}
 
 		return docs.ToString();
+	}
+	public static Task<bool> WriteLuaDocsAsync() => Task.Run(WriteLuaDocs);
+	public static bool WriteLuaDocs() {
+		using MethodTimer timer = new();
+		string contents;
+		try {
+			contents = LuadocGenerator.GenerateLuadoc();
+		}
+		catch (Exception e) {
+			Service.Plugin.Error("Failed to generate lua API reference", e);
+			return false;
+		}
+		try {
+			string path = LuadocGenerator.ApiDefinitionFilePath;
+			File.WriteAllText(path, contents);
+			Service.Plugin.Print($"Lua API reference written to {path}");
+		}
+		catch (Exception e) {
+			Service.Plugin.Error("Failed to write lua API definition file", e);
+			return false;
+		}
+		return true;
 	}
 
 	private static void addType(StringBuilder docs, Type type, string? name = null) {

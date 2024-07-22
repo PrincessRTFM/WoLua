@@ -252,6 +252,7 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 	[LuaDoc("Provides three values consisting of the current character's X (east/west), Y (north/south), and Z (vertical) coordinates.",
 		"If the player isn't loaded, all three values will be nil.",
 		"This property is shorthand for `.Entity.MapCoords`.")]
+	[return: AsLuaType(LuaType.Number)]
 	public DynValue MapCoords => this.Entity.MapCoords;
 
 	[LuaPlayerDoc("The current character's rotation in radians, ranging from 0 to 2pi.",
@@ -345,7 +346,11 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 		? Service.Condition[ConditionFlag.BoundByDuty]
 		|| Service.Condition[ConditionFlag.BoundByDuty56]
 		|| Service.Condition[ConditionFlag.BoundByDuty95]
-		|| Service.Condition[ConditionFlag.BoundToDuty97]
+		: null;
+
+	[LuaPlayerDoc("Whether the current character is in the queue for a duty.")]
+	public bool? WaitingForDuty => this.Loaded
+		? Service.Condition[ConditionFlag.InDutyQueue]
 		: null;
 
 	[LuaPlayerDoc("Whether the current character is using a fashion accessory, such as a parasol or set of wings.")]
@@ -460,7 +465,7 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 	#region Emotes
 
 	private static bool emotesLoaded = false;
-	private static readonly Dictionary<string, uint> emoteUnlocks = new();
+	private static readonly Dictionary<string, uint> emoteUnlocks = [];
 
 	internal static void InitialiseEmotes() {
 		if (emotesLoaded)

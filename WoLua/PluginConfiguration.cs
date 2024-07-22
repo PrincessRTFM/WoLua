@@ -1,5 +1,7 @@
 using Dalamud.Configuration;
 
+using PrincessRTFM.WoLua.Constants;
+
 namespace PrincessRTFM.WoLua;
 
 internal class PluginConfiguration: IPluginConfiguration {
@@ -11,8 +13,10 @@ internal class PluginConfiguration: IPluginConfiguration {
 		public const bool PathNormalisation = false;
 	}
 
-	public void Save()
-		=> Service.Interface.SavePluginConfig(this);
+	public void Save() {
+		Service.Log.Information($"[{LogTag.PluginCore}] Flushing configuration to disk");
+		Service.Interface.SavePluginConfig(this);
+	}
 
 	public int Version { get; set; } = 1;
 

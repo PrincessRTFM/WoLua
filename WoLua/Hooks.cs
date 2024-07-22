@@ -1,29 +1,27 @@
 using System;
 
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Hooking;
+
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace PrincessRTFM.WoLua;
 
 public class Hooks: IDisposable {
 	private bool disposed;
 
-	private delegate void UiMouseoverEntityFunc(IntPtr t, IntPtr entity);
-	private Hook<UiMouseoverEntityFunc>? uiMouseoverEntity;
-	public GameObject? UITarget { get; private set; } = null;
-	private void onUiMouseoverEntity(IntPtr self, IntPtr entity) {
-		this.uiMouseoverEntity?.Original(self, entity);
-		this.UITarget = entity == IntPtr.Zero ? null : Service.Objects.CreateObjectReference(entity);
+	public unsafe IGameObject? UITarget {
+		get {
+			PronounModule* pronouns = PronounModule.Instance();
+			if (pronouns is null)
+				return null;
+			GameObject* actor = pronouns->UiMouseOverTarget;
+			return actor is null ? null : Service.Objects.CreateObjectReference((IntPtr)actor);
+		}
 	}
 
 	public Hooks() {
-		nint ptrUiMouseoverEntity = Service.Scanner.ScanModule("E8 ?? ?? ?? ?? 48 8B 5C 24 40 4C 8B 74 24 58 83 FD 02");
-		if (ptrUiMouseoverEntity != nint.Zero) {
-			int offset = Dalamud.Memory.MemoryHelper.Read<int>(ptrUiMouseoverEntity + 1);
-			nint ptrHook = ptrUiMouseoverEntity + 5 + offset;
-			this.uiMouseoverEntity = Service.Interop.HookFromAddress<UiMouseoverEntityFunc>(ptrHook, this.onUiMouseoverEntity);
-			this.uiMouseoverEntity.Enable();
-		}
+		// nop
 	}
 
 	protected virtual void Dispose(bool disposing) {
@@ -32,10 +30,10 @@ public class Hooks: IDisposable {
 		this.disposed = true;
 
 		if (disposing) {
-			this.uiMouseoverEntity?.Dispose();
+			// nop
 		}
 
-		this.uiMouseoverEntity = null;
+		// nop
 	}
 
 	public void Dispose() {

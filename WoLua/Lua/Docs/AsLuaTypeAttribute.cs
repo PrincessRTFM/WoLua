@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace PrincessRTFM.WoLua.Lua.Docs;
 
@@ -9,8 +6,6 @@ namespace PrincessRTFM.WoLua.Lua.Docs;
 internal class AsLuaTypeAttribute: Attribute {
 	public string LuaName { get; }
 
-	public AsLuaTypeAttribute(string luaType) {
-		this.LuaName = luaType;
-	}
-	public AsLuaTypeAttribute(LuaType luaType): this(luaType.LuaName()) { }
+	public AsLuaTypeAttribute(string luaType) => this.LuaName = luaType;
+	public AsLuaTypeAttribute(LuaType luaType) : this(luaType.LuaName()) { }
 }

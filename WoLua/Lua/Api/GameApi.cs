@@ -77,10 +77,10 @@ public class GameApi: ApiBase {
 		if (this.Disposed)
 			return;
 
-		string cleaned = Service.Common.Functions.Chat.SanitiseText(chatline);
+		string cleaned = Service.ServerChat.SanitiseText(chatline);
 		if (!string.IsNullOrWhiteSpace(cleaned)) {
 			this.Log(cleaned, LogTag.ServerChat);
-			Service.Common.Functions.Chat.SendMessage(cleaned);
+			Service.ServerChat.SendMessage(cleaned);
 		}
 	}
 	#endregion
@@ -90,7 +90,7 @@ public class GameApi: ApiBase {
 	[LuaDoc("Iterates over all real and not-dead entities near the player.",
 		"Only objects close enough to be loaded by the client will be seen.",
 		"Order is neither specified nor guaranteed.")]
-	public IEnumerable<EntityWrapper> NearbyEntities => Service.Objects.Where(o => GameObject.IsValid(o) && o.IsTargetable && !o.IsDead).Select(o => new EntityWrapper(o)).ToList();
+	public IEnumerable<EntityWrapper> NearbyEntities => Service.Objects.Where(o => o is not null && o.IsValid() && o.IsTargetable && !o.IsDead).Select(o => new EntityWrapper(o)).ToList();
 
 	[LuaDoc("Finds the nearest (three-dimensional distance) real and not-dead entity with the given (case-sensitive) name.",
 		"If no such entity could be found, the returned EntityWrapper will point to nothing.",

@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 
@@ -16,16 +14,14 @@ public static class StatusText {
 	public static SeString LoadingScripts { get; } = $"{IconScripts} {IconLoadingScripts}";
 	public static SeString Scripts {
 		get {
-			int total = Service.Scripts.Count;
-			int loaded = Service.Scripts.Values.Where(c => c.Active).Count();
+			int total = Service.ScriptManager.TotalScripts;
+			int loaded = Service.ScriptManager.WorkingScripts;
 			int failed = total - loaded;
-#if DEBUG
-			return $"{IconScripts}{loaded}/{total} {IconErrored}{failed}";
-#else
-			return loaded == total
-				? $"{IconScripts}{loaded}"
-				: $"{IconScripts}{loaded}/{total} {IconErrored}{failed}";
+			return
+#if !DEBUG
+				loaded == total ? $"{IconScripts}{loaded}" :
 #endif
+				$"{IconScripts}{loaded}/{total} {IconErrored}{failed}";
 		}
 	}
 	public static SeString Disposing { get; } = $"{IconScripts} {IconDisposing}";
@@ -34,9 +30,9 @@ public static class StatusText {
 	public static SeString TooltipLoadingScripts { get; } = "Loading scripts...";
 	public static SeString TooltipLoaded {
 		get {
-			int totalCount = Service.Scripts.Count;
+			int totalCount = Service.ScriptManager.TotalScripts;
 			string totalNoun = totalCount == 1 ? "script" : "scripts";
-			int loadedCount = Service.Scripts.Values.Where(c => c.Active).Count();
+			int loadedCount = Service.ScriptManager.WorkingScripts;
 			string loadedNoun = loadedCount == 1 ? "script" : "scripts";
 			int failedCount = totalCount - loadedCount;
 			string failedNoun = failedCount == 1 ? "script" : "scripts";

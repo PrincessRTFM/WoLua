@@ -5,6 +5,8 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
+
 using Lumina.Excel.GeneratedSheets;
 
 using MoonSharp.Interpreter;
@@ -23,15 +25,12 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 [MoonSharpHideMember(nameof(Equals))]
 [MoonSharpHideMember("<Clone>$")]
 [MoonSharpHideMember(nameof(Deconstruct))]
-public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrapper, IEquatable<EntityWrapper> { // TODO luadoc all of this
-	public static readonly EntityWrapper Empty = new((GameObject?)null);
+public sealed record class EntityWrapper(IGameObject? Entity): IWorldObjectWrapper, IEquatable<EntityWrapper> { // TODO luadoc all of this
+	public static readonly EntityWrapper Empty = new((IGameObject?)null);
 
 	#region Conversions
 	private unsafe NativeGameObject* go => this ? (NativeGameObject*)this.Entity!.Address : null;
 	private unsafe NativeCharacter* cs => this.IsPlayer ? (NativeCharacter*)this.Entity!.Address : null;
-
-	public static implicit operator GameObject?(EntityWrapper? wrapper) => wrapper?.Entity;
-	public static implicit operator EntityWrapper(GameObject? entity) => new(entity);
 
 	public static implicit operator bool(EntityWrapper? entity) => entity?.Exists ?? false;
 	#endregion
@@ -50,7 +49,7 @@ public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrappe
 			NativeCharacter* player = this.cs;
 			if (player is null)
 				return new(0);
-			NativeCharacter.MountContainer? mount = player->IsMounted() ? player->Mount : null;
+			MountContainer? mount = player->IsMounted() ? player->Mount : null;
 			return new(mount?.MountId ?? 0);
 		}
 	}
@@ -75,7 +74,7 @@ public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrappe
 				return null;
 			NativeCharacter* player = this.cs;
 			CharacterData cdata = player->CharacterData;
-			ushort titleId = cdata.TitleID;
+			ushort titleId = cdata.TitleId;
 			return titleId == 0
 				? null
 				: ExcelContainer.Titles.GetRow(titleId);
@@ -94,14 +93,14 @@ public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrappe
 	}
 	public bool? TitleIsPrefix => this.IsPlayer ? this.playerTitle?.IsPrefix : null;
 
-	public string? CompanyTag => this && this.Entity is Character self ? self.CompanyTag.TextValue : null;
+	public string? CompanyTag => this && this.Entity is ICharacter self ? self.CompanyTag.TextValue : null;
 
 	#endregion
 
 	#region Gender
 
-	public unsafe bool? IsMale => this ? this.go->Gender == 0 : null;
-	public unsafe bool? IsFemale => this ? this.go->Gender == 1 : null;
+	public unsafe bool? IsMale => this ? this.go->Sex == 0 : null;
+	public unsafe bool? IsFemale => this ? this.go->Sex == 1 : null;
 	public unsafe bool? IsGendered => this ? (this.IsMale ?? false) || (this.IsFemale ?? false) : null;
 
 	public string? MF(string male, string female) => this.MFN(male, female, null!);
@@ -114,11 +113,11 @@ public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrappe
 
 	#region Worlds
 
-	public ushort? HomeWorldId => this.IsPlayer && this.Entity is PlayerCharacter p ? (ushort)p.HomeWorld.GameData!.RowId : null;
-	public string? HomeWorld => this.IsPlayer && this.Entity is PlayerCharacter p ? p.HomeWorld.GameData!.Name!.RawString : null;
+	public ushort? HomeWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.HomeWorld.GameData!.RowId : null;
+	public string? HomeWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.HomeWorld.GameData!.Name!.RawString : null;
 
-	public ushort? CurrentWorldId => this.IsPlayer && this.Entity is PlayerCharacter p ? (ushort)p.CurrentWorld.GameData!.RowId : null;
-	public string? CurrentWorld => this.IsPlayer && this.Entity is PlayerCharacter p ? p.CurrentWorld.GameData!.Name!.RawString : null;
+	public ushort? CurrentWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.CurrentWorld.GameData!.RowId : null;
+	public string? CurrentWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.CurrentWorld.GameData!.Name!.RawString : null;
 
 	#endregion
 
@@ -145,40 +144,40 @@ public sealed record class EntityWrapper(GameObject? Entity): IWorldObjectWrappe
 
 	#region Stats
 
-	public byte? Level => this && this.Entity is Character self ? self.Level : null;
+	public byte? Level => this && this.Entity is ICharacter self ? self.Level : null;
 
 	public JobData Job {
 		get {
-			return this && this.Entity is Character self
+			return this && this.Entity is ICharacter self
 				? new(self.ClassJob!.Id, self.ClassJob!.GameData!.Name!.ToString().ToLower(), self.ClassJob!.GameData!.Abbreviation!.ToString().ToUpper())
 				: new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
 		}
 	}
 
-	public uint? Hp => this && this.Entity is Character self && self.MaxHp > 0 ? self.CurrentHp : null;
-	public uint? MaxHp => this && this.Entity is Character self ? self.MaxHp : null;
+	public uint? Hp => this && this.Entity is ICharacter self && self.MaxHp > 0 ? self.CurrentHp : null;
+	public uint? MaxHp => this && this.Entity is ICharacter self ? self.MaxHp : null;
 
-	public uint? Mp => this && this.Entity is Character self && self.MaxMp > 0 ? self.CurrentMp : null;
-	public uint? MaxMp => this && this.Entity is Character self ? self.MaxMp : null;
+	public uint? Mp => this && this.Entity is ICharacter self && self.MaxMp > 0 ? self.CurrentMp : null;
+	public uint? MaxMp => this && this.Entity is ICharacter self ? self.MaxMp : null;
 
-	public uint? Cp => this && this.Entity is Character self && self.MaxCp > 0 ? self.CurrentCp : null;
-	public uint? MaxCp => this && this.Entity is Character self ? self.MaxCp : null;
+	public uint? Cp => this && this.Entity is ICharacter self && self.MaxCp > 0 ? self.CurrentCp : null;
+	public uint? MaxCp => this && this.Entity is ICharacter self ? self.MaxCp : null;
 
-	public uint? Gp => this && this.Entity is Character self && self.MaxGp > 0 ? self.CurrentGp : null;
-	public uint? MaxGp => this && this.Entity is Character self ? self.MaxGp : null;
+	public uint? Gp => this && this.Entity is ICharacter self && self.MaxGp > 0 ? self.CurrentGp : null;
+	public uint? MaxGp => this && this.Entity is ICharacter self ? self.MaxGp : null;
 
 	#endregion
 
 	#region Flags
 
-	public bool IsHostile => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.Hostile);
-	public bool InCombat => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.InCombat);
-	public bool WeaponDrawn => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.WeaponOut);
-	public bool IsPartyMember => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.PartyMember);
-	public bool IsAllianceMember => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.AllianceMember);
-	public bool IsFriend => this && this.Entity is Character self && self.StatusFlags.HasFlag(StatusFlags.Friend);
-	public bool IsCasting => this && this.Entity is BattleChara self && self.IsCasting;
-	public bool CanInterrupt => this && this.Entity is BattleChara self && self.IsCasting && self.IsCastInterruptible;
+	public bool IsHostile => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.Hostile);
+	public bool InCombat => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.InCombat);
+	public bool WeaponDrawn => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.WeaponOut);
+	public bool IsPartyMember => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.PartyMember);
+	public bool IsAllianceMember => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.AllianceMember);
+	public bool IsFriend => this && this.Entity is ICharacter self && self.StatusFlags.HasFlag(StatusFlags.Friend);
+	public bool IsCasting => this && this.Entity is IBattleChara self && self.IsCasting;
+	public bool CanInterrupt => this && this.Entity is IBattleChara self && self.IsCasting && self.IsCastInterruptible;
 
 	#endregion
 

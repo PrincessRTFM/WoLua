@@ -12,7 +12,7 @@ internal abstract class BaseWindow: Window {
 	protected BaseWindow(string name, ImGuiWindowFlags flags = ImGuiWindowFlags.None, bool forceMainWindow = false) : base(name, flags, forceMainWindow) {
 		this.RespectCloseHotkey = true;
 		this.IsOpen = false;
-		this.TitleBarButtons = new() {
+		this.TitleBarButtons = [
 			new() {
 				Priority = 0,
 				Icon = FontAwesomeIcon.Heart,
@@ -35,7 +35,7 @@ internal abstract class BaseWindow: Window {
 					ImGui.EndTooltip();
 				},
 			},
-		};
+		];
 		this.AllowClickthrough = false;
 		this.AllowPinning = true;
 	}

@@ -6,6 +6,8 @@ namespace PrincessRTFM.WoLua.Lua.Api.Game;
 public class PartyApi: ApiBase { // TODO luadoc all of this
 	public PartyApi(ScriptContainer source) : base(source) { }
 
+	public static implicit operator bool(PartyApi? party) => party?.InParty ?? false;
+
 	public int? Size => this.Owner.GameApi.Player.Loaded ? Service.Party.Length : null;
 	public int? Length => this.Size;
 	public bool? InAlliance => this.Owner.GameApi.Player.Loaded ? Service.Party.IsAlliance : null;

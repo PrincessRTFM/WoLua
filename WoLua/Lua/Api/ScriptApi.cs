@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-using Dalamud.Interface.Internal.Notifications;
+using Dalamud.Interface.ImGuiNotification;
 
 using ImGuiNET;
 
@@ -41,11 +41,9 @@ public class ScriptApi: ApiBase {
 		this.Storage = null!;
 	}
 
-	protected internal override void PreInit() {
+	protected internal override void Init() {
 		this.Owner.Engine.Options.DebugPrint = this.Debug.PrintString;
 		this.Owner.Engine.Options.DebugInput = this.Debug.Input;
-	}
-	protected internal override void Init() {
 		this.Log("Loading script storage from disk", LogTag.ScriptLoader);
 		this.ReloadStorage();
 	}
