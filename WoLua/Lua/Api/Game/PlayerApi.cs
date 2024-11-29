@@ -478,8 +478,8 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 			int max = emotes.Count;
 			Service.Log.Information($"[{LogTag.Emotes}] Indexing {max:N0} emotes...");
 			for (uint i = 0; i < max; ++i) {
-				Emote? emote = emotes.GetRow(i);
-				if (emote is not null) {
+				Emote? emote = emotes.GetRowOrDefault(i);
+				if (emote.HasValue) {
 					string[] commands = (new string?[] {
 						emote.Value.Name.ToString(),
 						emote.Value.TextCommand.ValueNullable?.Command.ToString(),
