@@ -85,9 +85,9 @@ public sealed record class EntityWrapper(IGameObject? Entity): IWorldObjectWrapp
 		get {
 			if (!this.IsPlayer)
 				return null;
-			Title? maybeTitle = this.playerTitle;
-			return maybeTitle.HasValue
-				? this.MF(maybeTitle.Value.Masculine.ToString(), maybeTitle.Value.Feminine.ToString())
+			Title? title = this.playerTitle;
+			return title.HasValue
+				? this.MF(title.Value.Masculine.ToString(), title.Value.Feminine.ToString())
 				: string.Empty;
 		}
 	}
