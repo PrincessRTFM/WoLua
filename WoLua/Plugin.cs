@@ -13,7 +13,7 @@ using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Environment;
 
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Platforms;
@@ -23,8 +23,6 @@ using PrincessRTFM.WoLua.Lua;
 using PrincessRTFM.WoLua.Lua.Api.Game;
 using PrincessRTFM.WoLua.Ui;
 using PrincessRTFM.WoLua.Ui.Chat;
-
-using XivCommon;
 
 namespace PrincessRTFM.WoLua;
 
@@ -218,7 +216,7 @@ public class Plugin: IDalamudPlugin {
 							break;
 						case "class":
 						case "job":
-							if (Service.ClientState.LocalPlayer.ClassJob.GameData is ClassJob job) {
+							if (Service.ClientState.LocalPlayer.ClassJob.Value is ClassJob job) {
 								this.Print($"You current job is {job.RowId} ({job.Abbreviation}, {job.Name}) at level {Service.ClientState.LocalPlayer.Level}.");
 							}
 							else {

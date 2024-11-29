@@ -7,7 +7,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 
@@ -85,10 +85,10 @@ public sealed record class EntityWrapper(IGameObject? Entity): IWorldObjectWrapp
 		get {
 			if (!this.IsPlayer)
 				return null;
-			Title? title = this.playerTitle;
-			return title is null
-				? string.Empty
-				: this.MF(title.Masculine, title.Feminine);
+			Title? maybeTitle = this.playerTitle;
+			return maybeTitle.HasValue
+				? this.MF(maybeTitle.Value.Masculine.ToString(), maybeTitle.Value.Feminine.ToString())
+				: string.Empty;
 		}
 	}
 	public bool? TitleIsPrefix => this.IsPlayer ? this.playerTitle?.IsPrefix : null;
@@ -113,11 +113,11 @@ public sealed record class EntityWrapper(IGameObject? Entity): IWorldObjectWrapp
 
 	#region Worlds
 
-	public ushort? HomeWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.HomeWorld.GameData!.RowId : null;
-	public string? HomeWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.HomeWorld.GameData!.Name!.RawString : null;
+	public ushort? HomeWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.HomeWorld.Value.RowId : null;
+	public string? HomeWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.HomeWorld.Value.Name!.ToString() : null;
 
-	public ushort? CurrentWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.CurrentWorld.GameData!.RowId : null;
-	public string? CurrentWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.CurrentWorld.GameData!.Name!.RawString : null;
+	public ushort? CurrentWorldId => this.IsPlayer && this.Entity is IPlayerCharacter p ? (ushort)p.CurrentWorld.Value.RowId : null;
+	public string? CurrentWorld => this.IsPlayer && this.Entity is IPlayerCharacter p ? p.CurrentWorld.Value.Name!.ToString() : null;
 
 	#endregion
 
@@ -149,7 +149,7 @@ public sealed record class EntityWrapper(IGameObject? Entity): IWorldObjectWrapp
 	public JobData Job {
 		get {
 			return this && this.Entity is ICharacter self
-				? new(self.ClassJob!.Id, self.ClassJob!.GameData!.Name!.ToString().ToLower(), self.ClassJob!.GameData!.Abbreviation!.ToString().ToUpper())
+				? new(self.ClassJob.RowId, self.ClassJob!.Value.Name!.ToString().ToLower(), self.ClassJob!.Value.Abbreviation!.ToString().ToUpper())
 				: new(0, JobData.InvalidJobName, JobData.InvalidJobAbbr);
 		}
 	}

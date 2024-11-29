@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 
@@ -56,8 +56,8 @@ public sealed record class WeatherWrapper: IEquatable<WeatherWrapper> {
 		if (Service.DataManager.GetExcelSheet<Weather>() is ExcelSheet<Weather> skies) {
 			// Cache the names and descriptions for each type of weather
 			foreach (Weather row in skies) {
-				weatherNames[row.RowId] = row.Name;
-				weatherDescriptions[row.RowId] = row.Description;
+				weatherNames[row.RowId] = row.Name.ToString();
+				weatherDescriptions[row.RowId] = row.Description.ToString();
 			}
 			Service.Log.Information($"[{LogTag.Weather}] Indexed {weatherNames.Count} weather types");
 		}
