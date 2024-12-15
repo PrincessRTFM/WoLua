@@ -1,8 +1,8 @@
-Game.PrintChat("Yes, you can actually send chat messages on script load. It's not a GOOD idea, but you CAN do it.")
+Game.PrintMessage("Yes, you can actually send chat messages on script load. It's not a GOOD idea, but you CAN do it.")
 
 Script(function()
 	Game.PrintError("Oh no! This script prints an error when called!")
-	Game.PrintChat("Don't worry, nothing's actually wrong.")
+	Game.PrintMessage("Don't worry, nothing's actually wrong.")
 end)
 
 -- yeah, this example is really that simple
