@@ -10,7 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 
@@ -252,7 +252,6 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 	[LuaDoc("Provides three values consisting of the current character's X (east/west), Y (north/south), and Z (vertical) coordinates.",
 		"If the player isn't loaded, all three values will be nil.",
 		"This property is shorthand for `.Entity.MapCoords`.")]
-	[return: AsLuaType(LuaType.Number)]
 	public DynValue MapCoords => this.Entity.MapCoords;
 
 	[LuaPlayerDoc("The current character's rotation in radians, ranging from 0 to 2pi.",
@@ -476,24 +475,24 @@ public class PlayerApi: ApiBase, IWorldObjectWrapper {
 
 		ExcelSheet<Emote> emotes = Service.DataManager.GameData.GetExcelSheet<Emote>()!;
 		try {
-			uint max = emotes.RowCount;
+			int max = emotes.Count;
 			Service.Log.Information($"[{LogTag.Emotes}] Indexing {max:N0} emotes...");
 			for (uint i = 0; i < max; ++i) {
-				Emote? emote = emotes.GetRow(i);
-				if (emote is not null) {
+				Emote? emote = emotes.GetRowOrDefault(i);
+				if (emote.HasValue) {
 					string[] commands = (new string?[] {
-						emote.Name.RawString,
-						emote.TextCommand.Value?.Command?.ToString(),
-						emote.TextCommand.Value?.ShortCommand?.ToString(),
-						emote.TextCommand.Value?.Alias?.ToString(),
-						emote.TextCommand.Value?.ShortAlias?.ToString(),
+						emote.Value.Name.ToString(),
+						emote.Value.TextCommand.ValueNullable?.Command.ToString(),
+						emote.Value.TextCommand.ValueNullable?.ShortCommand.ToString(),
+						emote.Value.TextCommand.ValueNullable?.Alias.ToString(),
+						emote.Value.TextCommand.ValueNullable?.ShortAlias.ToString(),
 					})
 						.Where(s => !string.IsNullOrWhiteSpace(s))
 						.Cast<string>()
 						.Select(s => s.TrimStart('/'))
 						.ToArray();
 					foreach (string command in commands)
-						emoteUnlocks[command] = emote.UnlockLink;
+						emoteUnlocks[command] = emote.Value.UnlockLink;
 				}
 			}
 			Service.Log.Information($"[{LogTag.Emotes}] Cached {emoteUnlocks.Count:N0} emote names");

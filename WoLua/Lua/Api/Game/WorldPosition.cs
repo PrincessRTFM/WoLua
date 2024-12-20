@@ -4,7 +4,7 @@ using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
 
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 
@@ -46,10 +46,10 @@ public sealed record class WorldPosition(float? PosX, float? PosY, float? PosZ):
 				return null;
 			uint zone = Service.ClientState.TerritoryType;
 			if (zone > 0) {
-				Map? map = Service.DataManager.GetExcelSheet<Map>()!.GetRow(zone);
-				TerritoryTypeTransient? territoryTransient = Service.DataManager.GetExcelSheet<TerritoryTypeTransient>()!.GetRow(zone);
-				if (map is not null && territoryTransient is not null) {
-					return MapUtil.WorldToMap(this.GameEnginePosition, map, territoryTransient, true);
+				Map? map = Service.DataManager.GetExcelSheet<Map>()!.GetRowOrDefault(zone);
+				TerritoryTypeTransient? territoryTransient = Service.DataManager.GetExcelSheet<TerritoryTypeTransient>()!.GetRowOrDefault(zone);
+				if (map.HasValue && territoryTransient.HasValue) {
+					return MapUtil.WorldToMap(this.GameEnginePosition, map.Value, territoryTransient.Value, true);
 				}
 			}
 			return null;

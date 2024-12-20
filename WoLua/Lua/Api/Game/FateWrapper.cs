@@ -2,14 +2,13 @@ using System.Numerics;
 
 using Dalamud.Game.ClientState.Fates;
 
-using FFXIVClientStructs.FFXIV.Client.Game.Fate;
-
 using MoonSharp.Interpreter;
 
 using PrincessRTFM.WoLua.Constants;
 using PrincessRTFM.WoLua.Lua.Docs;
 
 using Fate = Dalamud.Game.ClientState.Fates.IFate;
+using FateContext = FFXIVClientStructs.FFXIV.Client.Game.Fate.FateContext;
 
 namespace PrincessRTFM.WoLua.Lua.Api.Game;
 

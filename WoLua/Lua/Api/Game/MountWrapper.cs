@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 using MoonSharp.Interpreter;
 
@@ -21,7 +21,7 @@ public sealed record class MountWrapper: IEquatable<MountWrapper> { // TODO luad
 
 		ExcelSheet<Mount> mounts = Service.DataManager.GetExcelSheet<Mount>()!;
 		foreach (Mount mount in mounts) {
-			mountNames[(ushort)mount.RowId] = mount.Singular;
+			mountNames[(ushort)mount.RowId] = mount.Singular.ToString();
 			mountArticles[(ushort)mount.RowId] = "A" + (mount.StartsWithVowel > 0 ? "n" : string.Empty);
 		}
 		mountNames.Remove(0);

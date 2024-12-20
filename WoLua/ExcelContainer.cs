@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace PrincessRTFM.WoLua;
 
 public static class ExcelContainer {
-	private static Lazy<ExcelSheet<T>> init<T>() where T: ExcelRow {
+	private static Lazy<ExcelSheet<T>> init<T>() where T: struct, IExcelRow<T> {
 		return new(() => {
 			if (Service.DataManager is null)
 				throw new InvalidOperationException("Cannot load excel sheet without DataManager instance", new NullReferenceException("Service.DataManager does not exist"));
