@@ -28,7 +28,7 @@ internal abstract class BaseWindow: Window {
 				Priority = 1,
 				Icon = FontAwesomeIcon.Code,
 				IconOffset = new(1, 1),
-				Click = _ => Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua") { UseShellExecute = true }),
+				Click = _ => Process.Start(new ProcessStartInfo("https://github.com/VariableVixen/WoLua") { UseShellExecute = true }),
 				ShowTooltip = () => {
 					ImGui.BeginTooltip();
 					ImGui.TextUnformatted("Browse the github repo");

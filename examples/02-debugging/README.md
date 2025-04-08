@@ -1,6 +1,6 @@
 # Debugging Your Script
 
-Nobody gets it right the first time. That means you're gonna need to debug your scripts somehow. For that, the [`Debug` API](https://github.com/PrincessRTFM/WoLua/blob/master/docs/debug.md) will be invaluable. Step one, of course, is to turn debugging output on with `Script.Debug.Enabled = true`, probably at the very top of your script.
+Nobody gets it right the first time. That means you're gonna need to debug your scripts somehow. For that, the [`Debug` API](https://github.com/VariableVixen/WoLua/blob/master/docs/debug.md) will be invaluable. Step one, of course, is to turn debugging output on with `Script.Debug.Enabled = true`, probably at the very top of your script.
 
 **Debug output is only enabled for debug calls made while `Script.Debug.Enabled` is `true`.**
 

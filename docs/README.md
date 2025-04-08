@@ -69,4 +69,4 @@ If there are other values you would like queryable, please [open an issue][issue
 [script storage]: <storage.md>
 [toast api]: <toast.md>
 
-[issue tracker]: <https://github.com/PrincessRTFM/WoLua/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc>
+[issue tracker]: <https://github.com/VariableVixen/WoLua/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc>

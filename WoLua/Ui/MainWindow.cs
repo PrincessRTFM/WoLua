@@ -96,7 +96,7 @@ internal class MainWindow: BaseWindow {
 			Textline($"Since the documentation for writing {Plugin.Name} scripts is necessarily so extensive, it's located online, on the plugin repository.");
 
 			if (ImGui.Button("Open documentation page")) {
-				Process.Start(new ProcessStartInfo("https://github.com/PrincessRTFM/WoLua/tree/master/docs#wolua-scripting") { UseShellExecute = true });
+				Process.Start(new ProcessStartInfo("https://github.com/VariableVixen/WoLua/tree/master/docs#wolua-scripting") { UseShellExecute = true });
 			}
 
 			Textline($"However, if you're writing your own scripts, you can use \"{Plugin.Command} api\" to generate an API definition file in {LuadocGenerator.ApiDefinitionFilePath}"
